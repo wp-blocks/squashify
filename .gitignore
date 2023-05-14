@@ -1,0 +1,43 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# The build directories
+build/
+build-types/
+lib/
+temp/
+
+# TurboRepo cache directories
+.turbo
+
+# Coverage directory used by tools like istanbul
+coverage/
+artifacts/
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# TypeScript compiler build information
+tsconfig.tsbuildinfo
+
+# Optional eslint cache
+.eslintcache
+
+# Output of `npm pack`
+*.tgz
+
+# Output of `wp-scripts plugin-zip`
+*.zip
+
+# dotenv environment variables file
+.env
+
+# Jetbrains editor config
+.idea

@@ -1,0 +1,19 @@
+{
+	"transformIgnorePatterns": [ "/node_modules/" ],
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"esModuleInterop": true
+	},
+	"coverageThreshold": {
+		"global": {
+			"branches": 10,
+			"functions": 10,
+			"lines": 100,
+			"statements": 10
+		}
+	},
+	"moduleNameMapper": {
+		"/^src\/(.*)$/": "<rootDir>/src/$1" // You missed out `/` before the rest value `$1`
+	},
+	"collectCoverage": true
+}
