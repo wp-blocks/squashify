@@ -4,7 +4,6 @@ import fs from 'fs';
 import path from 'path';
 
 import {inputFormats, InputFormats} from './constants';
-import {Path} from "webpack-cli";
 import {CompressionOptions} from "./types";
 
 export function removeDotFromStart(str: string): string {
@@ -43,7 +42,7 @@ export function asInputFormats(ext: unknown): ext is InputFormats {
  * @param folderPath The folder to search for images in
  * @returns An array of image formats
  */
-export function getImageFormatsInFolder(folderPath: Path): InputFormats[] {
+export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
 	const imageFormats = new Set<InputFormats>(); // using a Set to store unique image formats
 
 	/**
@@ -51,7 +50,7 @@ export function getImageFormatsInFolder(folderPath: Path): InputFormats[] {
 	 *
 	 * @param {string} dir The folder to search for images in.
 	 */
-	function searchForImages(dir: Path) {
+	function searchForImages(dir: string) {
 		const files = fs.readdirSync(dir);
 
 		// iterate over each file
