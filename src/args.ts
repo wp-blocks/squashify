@@ -42,7 +42,7 @@ export function getCliOptions( rawArgs: yargs.Argv<{}>): ScriptOptions {
 		srcDir: argv.in ?? '',
 		distDir: argv.out ?? '',
 		configFile: argv.config ?? defaultConfigFile,
-		interactive: argv.interactive ?? false,
+		interactive: argv.interactive,
 		verbose: argv.verbose ?? false,
 		compressionOptions: undefined,
 	};

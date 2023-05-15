@@ -7,7 +7,7 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"clean": "tsc --build --clean",
-    "squashify": "node ./lib/ --in ./tests/images/test1 --interactive",
+    "squashify": "node ./lib/ --in ./tests/images/test1 --interactive --verbose",
     "test": "jest --silent=false --coverage --verbose"
   },
   "files": [

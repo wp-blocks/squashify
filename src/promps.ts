@@ -24,22 +24,22 @@ export async function getPromptOptions(
 	}
 
 	// If the compression options are not specified, prompt the user
-	if ( options.compressionOptions ) {
-		// Get the image formats
-		const imageFormats = getImageFormatsInFolder( options.srcDir );
 
-		// If no image formats are found, return
-		if ( ! imageFormats.length ) {
-			logMessage( 'No image formats found in the source directory', options.verbose );
-			return options;
-		}
+	// Get the image formats
+	const imageFormats = getImageFormatsInFolder( options.srcDir );
 
-		// Prompt the user for compression options
-		options.compressionOptions = await getImageCompressionOptions(
-			imageFormats,
-			options.verbose
-		);
+	// If no image formats are found, return
+	if ( ! imageFormats.length ) {
+		logMessage( 'No image formats found in the source directory', options.verbose );
+		return options;
 	}
+
+	// Prompt the user for compression options
+	options.compressionOptions = await getImageCompressionOptions(
+		imageFormats,
+		options.verbose
+	);
+
 
 	return options;
 }
