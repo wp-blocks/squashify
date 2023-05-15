@@ -39,7 +39,6 @@ export function getIniOptions( options ): ScriptOptions {
 			fs.readFileSync( options.configFile, 'utf-8' )
 		);
 
-		console.log(iniOptions);
 	} catch ( err ) {
 		console.log(
 			`🎃 Squashify: Cannot find a valid configuration or ${options.configFile} does not exist.`

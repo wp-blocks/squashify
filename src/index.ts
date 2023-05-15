@@ -4,7 +4,6 @@ import { getCliOptions } from './args';
 import { convertImages } from './compression';
 import { getIniOptions } from './ini';
 import { getPromptOptions } from './promps';
-import {logMessage} from "./utils";
 
 /**
  * Prompts the user for the source and destination directories
@@ -32,8 +31,8 @@ export default async function main() {
 
 	if ( res ) {
 		// Print the time elapsed in seconds to the console
-		logMessage(
-			`The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`, options.verbose
+		console.log(
+			`The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`
 		);
 
 		return res;

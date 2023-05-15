@@ -3,9 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import sharp from 'sharp';
-import {Config as SvgoConfig, optimize, PluginConfig as SvgoPluginConfig} from 'svgo';
 
-import {Compressor} from './constants';
 import {asInputFormats, getCompressionOptions, getOutputExtension, getSvgoOptions, logMessage, optimizeSvg} from './utils';
 import {JPGCompressionOptions, SVGCompressionOptions} from "./types";
 
@@ -36,6 +34,11 @@ export async function convertImages( options ): Promise<any> {
 	// check if the srcDir is a directory
 	if ( typeof compressionOptions === 'undefined') {
 		return new Promise(() => {console.warn( `🎃 Error! No compression options not provided... maybe you want to try the interactive mode?` )});
+	}
+
+	// create the output directory if it doesn't exist
+	if ( ! fs.existsSync( distDir ) ) {
+		fs.mkdirSync( distDir );
 	}
 
 	// Get a list of files in the source directory
@@ -71,14 +74,8 @@ export async function convertImages( options ): Promise<any> {
 		// Get the extension of the file
 		const extension = path.extname( filePath ).toLowerCase();
 
-
 		// Set the default options for the image format
 		const compressOpt = getCompressionOptions( extension, compressionOptions );
-
-		// create the output directory if it doesn't exist
-		if ( ! fs.existsSync( distDir ) ) {
-			fs.mkdirSync( distDir );
-		}
 
 		// Check if the file is an image
 		if ( asInputFormats( extension ) && compressOpt ) {

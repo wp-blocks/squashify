@@ -7,10 +7,6 @@ import {Compressor, inputFormats, InputFormats} from './constants';
 import {CompressionOptions} from "./types";
 import {Config as SvgoConfig, optimize, PluginConfig as SvgoPluginConfig} from "svgo";
 
-export function removeDotFromStart(str: string): string {
-	return str.substring( 1 );
-}
-
 /**
  * The function returns compression options for a given image format.
  *
@@ -95,7 +91,7 @@ export function logMessage(message: string, verbose = false) {
 }
 
 /**
- * The function optimizes an SVG file using SVGO and writes the optimized SVG to a
+ * The function optimizes an SVG file asynchronously using SVGO and writes the optimized SVG to a
  * specified output file.
  *
  * @param filePath    The path to the SVG file that needs to be optimized.
@@ -111,14 +107,28 @@ export async function optimizeSvg(
 	distPath: string,
 	svgoOptions: SvgoConfig
 ): Promise<void> {
-	// Read the SVG file from the file system
-	const svg = fs.readFileSync( filePath, 'utf8' );
+	// Start a Promise that resolves when the file is written
+	return new Promise((resolve, reject) => {
+		// Read the SVG file from the file system
+		fs.readFile(filePath, 'utf8', (err, svg) => {
+			if (err) {
+				return reject(err);
+			}
 
-	// Optimize the SVG with SVGO
-	const optimizedSvg = optimize( svg, svgoOptions );
+			// Optimize the SVG with SVGO
+			const optimizedSvg = optimize(svg, svgoOptions);
 
-	// Write the optimized SVG to the output file
-	return fs.promises.writeFile( distPath, optimizedSvg.data );
+			// Write the optimized SVG to the output file
+			fs.writeFile(distPath, optimizedSvg.data, (err) => {
+				if (err) {
+					return reject(err);
+				}
+
+				// Resolve the Promise when the file is written
+				resolve();
+			});
+		});
+	});
 }
 
 /**
