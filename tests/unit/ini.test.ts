@@ -10,38 +10,82 @@ describe('getIniOptions', () => {
 			distDir: 'dist',
 			compressionOptions: null
 		};
+
 		const result = getIniOptions(options);
+
 		expect(result).toEqual(options);
 	});
 
 	it('should load the configuration file and update the options', () => {
 		const options = {
-			configFile: './tests/data/.image',
-			srcDir: './src',
-			distDir: './dist',
+			configFile: './tests/data/.squash',
+			srcDir: './old',
+			distDir: './new',
 			compressionOptions: null
 		};
 
 		const result = getIniOptions(options);
 
 		// check the srcDir and distDir
-		expect(result.srcDir).toEqual('./src');
-		expect(result.distDir).toEqual('./dist');
+		expect(result.srcDir).toEqual('./old');
+		expect(result.distDir).toEqual('./new');
 
 		// check the compression options
-		expect(result.compressionOptions).toEqual({
-			jpg: {compress: 'yes', compressor: 'mozjpeg', quality: '80', progressive: 'true'},
-			png: {compress: 'yes', compressor: 'webp', quality: '80'},
-			svg: {
-				compress: 'no',
-				compressor: 'svg',
-				options: "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst"
+		expect(result.compressionOptions).toMatchObject({
+				".jpg": {
+					"compressor": "mozjpeg",
+					"quality": 80,
+					"progressive": true,
+					"options": null
+				},
+				".jpeg": {
+					"compressor": "mozjpeg",
+					"quality": 80,
+					"progressive": true,
+					"options": null
+				},
+				".png": {
+					"compressor": "webp",
+					"quality": 80,
+					"progressive": null,
+					"options": null
+				},
+				".webp": {
+					"compressor": "webp",
+					"quality": 80,
+					"progressive": null,
+					"options": null
+				},
+				".avif": {
+					"compressor": "webp",
+					"quality": 80,
+					"progressive": null,
+					"options": null
+				},
+				".tiff": {
+					"compressor": "webp",
+					"quality": 80,
+					"progressive": null,
+					"options": null
+				},
+				".gif": {
+					"compressor": "webp",
+					"quality": 80,
+					"progressive": null,
+					"options": null
+				},
+				".svg": {
+					"compressor": "svgo",
+					"quality": null,
+					"progressive": null,
+					"options": "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst"
+				}
 			}
-		});
+		);
 
 		// Check that options for all input formats have been parsed
 		inputFormats.forEach(format => {
-			expect(result.compressionOptions[format.substring(1)]).toBeDefined();
+			expect(result.compressionOptions[format]).toBeDefined();
 		});
 	});
 });

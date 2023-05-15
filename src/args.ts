@@ -1,4 +1,4 @@
-import { defaultConfigFile, defaultDist, defaultSrc } from './constants';
+import { defaultConfigFile } from './constants';
 import yargs from "yargs";
 import {ScriptOptions} from "./types";
 
@@ -7,7 +7,7 @@ import {ScriptOptions} from "./types";
  *
  * @param rawArgs The raw command-line arguments parsed by yargs
  */
-export function getCliOptions( rawArgs: yargs.Argv<{}>): ScriptOptions {
+export function getCliOptions( rawArgs: yargs.Argv<object>): ScriptOptions {
 	// Check for command-line arguments
 	const argv = rawArgs
 		.usage( 'Usage: $0 [options]' )
@@ -39,8 +39,8 @@ export function getCliOptions( rawArgs: yargs.Argv<{}>): ScriptOptions {
 		.parseSync();
 
 	return {
-		srcDir: argv.in ?? defaultSrc,
-		distDir: argv.out ?? defaultDist,
+		srcDir: argv.in ?? '',
+		distDir: argv.out ?? '',
 		configFile: argv.config ?? defaultConfigFile,
 		interactive: argv.interactive ?? false,
 		verbose: argv.verbose ?? false,

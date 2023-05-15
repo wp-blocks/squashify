@@ -1,4 +1,4 @@
-# @wp-blocks/squashify
+# squashify 
 
 ## Features
 - 🖼️ Efficient: Compresses and optimizes images using various algorithms to reduce file size and make your website load faster.
@@ -15,7 +15,7 @@ A Node.js command-line tool and script to compress and optimize images, using di
 If you have a large number of images in a folder that need to be compressed and optimized, this package can be a lifesaver. With just one command, you can easily reduce the size of your images, making them load faster on your website. Whether you need to compress JPGs, optimize SVGs, or generate compressed AVIF or WebP images, this package has got you covered. It's a simple and effective way to make your website more efficient and your users happier. Give it a try and see the difference it can make!
 
 ## How Use This?
-There are three ways to use @wp-blocks/squashify:
+There are three ways to use squashify:
 
 **As a Node.js script**: You can run the command using a Node.js script in your package.json file by specifying the input and output directories.
 
@@ -29,31 +29,31 @@ There are three ways to use @wp-blocks/squashify:
 
 ### as Node Script
 
-To run the @wp-blocks/squashify command using a Node.js script in your package.json file, you can add the following code to your scripts section:
+To run the squashify command using a Node.js script in your package.json file, you can add the following code to your scripts section:
 
 ```json
 {
   "scripts": {
-    "squashify": "npx @wp-blocks/squashify --in ./old --out ./new"
+    "squashify": "npx squashify --in ./old --out ./new"
   }
 }
 ```
 
 ### as Dependency
 
-To use @wp-blocks/squashify as a dependency in your project, simply include it in your package.json file:
+To use squashify as a dependency in your project, simply include it in your package.json file:
 
 ```json
 {
   "dependencies": {
-    "@wp-blocks/squashify": "^1.0.0"
+    "squashify": "^1.0.0"
   }
 }
 ```
 Then, in your project code, you can import the package and use it as follows:
 
 ```js
-const { compressImages } = require('@wp-blocks/squashify');
+const { compressImages } = require('squashify');
 
 // Define source and destination directories
 const sourceDir = 'path/to/source';
@@ -77,7 +77,7 @@ This will compress all images in the source directory and save the compressed im
 To use the script, run the following command:
 
 ```bash
-npx @wp-blocks/squashify --interactive
+npx squashify --interactive
 ```
 
 The script will prompt you to enter the source and destination directory paths. After entering the directories, the script will show the list of image formats available in the source directory. You can choose the compression options for each format.
@@ -112,16 +112,16 @@ Here's an example .image file:
 in = ./src/images
 out = ./images
 
-[jpg]
+[.jpg]
 compressor = mozjpeg
 quality = 85
 progressive = true
 
-[png]
-compressor = webp
-quality = 80
+[.png]
+compressor = avif
+quality = 50
 
-[svg]
+[.svg]
 options = CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
 ```
 ### Supported Image Formats

@@ -6,7 +6,7 @@ import {
 	srcDirQuestion,
 } from './options';
 import { ScriptOptions } from './types';
-import { getImageFormatsInFolder } from './utils';
+import {getImageFormatsInFolder, logMessage} from './utils';
 
 export async function getPromptOptions(
 	options: ScriptOptions
@@ -24,21 +24,22 @@ export async function getPromptOptions(
 	}
 
 	// If the compression options are not specified, prompt the user
-	if ( options.compressionOptions ) {
-		// Get the image formats
-		const imageFormats = getImageFormatsInFolder( options.srcDir );
 
-		// If no image formats are found, return
-		if ( ! imageFormats.length ) {
-			console.log( 'No image formats found in the source directory' );
-			return options;
-		}
+	// Get the image formats
+	const imageFormats = getImageFormatsInFolder( options.srcDir );
 
-		// Prompt the user for compression options
-		options.compressionOptions = await getImageCompressionOptions(
-			imageFormats
-		);
+	// If no image formats are found, return
+	if ( ! imageFormats.length ) {
+		logMessage( 'No image formats found in the source directory', options.verbose );
+		return options;
 	}
+
+	// Prompt the user for compression options
+	options.compressionOptions = await getImageCompressionOptions(
+		imageFormats,
+		options.verbose
+	);
+
 
 	return options;
 }

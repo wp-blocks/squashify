@@ -27,14 +27,16 @@ export default async function main() {
 	const startTime = Date.now();
 
 	// Then convert the images in the source directory
-	convertImages( options ).then( () => {
-		// Print the time elapsed
+	const res = await convertImages( options )
+
+	if ( res ) {
+		// Print the time elapsed in seconds to the console
 		console.log(
-			'The end 🎉 - Time elapsed:',
-			( Date.now() - startTime ) / 1000,
-			'seconds'
+			`The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`
 		);
-	} );
+
+		return res;
+	}
 }
 
 main().catch( ( err ) => {

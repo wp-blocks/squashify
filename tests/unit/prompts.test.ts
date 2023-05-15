@@ -1,7 +1,9 @@
 import prompts from 'prompts';
-import {getImageCompressionOptions} from "../../src/options";
+import {getImageCompressionOptions, srcDirQuestion} from "../../src/options";
+import {logMessage} from "../../src/utils";
 
 jest.mock('prompts');
+
 
 describe('getImageCompressionOptions', () => {
 	beforeEach(() => {
@@ -34,3 +36,28 @@ describe('getImageCompressionOptions', () => {
 		});
 	});
 });
+
+test('logs the message to the console when verbose is true', () => {
+	// Redirect console.log to a mock function
+	const consoleLogMock = jest.fn();
+	console.log = consoleLogMock;
+
+	// Call the logMessage function with verbose set to true
+	logMessage('Hello, world!', true);
+
+	// Expect console.log to have been called with the message argument
+	expect(consoleLogMock).toHaveBeenCalledWith('Hello, world!');
+});
+
+test('does not log the message to the console when verbose is false', () => {
+	// Redirect console.log to a mock function
+	const consoleLogMock = jest.fn();
+	console.log = consoleLogMock;
+
+	// Call the logMessage function with verbose set to false
+	logMessage('Hello, world!', false);
+
+	// Expect console.log not to have been called
+	expect(consoleLogMock).not.toHaveBeenCalled();
+});
+

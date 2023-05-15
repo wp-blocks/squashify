@@ -2,8 +2,21 @@ import fs from 'fs';
 
 import ini from 'ini';
 
-import { inputFormats } from './constants';
+import {inputFormats} from './constants';
 import { ScriptOptions } from './types';
+import {logMessage} from "./utils";
+
+function getCompressor(iniOptions, format: string) {
+	if (format === '.jpg' || format === '.jpeg') {
+		return iniOptions?.[format]?.compressor ??
+			'mozjpeg'
+	} else if (format === '.svg' ) {
+		return 'svgo'
+	} else {
+		return iniOptions?.[format]?.compressor ??
+		'webp'
+	}
+}
 
 /**
  * Get the script options from the configuration file.
@@ -13,14 +26,22 @@ import { ScriptOptions } from './types';
 export function getIniOptions( options ): ScriptOptions {
 	let iniOptions;
 
+	if ( ! options.configFile ) {
+		console.log(
+			'🎃 Squashify: No configuration file found. Please read the https://github.com/wp-blocks/squashify to know more about!'
+		);
+		return options;
+	}
+
 	try {
 		// Get the compression options in the configuration file
 		iniOptions = ini.parse(
 			fs.readFileSync( options.configFile, 'utf-8' )
 		);
+
 	} catch ( err ) {
 		console.log(
-			'image: No configuration file found. Please read the ReadMe to know more about!'
+			`🎃 Squashify: Cannot find a valid configuration or ${options.configFile} does not exist.`
 		);
 		return options;
 	}
@@ -31,32 +52,30 @@ export function getIniOptions( options ): ScriptOptions {
 	}
 
 	if ( Object.keys( iniOptions ).length ) {
-		options.srcDir = iniOptions?.path?.in ?? undefined;
-		options.distDir = iniOptions?.path?.out ?? undefined;
+		options.srcDir = options.srcDir || iniOptions?.path?.in || '';
+		options.distDir = options.distDir || iniOptions?.path?.out || '';
 
 		// parse known options
 		inputFormats
-			// remove the dot from the start of each string by using the .substring() method
-			.map( ( format ) => format.substring( 1 ) )
 			// then parse the options for each format
 			.forEach( ( format ) => {
 				options.compressionOptions[ format ] = {
-					compress: iniOptions[ format ] ? 'yes' : 'no',
-					compressor:
-						iniOptions?.[ format ]?.compressor ??
-						( format === 'jpg' ? 'mozjpeg' : 'webp' ),
-					quality: iniOptions?.[ format ]?.quality ?? 80,
+					compressor: getCompressor( iniOptions, format ),
+					quality: format === '.svg'
+						? null
+						: Number(iniOptions?.[ format ]?.quality) || 80,
 					progressive:
-						format === 'jpg'
+						format === '.jpg' || format === '.jpeg'
 							? iniOptions?.[ format ]?.progressive ?? true
-							: undefined,
+							: null,
 					options:
-						format === 'svg'
-							? iniOptions?.[ format ]?.options ?? []
-							: undefined,
+						format === '.svg'
+							? iniOptions?.[ format ]?.options ?? 'CleanupAttrs, RemoveDoctype, RemoveXMLProcInst'
+							: null,
 				};
 			} );
 	}
-	console.log( 'configuration file loaded, options:', options );
+
+	logMessage( 'Configuration file loaded, options: '.concat(JSON.stringify(options)), options.verbose  );
 	return options as ScriptOptions;
 }
