@@ -12,11 +12,6 @@ const {compressionOptions} = getIniOptions({
 
 describe('convertImages', () => {
 
-	afterEach(() => {
-		// remove the created directory after each test
-		fs.rm(distDir, {recursive: true, force: true})
-	});
-
 	test('Should handle default options correctly', async () => {
 
 		const r = await convertImages({
