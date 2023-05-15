@@ -10,13 +10,15 @@ describe('getIniOptions', () => {
 			distDir: 'dist',
 			compressionOptions: null
 		};
+
 		const result = getIniOptions(options);
+
 		expect(result).toEqual(options);
 	});
 
 	it('should load the configuration file and update the options', () => {
 		const options = {
-			configFile: './tests/data/.image',
+			configFile: './tests/data/.squash',
 			srcDir: './src',
 			distDir: './dist',
 			compressionOptions: null
@@ -25,17 +27,50 @@ describe('getIniOptions', () => {
 		const result = getIniOptions(options);
 
 		// check the srcDir and distDir
-		expect(result.srcDir).toEqual('./src');
-		expect(result.distDir).toEqual('./dist');
+		expect(result.srcDir).toEqual('./old');
+		expect(result.distDir).toEqual('./new');
 
 		// check the compression options
-		expect(result.compressionOptions).toEqual({
-			jpg: {compress: 'yes', compressor: 'mozjpeg', quality: '80', progressive: 'true'},
-			png: {compress: 'yes', compressor: 'webp', quality: '80'},
-			svg: {
-				compress: 'no',
-				compressor: 'svg',
-				options: "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst"
+		expect(result.compressionOptions).toMatchObject({
+			"avif": {
+				"compress": "no",
+				"compressor": "webp",
+				"quality": 80
+			},
+			"gif": {
+				"compress": "no",
+				"compressor": "webp",
+				"quality": 80
+			},
+			"jpeg": {
+				"compress": "no",
+				"compressor": "webp",
+				"quality": 80
+			},
+			"jpg": {
+				"compress": "yes",
+				"compressor": "mozjpeg",
+				"progressive": true,
+				"quality": "85"
+			},
+			"png": {
+				"compress": "yes",
+				"compressor": "webp",
+				"quality": "80"
+			},
+			"svg": {
+				"compress": "yes",
+				"options": "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,",
+			},
+			"tiff": {
+				"compress": "no",
+				"compressor": "webp",
+				"quality": 80
+			},
+			"webp": {
+				"compress": "no",
+				"compressor": "webp",
+				"quality": 80
 			}
 		});
 

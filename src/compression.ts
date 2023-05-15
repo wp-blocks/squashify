@@ -5,8 +5,9 @@ import path from 'path';
 import sharp from 'sharp';
 import { Config as SvgoConfig, optimize } from 'svgo';
 
-import { Compressor } from './constants';
-import { asInputFormats, getCompressionOptions } from './utils';
+import {Compressor, compressors} from './constants';
+import {asInputFormats, getCompressionOptions, logMessage} from './utils';
+import {JPGCompressionOptions, SVGCompressionOptions} from "./types";
 
 /**
  * The function optimizes an SVG file using SVGO and writes the optimized SVG to a
@@ -61,20 +62,25 @@ export function getOutputExtension( compressor: Compressor, originalExt ) {
  * The function converts images in a source directory to a specified format and
  * compresses them, while also copying non-image files to a destination directory.
  *
- * @param opt                    The options object
- * @param opt.srcDir             The source directory from where the images will be read and
+ * @param options                    The options object
+ * @param options.srcDir             The source directory from where the images will be read and
  *                               converted.
- * @param opt.distDir            The destination directory where the converted images will be
+ * @param options.distDir            The destination directory where the converted images will be
  *                               saved. If no value is provided, the images will be saved in the same directory as
  *                               the source images.
- * @param opt.compressionOptions An optional object that contains compression options
+ * @param options.compressionOptions An optional object that contains compression options
  *                               for different image formats. The default value is an empty object. The object should
  *                               have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
  *                               that are objects containing compression options for that format (e.g. "no", "mozjpeg", "jpeg").
  */
-export function convertImages( opt ) {
+export function convertImages( options ) {
 	// destructuring the options
-	const { srcDir, distDir, compressionOptions } = opt;
+	const { srcDir, distDir, compressionOptions } = options;
+
+	// check if the srcDir is a directory
+	if ( ! fs.existsSync( srcDir ) ) {
+		return new Promise(() => {console.warn( `${ srcDir } is not a directory` )});
+	}
 
 	// Get a list of files in the source directory
 	const files = fs.readdirSync( srcDir );
@@ -110,7 +116,7 @@ export function convertImages( opt ) {
 		const extension = path.extname( filePath ).toLowerCase();
 
 		// Set the default options for the image format
-		const options = getCompressionOptions( extension, compressionOptions );
+		const compressOpt = getCompressionOptions( extension, compressionOptions );
 
 		// create the output directory if it doesn't exist
 		if ( ! fs.existsSync( distDir ) ) {
@@ -118,53 +124,55 @@ export function convertImages( opt ) {
 		}
 
 		// Check if the file is an image
-		if ( asInputFormats( extension ) && options ) {
+		if ( asInputFormats( extension ) && compressOpt ) {
 			// The output file name
 			const distFileName = distPath.concat(
-				getOutputExtension( options.compressor, extension )
+				getOutputExtension( compressOpt.compressor, extension )
 			);
 
 			// Apply compression options
-			if ( extension === '.svg' ) {
+			if ( extension === '.svg') {
 				// Save the image to the destination directory
-				optimizeSvg( filePath, distPath, { ...options.plugins } as SvgoConfig );
+				optimizeSvg( filePath, distPath, { ...(compressOpt as SVGCompressionOptions).plugins } as SvgoConfig );
 			} else {
 				// Load the image with sharp
 				let image = sharp( filePath );
 
 				// Apply compression options if specified in the options
-				if ( options.compressor ) {
-					switch ( options.compressor ) {
+				if ( compressOpt.compressor ) {
+					switch ( compressOpt.compressor ) {
 						case 'avif':
 							image = image.avif( {
-								quality: options.quality,
+								quality: compressOpt.quality,
 							} );
 							break;
 						case 'webp':
 							image = image.webp( {
-								quality: options.quality,
-							} );
-							break;
-						case 'mozjpeg':
-							image = image.jpeg( {
-								mozjpeg: true,
-								quality: options.quality,
+								quality: compressOpt.quality,
 							} );
 							break;
 						case 'png':
 							image = image.png();
 							break;
-						case 'jpg':
+						case 'mozjpeg':
 							image = image.jpeg( {
-								quality: options.quality,
-								progressive: options.progressive,
+								mozjpeg: true,
+								quality: compressOpt.quality,
+							} );
+							break;
+						case 'jpg':
+							const jpegOpt =  compressOpt as JPGCompressionOptions;
+							image = image.jpeg( {
+								quality: jpegOpt.quality,
+								progressive: jpegOpt.progressive,
 							} );
 							break;
 					}
 				}
 
-				console.log(
-					`File converted from ${ filePath } to ${ distFileName }`
+				logMessage(
+					`File converted from ${ filePath } to ${ distFileName }`,
+					options
 				);
 
 				return image.toFile( distFileName );

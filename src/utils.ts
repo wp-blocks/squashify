@@ -5,7 +5,7 @@ import path from 'path';
 
 import { inputFormats, InputFormats } from './constants';
 import {Path} from "webpack-cli";
-import {CompressionOptions} from "./types";
+import {CompressionOptions, JPGCompressionOptions, SVGCompressionOptions} from "./types";
 
 /**
  * The function returns compression options for a given image format.
@@ -21,13 +21,7 @@ import {CompressionOptions} from "./types";
  * format.
  */
 export function getCompressionOptions(imageFormat: string, options): CompressionOptions | false {
-	const formatOptions = options[ imageFormat ];
-
-	if ( ! formatOptions ) {
-		return false;
-	}
-
-	return formatOptions;
+	return options[ imageFormat ] ?? false;
 }
 
 /**
@@ -84,4 +78,9 @@ export function getImageFormatsInFolder( folderPath: Path ): InputFormats[] {
 	searchForImages( folderPath );
 
 	return [ ...imageFormats ]; // convert the Set to an array
+}
+
+
+export function logMessage( message: string, options: { verbose: boolean } = { verbose: false } ) {
+	if (options.verbose) console.log( message );
 }

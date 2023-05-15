@@ -8,6 +8,7 @@ quality = 85
 progressive = true
 
 [png]
+conpress = yes
 compressor = webp
 quality = 80
 

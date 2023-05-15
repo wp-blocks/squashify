@@ -6,7 +6,7 @@
   "scripts": {
 		"build": "tsc --build",
 		"clean": "tsc --build --clean",
-    "squashify": "node ./lib/",
+    "squashify": "node ./lib/ --in ./tests/images/test1 --config ./tests/data/.squash",
     "test": "jest --silent=false --coverage"
   },
   "files": [

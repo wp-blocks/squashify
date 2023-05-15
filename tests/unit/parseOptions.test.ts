@@ -1,5 +1,7 @@
 import prompts from "prompts";
 import {getPromptOptions} from "../../src/promps";
+import {getOutputExtension} from "../../src/compression";
+import {getCompressionOptions} from "../../src/utils";
 
 jest.mock('prompts', () => jest.fn());
 
@@ -8,7 +10,7 @@ describe('getPromptOptions', () => {
 		jest.resetAllMocks();
 	});
 
-	it('should prompt for source directory when not provided', async () => {
+	it('Should prompt for source directory when not provided', async () => {
 		const options = { distDir: './dist' };
 
 		// Mock the prompts function to return the user's input
@@ -21,7 +23,7 @@ describe('getPromptOptions', () => {
 		expect(prompts).toBeCalledTimes(1);
 	});
 
-	it('should prompt for destination directory when not provided', async () => {
+	it('Should prompt for destination directory when not provided', async () => {
 		const options = { srcDir: './src' };
 
 		// Mock the prompts function to return the user's input
@@ -34,7 +36,7 @@ describe('getPromptOptions', () => {
 		expect(prompts).toBeCalledTimes(1);
 	});
 
-	it('should not prompt for compression options when already provided', async () => {
+	it('Should not prompt for compression options when already provided', async () => {
 		const options = {
 			srcDir: './src',
 			distDir: './dist',
@@ -48,5 +50,53 @@ describe('getPromptOptions', () => {
 
 		expect(result.compressionOptions).toEqual(options.compressionOptions);
 		expect(prompts).toBeCalledTimes(0);
+	});
+});
+
+describe('Should output file extension for a given image format', () => {
+	it('Should return a new extension when compressor is "jpg" or "mozjpeg"', () => {
+		expect(getOutputExtension('jpg', '.png')).toBe('.jpg');
+		expect(getOutputExtension('mozjpeg', '.webp')).toBe('.jpg');
+	});
+
+	it('Should return an empty string when the new extension is the same as the original extension', () => {
+		expect(getOutputExtension('mozjpeg', '.jpg')).toBe('');
+		expect(getOutputExtension('png', '.png')).toBe('');
+		expect(getOutputExtension('webp', '.webp')).toBe('');
+	});
+
+	it('Should return a new extension when the new extension is different from the original extension', () => {
+		expect(getOutputExtension('jpg', '.png')).toBe('.jpg');
+		expect(getOutputExtension('png', '.jpg')).toBe('.png');
+		expect(getOutputExtension('webp', '.png')).not.toBe('.jpg');
+	});
+});
+
+describe('getCompressionOptions', () => {
+	it('Should return false for an unsupported image format', () => {
+		const options = {
+			jpeg: { quality: 80, progressive: true },
+			png: { },
+		};
+		expect(getCompressionOptions('webp', options)).toBe(false);
+	});
+
+	it('Should return the compression options for a supported image format', () => {
+		const options = {
+			jpeg: { quality: 80, progressive: true },
+			png: { },
+		};
+		expect(getCompressionOptions('jpeg', options)).toEqual({
+			quality: 80,
+			progressive: true,
+		});
+	});
+
+	it('Should return false when no options are found for a supported image format', () => {
+		const options = {
+			jpeg: { quality: 80, progressive: true },
+			png: { },
+		};
+		expect(getCompressionOptions('webp', options)).toBe(false);
 	});
 });

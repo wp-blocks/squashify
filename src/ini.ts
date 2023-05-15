@@ -5,6 +5,11 @@ import ini from 'ini';
 import { inputFormats } from './constants';
 import { ScriptOptions } from './types';
 
+function getCompressor(iniOptions, format: string) {
+	return iniOptions?.[ format ]?.compressor ??
+	( format === 'jpg' ? 'mozjpeg' : format === 'svg' ? 'svgo' : 'webp' )
+}
+
 /**
  * Get the script options from the configuration file.
  *
@@ -13,6 +18,13 @@ import { ScriptOptions } from './types';
 export function getIniOptions( options ): ScriptOptions {
 	let iniOptions;
 
+	if ( ! options.configFile ) {
+		console.log(
+			'🎃 Squashify: No configuration file found. Please read the https://github.com/wp-blocks/squashify to know more about!'
+		);
+		return options;
+	}
+
 	try {
 		// Get the compression options in the configuration file
 		iniOptions = ini.parse(
@@ -20,7 +32,7 @@ export function getIniOptions( options ): ScriptOptions {
 		);
 	} catch ( err ) {
 		console.log(
-			'image: No configuration file found. Please read the ReadMe to know more about!'
+			`🎃 Squashify: Cannot find a valid configuration or ${options.configFile} does not exist.`
 		);
 		return options;
 	}
@@ -31,8 +43,8 @@ export function getIniOptions( options ): ScriptOptions {
 	}
 
 	if ( Object.keys( iniOptions ).length ) {
-		options.srcDir = iniOptions?.path?.in ?? undefined;
-		options.distDir = iniOptions?.path?.out ?? undefined;
+		options.srcDir = iniOptions?.path?.in ?? options.srcDir;
+		options.distDir = iniOptions?.path?.out ?? options.distDir;
 
 		// parse known options
 		inputFormats
@@ -41,22 +53,20 @@ export function getIniOptions( options ): ScriptOptions {
 			// then parse the options for each format
 			.forEach( ( format ) => {
 				options.compressionOptions[ format ] = {
-					compress: iniOptions[ format ] ? 'yes' : 'no',
-					compressor:
-						iniOptions?.[ format ]?.compressor ??
-						( format === 'jpg' ? 'mozjpeg' : 'webp' ),
-					quality: iniOptions?.[ format ]?.quality ?? 80,
+					compressor: getCompressor( iniOptions, format ),
+					quality: Number(iniOptions?.[ format ]?.quality) ?? 80,
 					progressive:
 						format === 'jpg'
 							? iniOptions?.[ format ]?.progressive ?? true
-							: undefined,
+							: null,
 					options:
 						format === 'svg'
 							? iniOptions?.[ format ]?.options ?? []
-							: undefined,
+							: null,
 				};
 			} );
 	}
+
 	console.log( 'configuration file loaded, options:', options );
 	return options as ScriptOptions;
 }

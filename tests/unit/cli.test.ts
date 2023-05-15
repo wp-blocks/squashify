@@ -4,9 +4,11 @@ import {defaultConfigFile, defaultDist, defaultSrc} from "../../src/constants";
 
 describe('getCliOptions', () => {
 
-	it('should return the correct options', () => {
+	it('Should return the correct options', () => {
 
-		const options = getCliOptions( yargs( ['--in', './source', '--out', './destination', '--config', './config.json', '--verbose', '--interactive'] ) );
+		const args = '--in ./source --out ./destination --config ./config.json --verbose --interactive'
+
+		const options = getCliOptions( yargs( args.split(" ") ) );
 
 		expect(options.srcDir).toBe('./source');
 		expect(options.distDir).toBe('./destination');
@@ -15,7 +17,7 @@ describe('getCliOptions', () => {
 		expect(options.interactive).toBe(true);
 	});
 
-	it('should return the default options if no arguments are passed', () => {
+	it('Should return the default options if no arguments are passed', () => {
 
 		const options = getCliOptions( yargs( [''] ) );
 
