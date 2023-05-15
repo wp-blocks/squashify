@@ -21,8 +21,8 @@ describe('getCliOptions', () => {
 
 		const options = getCliOptions( yargs( [''] ) );
 
-		expect(options.srcDir).toBe(defaultSrc);
-		expect(options.distDir).toBe(defaultDist);
+		expect(options.srcDir).toBe('');
+		expect(options.distDir).toBe('');
 		expect(options.configFile).toBe(defaultConfigFile);
 		expect(options.verbose).toBe(false);
 		expect(options.interactive).toBe(false);

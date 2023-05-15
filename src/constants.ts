@@ -6,7 +6,7 @@ export const defaultConfigFile = '.squash';
 
 export const compressors = [ 'avif', 'webp', 'mozjpeg', 'jpg', 'png' ] as const;
 
-export type Compressor = typeof compressors[ number ];
+export type Compressor = typeof compressors[ number ] | 'svgo';
 
 export const inputFormats = [
 	'.jpg',

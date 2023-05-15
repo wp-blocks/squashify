@@ -18,11 +18,13 @@ export interface SVGCompressionOptions extends DefaultCompressionOptions {
 
 export type CompressionOptions = JPGCompressionOptions | DefaultCompressionOptions | SVGCompressionOptions ;
 
+export type CompressionOptionsMap = { [ key in InputFormats ]: CompressionOptions };
+
 export interface ScriptOptions {
 	srcDir: string;
 	distDir: string;
 	configFile: string;
 	verbose: boolean;
 	interactive: boolean;
-	compressionOptions?: { [ key in InputFormats ]: CompressionOptions };
+	compressionOptions?: CompressionOptionsMap;
 }

@@ -5,6 +5,7 @@ import prompts, { PromptObject } from 'prompts';
 
 import { compressors, svgOptions, InputFormats } from './constants';
 import {CompressionOptions, SVGCompressionOptions} from './types';
+import {logMessage} from "./utils";
 
 /**
  * Prompts the user for the source directory
@@ -46,7 +47,7 @@ export const distDirQuestion: PromptObject = {
  * @param format The image format
  * @returns An array of prompts
  */
-const promptsToAsk = ( format: InputFormats ): PromptObject[] => {
+export const promptsToAsk = ( format: InputFormats ): PromptObject[] => {
 	if ( format === '.svg' ) {
 		return [
 			{
@@ -138,6 +139,7 @@ const promptsToAsk = ( format: InputFormats ): PromptObject[] => {
  *
  * @param imageFormats - An array of image file formats (e.g. ['.jpg', '.png', '.svg'])
  *                     that the function will prompt the user about compressing.
+ * @param verbose - Whether to log messages
  * @returns an object containing compression options for different image formats. The
  * options are obtained through a series of prompts that ask the user whether they want
  * to compress each format, which compressor to use (if applicable), and the quality
@@ -145,12 +147,13 @@ const promptsToAsk = ( format: InputFormats ): PromptObject[] => {
  * use for compression.
  */
 export async function getImageCompressionOptions(
-	imageFormats: InputFormats[]
+	imageFormats: InputFormats[],
+	verbose: boolean = false
 ): Promise< { [ key in InputFormats ]: CompressionOptions } > {
 	const options = {} as { [ key in InputFormats ]: CompressionOptions };
 
 	for ( const format of imageFormats ) {
-		console.log( '=='.concat( format, '==' ) );
+		logMessage( '=='.concat( format, '==' ), verbose );
 		let response: CompressionOptions;
 
 		response = ( await prompts(
@@ -158,7 +161,7 @@ export async function getImageCompressionOptions(
 		) ) as CompressionOptions;
 
 		if ( response.compress === "no" ) {
-			console.log( `Skipping ${ format } files...` );
+			logMessage( `Skipping ${ format } files...`, verbose );
 			continue;
 		}
 

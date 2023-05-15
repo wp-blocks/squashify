@@ -1,7 +1,9 @@
 import prompts from "prompts";
 import {getPromptOptions} from "../../src/promps";
+import {promptsToAsk} from "../../src/options";
 import {getOutputExtension} from "../../src/compression";
 import {getCompressionOptions} from "../../src/utils";
+import {InputFormats} from "../../src/constants";
 
 jest.mock('prompts', () => jest.fn());
 
@@ -17,7 +19,7 @@ describe('getPromptOptions', () => {
 		(prompts as jest.MockedFunction<typeof prompts>)
 			.mockResolvedValueOnce({ srcDir: './src' });
 
-		const result = await getPromptOptions(options);
+		const result = await getPromptOptions(options as any);
 
 		expect(result.srcDir).toBe('./src');
 		expect(prompts).toBeCalledTimes(1);
@@ -30,7 +32,7 @@ describe('getPromptOptions', () => {
 		(prompts as jest.MockedFunction<typeof prompts>)
 			.mockResolvedValueOnce({ distDir: './dist' });
 
-		const result = await getPromptOptions(options);
+		const result = await getPromptOptions(options as any);
 
 		expect(result.distDir).toBe('./dist');
 		expect(prompts).toBeCalledTimes(1);
@@ -46,10 +48,58 @@ describe('getPromptOptions', () => {
 			},
 		};
 
-		const result = await getPromptOptions(options);
+		const result = await getPromptOptions(options as any);
 
 		expect(result.compressionOptions).toEqual(options.compressionOptions);
 		expect(prompts).toBeCalledTimes(0);
+	});
+});
+
+describe('promptsToAsk', () => {
+	test('should return the correct prompts for .svg format', () => {
+		const format: InputFormats = '.svg';
+		const prompts = promptsToAsk(format);
+		expect(prompts).toHaveLength(2);
+
+		const [compressPrompt, pluginsPrompt] = prompts;
+
+		expect(compressPrompt.name).toBe('compress');
+		expect(compressPrompt.choices).toHaveLength(3);
+
+		expect(pluginsPrompt.name).toBe('plugins');
+		expect(pluginsPrompt.choices).toHaveLength(30);
+	});
+
+	test('should return the correct prompts for .jpg format', () => {
+		const format: InputFormats = '.jpg';
+		const prompts = promptsToAsk(format);
+		expect(prompts).toHaveLength(4);
+
+		const [compressPrompt, compressorPrompt, qualityPrompt, progressivePrompt] = prompts;
+
+		expect(compressPrompt.name).toBe('compress');
+		expect(compressPrompt.choices).toHaveLength(2);
+
+		expect(compressorPrompt.name).toBe('compressor');
+		expect(compressorPrompt.choices).toHaveLength(5);
+
+		expect(qualityPrompt.name).toBe('quality');
+		expect(qualityPrompt.min).toBe(1);
+		expect(qualityPrompt.max).toBe(100);
+
+		expect(progressivePrompt.name).toBe('progressive');
+		expect(progressivePrompt.initial).toBe(true);
+	});
+
+	test('should return the correct prompts for .png format', () => {
+		const format: InputFormats = '.png';
+		const prompts = promptsToAsk(format);
+		expect(prompts).toHaveLength(4);
+
+		const [compressPrompt, compressorPrompt] = prompts;
+
+		expect(compressPrompt.name).toBe('compress');
+		expect(compressPrompt.choices).toHaveLength(2);
 	});
 });
 
@@ -78,7 +128,7 @@ describe('getCompressionOptions', () => {
 			jpeg: { quality: 80, progressive: true },
 			png: { },
 		};
-		expect(getCompressionOptions('webp', options)).toBe(false);
+		expect(getCompressionOptions('.webp', options)).toBe(false);
 	});
 
 	it('Should return the compression options for a supported image format', () => {
@@ -86,9 +136,9 @@ describe('getCompressionOptions', () => {
 			jpeg: { quality: 80, progressive: true },
 			png: { },
 		};
-		expect(getCompressionOptions('jpeg', options)).toEqual({
-			quality: 80,
+		expect(getCompressionOptions('.jpeg', options)).toMatchObject({
 			progressive: true,
+			quality: 80,
 		});
 	});
 
@@ -97,6 +147,6 @@ describe('getCompressionOptions', () => {
 			jpeg: { quality: 80, progressive: true },
 			png: { },
 		};
-		expect(getCompressionOptions('webp', options)).toBe(false);
+		expect(getCompressionOptions('.pdf', options)).toBe(false);
 	});
 });

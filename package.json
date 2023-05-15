@@ -5,9 +5,10 @@
   "license": "GPL-2.0-or-later",
   "scripts": {
 		"build": "tsc --build",
+		"watch": "tsc --watch",
 		"clean": "tsc --build --clean",
-    "squashify": "node ./lib/ --in ./tests/images/test1 --config ./tests/data/.squash",
-    "test": "jest --silent=false --coverage"
+    "squashify": "node ./lib/ --in ./tests/images/test1 --interactive",
+    "test": "jest --silent=false --coverage --verbose"
   },
   "files": [
     "dist/",

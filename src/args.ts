@@ -39,8 +39,8 @@ export function getCliOptions( rawArgs: yargs.Argv<{}>): ScriptOptions {
 		.parseSync();
 
 	return {
-		srcDir: argv.in ?? defaultSrc,
-		distDir: argv.out ?? defaultDist,
+		srcDir: argv.in ?? '',
+		distDir: argv.out ?? '',
 		configFile: argv.config ?? defaultConfigFile,
 		interactive: argv.interactive ?? false,
 		verbose: argv.verbose ?? false,

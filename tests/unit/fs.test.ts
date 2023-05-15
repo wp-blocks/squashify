@@ -1,5 +1,37 @@
-import {describe, expect, it} from "@jest/globals";
+import fs from "fs";
+
 import {getImageFormatsInFolder} from "../../src/utils";
+import {srcDirQuestion} from "../../src/options";
+
+
+describe('srcDirQuestion', () => {
+	test('should return true if the path exists and is a directory', async () => {
+		const value = './tests/images/test1';
+		const result = await srcDirQuestion.validate(value);
+		expect(result).toBe(true);
+	});
+
+	test('should return an error message if the path does not exist', async () => {
+		const value = './tests/images/non-existent-path';
+		const result = await srcDirQuestion.validate(value);
+		expect(result).toBe('Path does not exist');
+	});
+
+	test('should return an error message if the path exists but is not a directory', async () => {
+		const value = './tests/images/test1/image.png';
+		const result = await srcDirQuestion.validate(value);
+		expect(result).toBe('Path is not a directory');
+	});
+
+	test('should use the fs.promises.stat method to check if the path exists', async () => {
+		const spy = jest.spyOn(fs.promises, 'stat');
+		const value = './src/images';
+		await srcDirQuestion.validate(value);
+		expect(spy).toHaveBeenCalledWith(value);
+		spy.mockRestore();
+	});
+});
+
 
 describe('getImageFormatsInFolder', () => {
 	it('should return an empty array when given an empty folder', () => {

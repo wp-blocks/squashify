@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import sharp from 'sharp';
+import sharp, {OutputInfo} from 'sharp';
 import { Config as SvgoConfig, optimize } from 'svgo';
 
 import {Compressor, compressors} from './constants';
@@ -25,7 +25,7 @@ export function optimizeSvg(
 	filePath: string,
 	distPath: string,
 	svgoOptions: SvgoConfig
-) {
+): Promise<void> {
 	// Read the SVG file from the file system
 	const svg = fs.readFileSync( filePath, 'utf8' );
 
@@ -33,7 +33,7 @@ export function optimizeSvg(
 	const optimizedSvg = optimize( svg, svgoOptions );
 
 	// Write the optimized SVG to the output file
-	fs.writeFileSync( distPath, optimizedSvg.data );
+	return fs.promises.writeFile( distPath, optimizedSvg.data );
 }
 
 /**
@@ -73,13 +73,18 @@ export function getOutputExtension( compressor: Compressor, originalExt ) {
  *                               have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
  *                               that are objects containing compression options for that format (e.g. "no", "mozjpeg", "jpeg").
  */
-export function convertImages( options ) {
+export async function convertImages( options ): Promise<any> {
 	// destructuring the options
 	const { srcDir, distDir, compressionOptions } = options;
 
 	// check if the srcDir is a directory
 	if ( ! fs.existsSync( srcDir ) ) {
 		return new Promise(() => {console.warn( `${ srcDir } is not a directory` )});
+	}
+
+	// check if the srcDir is a directory
+	if ( typeof compressionOptions === 'undefined') {
+		return new Promise(() => {console.warn( `No compression options not provided... maybe you want to try the interactive mode?` )});
 	}
 
 	// Get a list of files in the source directory
@@ -99,7 +104,7 @@ export function convertImages( options ) {
 			const subDir = path.join( distDir, file );
 			fs.mkdirSync( subDir, { recursive: true } );
 
-			console.log( `Converted ${ file } to ${ subDir }` );
+			logMessage( `Converted ${ file } to ${ subDir }`, options.verbose );
 
 			// Call this function on the subdirectory
 			return convertImages( {
@@ -115,8 +120,10 @@ export function convertImages( options ) {
 		// Get the extension of the file
 		const extension = path.extname( filePath ).toLowerCase();
 
+
 		// Set the default options for the image format
 		const compressOpt = getCompressionOptions( extension, compressionOptions );
+
 
 		// create the output directory if it doesn't exist
 		if ( ! fs.existsSync( distDir ) ) {
@@ -131,9 +138,9 @@ export function convertImages( options ) {
 			);
 
 			// Apply compression options
-			if ( extension === '.svg') {
+			if ( extension === '.svg' && compressOpt?.compressor === 'svgo' ) {
 				// Save the image to the destination directory
-				optimizeSvg( filePath, distPath, { ...(compressOpt as SVGCompressionOptions).plugins } as SvgoConfig );
+				return optimizeSvg( filePath, distPath, { ...(compressOpt as SVGCompressionOptions).plugins } as SvgoConfig );
 			} else {
 				// Load the image with sharp
 				let image = sharp( filePath );
@@ -172,13 +179,14 @@ export function convertImages( options ) {
 
 				logMessage(
 					`File converted from ${ filePath } to ${ distFileName }`,
-					options
+					options.verbose
 				);
-
 				return image.toFile( distFileName );
 			}
 		} else {
-			console.log( `File copied from ${ filePath } to ${ distPath }` );
+			logMessage( `File copied from ${ filePath } to ${ distPath }`,
+				options.verbose
+			);
 
 			// Write the contents to the destination file
 			return fs.promises.copyFile( filePath, distPath );
@@ -186,7 +194,5 @@ export function convertImages( options ) {
 	} );
 
 	// Wait for all promises to resolve before returning
-	return Promise.all( promises ).then( () => {
-		return true;
-	} );
+	return Promise.all( promises )
 }

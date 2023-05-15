@@ -2,12 +2,20 @@ import fs from 'fs';
 
 import ini from 'ini';
 
-import { inputFormats } from './constants';
+import {defaultDist, defaultSrc, inputFormats} from './constants';
 import { ScriptOptions } from './types';
+import {logMessage, removeDotFromStart} from "./utils";
 
 function getCompressor(iniOptions, format: string) {
-	return iniOptions?.[ format ]?.compressor ??
-	( format === 'jpg' ? 'mozjpeg' : format === 'svg' ? 'svgo' : 'webp' )
+	if (format === 'jpg' || format === 'jpeg') {
+		return iniOptions?.[format]?.compressor ??
+			'mozjpeg'
+	} else if (format === 'svg' ) {
+		return 'svgo'
+	} else {
+		return iniOptions?.[format]?.compressor ??
+		'webp'
+	}
 }
 
 /**
@@ -43,20 +51,22 @@ export function getIniOptions( options ): ScriptOptions {
 	}
 
 	if ( Object.keys( iniOptions ).length ) {
-		options.srcDir = iniOptions?.path?.in ?? options.srcDir;
-		options.distDir = iniOptions?.path?.out ?? options.distDir;
+		options.srcDir = options.srcDir || iniOptions?.path?.in || '';
+		options.distDir = options.distDir || iniOptions?.path?.out || '';
 
 		// parse known options
 		inputFormats
 			// remove the dot from the start of each string by using the .substring() method
-			.map( ( format ) => format.substring( 1 ) )
+			.map( ( format ) => removeDotFromStart(format) )
 			// then parse the options for each format
 			.forEach( ( format ) => {
 				options.compressionOptions[ format ] = {
 					compressor: getCompressor( iniOptions, format ),
-					quality: Number(iniOptions?.[ format ]?.quality) ?? 80,
+					quality: format === 'svg'
+						? null
+						: Number(iniOptions?.[ format ]?.quality) || 80,
 					progressive:
-						format === 'jpg'
+						format === 'jpg' || format === 'jpeg'
 							? iniOptions?.[ format ]?.progressive ?? true
 							: null,
 					options:
@@ -67,6 +77,6 @@ export function getIniOptions( options ): ScriptOptions {
 			} );
 	}
 
-	console.log( 'configuration file loaded, options:', options );
+	logMessage( 'Configuration file loaded, options: '.concat(JSON.stringify(options)), options.verbose  );
 	return options as ScriptOptions;
 }
