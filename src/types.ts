@@ -1,7 +1,6 @@
-import { Config as SvgoConfig } from 'svgo';
-
 import { Compressor, InputFormats } from './constants';
 
+/* These are interfaces defining the options for compressing different types of files. */
 export interface DefaultCompressionOptions {
 	compress: string;
 	compressor?: Compressor;
@@ -13,13 +12,14 @@ export interface JPGCompressionOptions extends DefaultCompressionOptions {
 }
 
 export interface SVGCompressionOptions extends DefaultCompressionOptions {
-	plugins?: SvgoConfig[];
+	plugins?: string;
 }
 
 export type CompressionOptions = JPGCompressionOptions | DefaultCompressionOptions | SVGCompressionOptions ;
 
 export type CompressionOptionsMap = { [ key in InputFormats ]: CompressionOptions };
 
+/* The `ScriptOptions` interface is defining the options that can be passed to a script. */
 export interface ScriptOptions {
 	srcDir: string;
 	distDir: string;

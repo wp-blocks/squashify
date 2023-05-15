@@ -4,6 +4,7 @@ import { getCliOptions } from './args';
 import { convertImages } from './compression';
 import { getIniOptions } from './ini';
 import { getPromptOptions } from './promps';
+import {logMessage} from "./utils";
 
 /**
  * Prompts the user for the source and destination directories
@@ -27,14 +28,16 @@ export default async function main() {
 	const startTime = Date.now();
 
 	// Then convert the images in the source directory
-	convertImages( options ).then( () => {
-		// Print the time elapsed
-		console.log(
-			'The end 🎉 - Time elapsed:',
-			( Date.now() - startTime ) / 1000,
-			'seconds'
+	const res = await convertImages( options )
+
+	if ( res ) {
+		// Print the time elapsed in seconds to the console
+		logMessage(
+			`The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`, options.verbose
 		);
-	} );
+
+		return res;
+	}
 }
 
 main().catch( ( err ) => {

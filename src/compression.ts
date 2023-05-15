@@ -2,61 +2,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import sharp, {OutputInfo} from 'sharp';
-import { Config as SvgoConfig, optimize } from 'svgo';
+import sharp from 'sharp';
+import {Config as SvgoConfig, optimize, PluginConfig as SvgoPluginConfig} from 'svgo';
 
-import {Compressor, compressors} from './constants';
-import {asInputFormats, getCompressionOptions, logMessage} from './utils';
+import {Compressor} from './constants';
+import {asInputFormats, getCompressionOptions, getOutputExtension, getSvgoOptions, logMessage, optimizeSvg} from './utils';
 import {JPGCompressionOptions, SVGCompressionOptions} from "./types";
-
-/**
- * The function optimizes an SVG file using SVGO and writes the optimized SVG to a
- * specified output file.
- *
- * @param filePath    The path to the SVG file that needs to be optimized.
- * @param distPath    The `distPath` parameter is a string representing the file path
- *                    where the optimized SVG file will be written to.
- * @param svgoOptions `svgoOptions` is an object that contains options for optimizing
- *                    the SVG using SVGO (SVG Optimizer). These options can include things like removing
- *                    comments, removing empty groups, and optimizing path data. The specific options and
- *                    their values will depend on the desired optimization settings.
- */
-export function optimizeSvg(
-	filePath: string,
-	distPath: string,
-	svgoOptions: SvgoConfig
-): Promise<void> {
-	// Read the SVG file from the file system
-	const svg = fs.readFileSync( filePath, 'utf8' );
-
-	// Optimize the SVG with SVGO
-	const optimizedSvg = optimize( svg, svgoOptions );
-
-	// Write the optimized SVG to the output file
-	return fs.promises.writeFile( distPath, optimizedSvg.data );
-}
-
-/**
- * Returns the output file extension for a given image format
- * is needed because the mozjpeg compressor needs to be saved with the jpg extension
- * and to avoid the jpeg extension being added to the output file when saving a jpeg file
- *
- * @param compressor  The image format
- * @param originalExt The original file extension
- * @returns The output file extension
- */
-export function getOutputExtension( compressor: Compressor, originalExt ) {
-	let newExt = '.'.concat( compressor );
-
-	switch ( compressor ) {
-		case 'jpg':
-		case 'mozjpeg':
-			newExt = '.jpg';
-			break;
-	}
-
-	return originalExt !== newExt ? newExt : '';
-}
 
 /**
  * The function converts images in a source directory to a specified format and
@@ -79,12 +30,12 @@ export async function convertImages( options ): Promise<any> {
 
 	// check if the srcDir is a directory
 	if ( ! fs.existsSync( srcDir ) ) {
-		return new Promise(() => {console.warn( `${ srcDir } is not a directory` )});
+		return new Promise(() => {console.warn( `🎃 Error! ${ srcDir } is not a directory` )});
 	}
 
 	// check if the srcDir is a directory
 	if ( typeof compressionOptions === 'undefined') {
-		return new Promise(() => {console.warn( `No compression options not provided... maybe you want to try the interactive mode?` )});
+		return new Promise(() => {console.warn( `🎃 Error! No compression options not provided... maybe you want to try the interactive mode?` )});
 	}
 
 	// Get a list of files in the source directory
@@ -124,7 +75,6 @@ export async function convertImages( options ): Promise<any> {
 		// Set the default options for the image format
 		const compressOpt = getCompressionOptions( extension, compressionOptions );
 
-
 		// create the output directory if it doesn't exist
 		if ( ! fs.existsSync( distDir ) ) {
 			fs.mkdirSync( distDir );
@@ -132,16 +82,24 @@ export async function convertImages( options ): Promise<any> {
 
 		// Check if the file is an image
 		if ( asInputFormats( extension ) && compressOpt ) {
-			// The output file name
-			const distFileName = distPath.concat(
-				getOutputExtension( compressOpt.compressor, extension )
-			);
 
 			// Apply compression options
-			if ( extension === '.svg' && compressOpt?.compressor === 'svgo' ) {
+			if ( extension === '.svg' && compressOpt?.compress !== 'no' ) {
+
+				logMessage(
+					`File SVG optimized source ${ filePath } to ${ file }`,
+					options.verbose
+				);
+
 				// Save the image to the destination directory
-				return optimizeSvg( filePath, distPath, { ...(compressOpt as SVGCompressionOptions).plugins } as SvgoConfig );
+				return optimizeSvg( filePath, distPath, getSvgoOptions( (compressOpt as SVGCompressionOptions).plugins ) );
 			} else {
+
+				// The output file name
+				const distFileName = distPath.concat(
+					getOutputExtension( compressOpt.compressor, extension )
+				);
+
 				// Load the image with sharp
 				let image = sharp( filePath );
 
@@ -168,10 +126,9 @@ export async function convertImages( options ): Promise<any> {
 							} );
 							break;
 						case 'jpg':
-							const jpegOpt =  compressOpt as JPGCompressionOptions;
 							image = image.jpeg( {
-								quality: jpegOpt.quality,
-								progressive: jpegOpt.progressive,
+								quality: (compressOpt as JPGCompressionOptions).quality,
+								progressive: (compressOpt as JPGCompressionOptions).progressive,
 							} );
 							break;
 					}

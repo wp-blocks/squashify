@@ -32,60 +32,60 @@ describe('getIniOptions', () => {
 
 		// check the compression options
 		expect(result.compressionOptions).toMatchObject({
-				"jpg": {
-					"compressor": "mozjpeg",
-					"quality": 85,
-					"progressive": true,
-					"options": null
-				},
-				"jpeg": {
+				".jpg": {
 					"compressor": "mozjpeg",
 					"quality": 80,
 					"progressive": true,
 					"options": null
 				},
-				"png": {
+				".jpeg": {
+					"compressor": "mozjpeg",
+					"quality": 80,
+					"progressive": true,
+					"options": null
+				},
+				".png": {
 					"compressor": "webp",
 					"quality": 80,
 					"progressive": null,
 					"options": null
 				},
-				"webp": {
+				".webp": {
 					"compressor": "webp",
 					"quality": 80,
 					"progressive": null,
 					"options": null
 				},
-				"avif": {
+				".avif": {
 					"compressor": "webp",
 					"quality": 80,
 					"progressive": null,
 					"options": null
 				},
-				"tiff": {
+				".tiff": {
 					"compressor": "webp",
 					"quality": 80,
 					"progressive": null,
 					"options": null
 				},
-				"gif": {
+				".gif": {
 					"compressor": "webp",
 					"quality": 80,
 					"progressive": null,
 					"options": null
 				},
-				"svg": {
+				".svg": {
 					"compressor": "svgo",
 					"quality": null,
 					"progressive": null,
-					"options": "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,"
+					"options": "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst"
 				}
 			}
 		);
 
 		// Check that options for all input formats have been parsed
 		inputFormats.forEach(format => {
-			expect(result.compressionOptions[format.substring(1)]).toBeDefined();
+			expect(result.compressionOptions[format]).toBeDefined();
 		});
 	});
 });

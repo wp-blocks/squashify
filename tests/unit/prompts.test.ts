@@ -1,7 +1,6 @@
-import prompts, {PromptObject} from 'prompts';
+import prompts from 'prompts';
 import {getImageCompressionOptions, srcDirQuestion} from "../../src/options";
 import {logMessage} from "../../src/utils";
-import fs from "fs";
 
 jest.mock('prompts');
 

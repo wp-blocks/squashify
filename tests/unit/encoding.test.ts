@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import {convertImages, optimizeSvg} from "../../src/compression";
 import {getIniOptions} from "../../src/ini";
 
@@ -7,6 +6,7 @@ const srcDirWithImgs = './tests/images/test1';
 const srcDirWithImgs2 = './tests/images/test2';
 const srcDirWithoutImgs = './tests/images/non-image';
 const distDir = './tests/images/dist';
+const distDir2 = './tests/images/dist2';
 
 // get test options
 const options = getIniOptions({
@@ -22,9 +22,13 @@ describe('convertImages', () => {
 
 	test('should handle subdirectories correctly', async () => {
 
-		convertImages({
+		const r = await convertImages({
 			srcDir: srcDirWithImgs, distDir, compressionOptions: options.compressionOptions
-		}).then(() => {
+		})
+
+		if (r) {
+			expect(fs.readdirSync(`${distDir}`)).toMatchObject(["image.gif.webp", "image.jpg", "image.png.webp", "image.svg", "image.tiff.webp"] );
+			expect(fs.readdirSync(`${distDir}`).length).toBe(5);
 
 			// check if the subdirectory was created and image was converted to destination directory
 			// the jpg file exists
@@ -35,65 +39,48 @@ describe('convertImages', () => {
 
 			expect(fs.existsSync(`${distDir}/image.gif.webp`)).toBe(true);
 			expect(fs.existsSync(`${distDir}/image.tiff.webp`)).toBe(true);
-
-		})
+		}
 	});
 
 	test('should handle non-image files correctly', async () => {
 
-		convertImages({srcDir: srcDirWithoutImgs, distDir, compressionOptions: options.compressionOptions}).then(() => {
+		const r = await convertImages({srcDir: srcDirWithoutImgs, distDir, compressionOptions: options.compressionOptions})
 
+		if (r) {
 			// check if the non-image file was copied to destination directory
 			expect(fs.existsSync(`${distDir}/a.txt`)).toBe(true);
+		}
 
-		})
+	});
+});
 
+
+describe('convertImages with options', () => {
+
+	afterEach(() => {
+		// remove the created directory after each test
+		fs.rm(distDir2, {recursive: true, force: true})
 	});
 
 	test('should apply compression options correctly', async () => {
 
-		convertImages({
+		const r = await convertImages({
 			srcDir: srcDirWithImgs2,
-			distDir,
+			distDir: distDir2,
 			compressionOptions: {
 				...options.compressionOptions,
-				'png': {compressor: 'avif', quality: 20},
-				'gif': {compressor: 'png'},
-				'tiff': {compressor: 'jpg', quality: 20}
+				'.png': {compressor: 'avif', quality: 20},
+				'.gif': {compressor: 'png'},
+				'.tiff': {compressor: 'jpg', quality: 20}
 			},
-		}).then(() => {
-			// check if the image was compressed to destination directory
-			expect(fs.existsSync(`${distDir}/image.png.avif`)).toBe(true);
-			expect(fs.existsSync(`${distDir}/deep/image.jpg`)).toBe(true);
-			expect(fs.existsSync(`${distDir}/deep/with-images/image.tiff.jpg`)).toBe(true);
-			expect(fs.existsSync(`${distDir}/deep/with-images/image.gif.png`)).toBe(true);
 		})
-	});
-});
 
-describe('optimizeSvg', () => {
-	const filePath = path.join(__dirname, '../images/test3/image.svg');
-
-	const distPath = path.join(__dirname, '../images/dist/image.min.svg');
-
-	it('optimizes an SVG file and writes it to the specified output file', async () => {
-		// Call the optimizeSvg function with test arguments
-		optimizeSvg(filePath, distPath, {} ).then(() => {
-
-			// Check if the optimized file was written to the correct location
-			expect(fs.existsSync(distPath)).toBe(true);
-
-			// Check if the optimized SVG was written to the correct location
-			const writtenSvgContent = fs.readFileSync(distPath, 'utf8');
-
-			// the file was written
-			expect(writtenSvgContent).toBeDefined();
-
-			// the file has content
-			expect(writtenSvgContent.length).toBeGreaterThan(0);
-
-			// Cleanup
-			fs.unlinkSync(distPath);
-		});
-	});
+		if (r) {
+			// check if the image was compressed to destination directory
+			expect(fs.existsSync(`${distDir2}/image.png.avif`)).toBe(true);
+			expect(fs.existsSync(`${distDir2}/deep/image.jpg`)).toBe(true);
+			expect(fs.existsSync(`${distDir2}/deep/with-images/image.tiff.jpg`)).toBe(true);
+			expect(fs.existsSync(`${distDir2}/deep/with-images/image.gif.png`)).toBe(true);
+		}
+	})
 });

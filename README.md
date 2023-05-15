@@ -112,16 +112,16 @@ Here's an example .image file:
 in = ./src/images
 out = ./images
 
-[jpg]
+[.jpg]
 compressor = mozjpeg
 quality = 85
 progressive = true
 
-[png]
-compressor = webp
-quality = 80
+[.png]
+compressor = avif
+quality = 50
 
-[svg]
+[.svg]
 options = CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
 ```
 ### Supported Image Formats

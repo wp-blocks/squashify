@@ -3,8 +3,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import {inputFormats, InputFormats} from './constants';
+import {Compressor, inputFormats, InputFormats} from './constants';
 import {CompressionOptions} from "./types";
+import {Config as SvgoConfig, optimize, PluginConfig as SvgoPluginConfig} from "svgo";
 
 export function removeDotFromStart(str: string): string {
 	return str.substring( 1 );
@@ -24,7 +25,7 @@ export function removeDotFromStart(str: string): string {
  * format.
  */
 export function getCompressionOptions(imageFormat: string, options): CompressionOptions | false {
-	return options[removeDotFromStart(imageFormat)] ?? false;
+	return options[imageFormat] ?? false;
 }
 
 /**
@@ -87,8 +88,77 @@ export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
  * Log a message to the console if the verbose flag is set
  *
  * @param message The message to log
- * @param options The options object that contains the verbose flag
+ * @param verbose Whether or not to log the message
  */
-export function logMessage(message: string, verbose: boolean = false) {
+export function logMessage(message: string, verbose = false) {
 	if (verbose) console.log(message);
+}
+
+/**
+ * The function optimizes an SVG file using SVGO and writes the optimized SVG to a
+ * specified output file.
+ *
+ * @param filePath    The path to the SVG file that needs to be optimized.
+ * @param distPath    The `distPath` parameter is a string representing the file path
+ *                    where the optimized SVG file will be written to.
+ * @param svgoOptions `svgoOptions` is an object that contains options for optimizing
+ *                    the SVG using SVGO (SVG Optimizer). These options can include things like removing
+ *                    comments, removing empty groups, and optimizing path data. The specific options and
+ *                    their values will depend on the desired optimization settings.
+ */
+export async function optimizeSvg(
+	filePath: string,
+	distPath: string,
+	svgoOptions: SvgoConfig
+): Promise<void> {
+	// Read the SVG file from the file system
+	const svg = fs.readFileSync( filePath, 'utf8' );
+
+	// Optimize the SVG with SVGO
+	const optimizedSvg = optimize( svg, svgoOptions );
+
+	// Write the optimized SVG to the output file
+	return fs.promises.writeFile( distPath, optimizedSvg.data );
+}
+
+/**
+ * Returns the output file extension for a given image format
+ * is needed because the mozjpeg compressor needs to be saved with the jpg extension
+ * and to avoid the jpeg extension being added to the output file when saving a jpeg file
+ *
+ * @param compressor  The image format
+ * @param originalExt The original file extension
+ * @returns The output file extension
+ */
+export function getOutputExtension( compressor: Compressor, originalExt ) {
+	let newExt = '.'.concat( compressor );
+
+	switch ( compressor ) {
+		case 'jpg':
+		case 'mozjpeg':
+			newExt = '.jpg';
+			break;
+	}
+
+	return originalExt !== newExt ? newExt : '';
+}
+
+/**
+ * The function takes in a string of options, splits it by commas, and returns an object with the
+ * options as an array under the "plugins" key.
+ *
+ * @param options The `options` parameter is a string that contains a comma-separated list of options
+ *                for configuring the `svgo` plugin. These options will be split into an array and trimmed before
+ *                being returned as an object with a `plugins` property.
+ * @returns A function is being returned that takes in an argument `options` and returns an object of
+ * type `SvgoConfig`. The function splits the `options` string by commas and trims each option, then
+ * maps the resulting array to an array of `SvgoPluginConfig` objects. Finally, the function returns an
+ * object with a `plugins` property set to the `conf` array.
+ */
+export function getSvgoOptions(options): SvgoConfig {
+	// return the string as array split by commas
+	const conf = options ? options.split(',').map(option => option.trim()) as SvgoPluginConfig[] : null;
+	return {
+		plugins: conf
+	};
 }

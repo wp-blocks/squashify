@@ -4,7 +4,7 @@ import fs from 'fs';
 import prompts, { PromptObject } from 'prompts';
 
 import { compressors, svgOptions, InputFormats } from './constants';
-import {CompressionOptions, SVGCompressionOptions} from './types';
+import {CompressionOptions} from './types';
 import {logMessage} from "./utils";
 
 /**
@@ -148,15 +148,13 @@ export const promptsToAsk = ( format: InputFormats ): PromptObject[] => {
  */
 export async function getImageCompressionOptions(
 	imageFormats: InputFormats[],
-	verbose: boolean = false
+	verbose = false
 ): Promise< { [ key in InputFormats ]: CompressionOptions } > {
 	const options = {} as { [ key in InputFormats ]: CompressionOptions };
 
 	for ( const format of imageFormats ) {
 		logMessage( '=='.concat( format, '==' ), verbose );
-		let response: CompressionOptions;
-
-		response = ( await prompts(
+		const response: CompressionOptions = ( await prompts(
 			promptsToAsk( format )
 		) ) as CompressionOptions;
 

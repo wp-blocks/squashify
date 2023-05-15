@@ -2,15 +2,15 @@ import fs from 'fs';
 
 import ini from 'ini';
 
-import {defaultDist, defaultSrc, inputFormats} from './constants';
+import {inputFormats} from './constants';
 import { ScriptOptions } from './types';
-import {logMessage, removeDotFromStart} from "./utils";
+import {logMessage} from "./utils";
 
 function getCompressor(iniOptions, format: string) {
-	if (format === 'jpg' || format === 'jpeg') {
+	if (format === '.jpg' || format === '.jpeg') {
 		return iniOptions?.[format]?.compressor ??
 			'mozjpeg'
-	} else if (format === 'svg' ) {
+	} else if (format === '.svg' ) {
 		return 'svgo'
 	} else {
 		return iniOptions?.[format]?.compressor ??
@@ -38,6 +38,8 @@ export function getIniOptions( options ): ScriptOptions {
 		iniOptions = ini.parse(
 			fs.readFileSync( options.configFile, 'utf-8' )
 		);
+
+		console.log(iniOptions);
 	} catch ( err ) {
 		console.log(
 			`🎃 Squashify: Cannot find a valid configuration or ${options.configFile} does not exist.`
@@ -56,22 +58,20 @@ export function getIniOptions( options ): ScriptOptions {
 
 		// parse known options
 		inputFormats
-			// remove the dot from the start of each string by using the .substring() method
-			.map( ( format ) => removeDotFromStart(format) )
 			// then parse the options for each format
 			.forEach( ( format ) => {
 				options.compressionOptions[ format ] = {
 					compressor: getCompressor( iniOptions, format ),
-					quality: format === 'svg'
+					quality: format === '.svg'
 						? null
 						: Number(iniOptions?.[ format ]?.quality) || 80,
 					progressive:
-						format === 'jpg' || format === 'jpeg'
+						format === '.jpg' || format === '.jpeg'
 							? iniOptions?.[ format ]?.progressive ?? true
 							: null,
 					options:
-						format === 'svg'
-							? iniOptions?.[ format ]?.options ?? []
+						format === '.svg'
+							? iniOptions?.[ format ]?.options ?? 'CleanupAttrs, RemoveDoctype, RemoveXMLProcInst'
 							: null,
 				};
 			} );

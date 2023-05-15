@@ -1,8 +1,7 @@
 import prompts from "prompts";
 import {getPromptOptions} from "../../src/promps";
 import {promptsToAsk} from "../../src/options";
-import {getOutputExtension} from "../../src/compression";
-import {getCompressionOptions} from "../../src/utils";
+import {getCompressionOptions,getOutputExtension} from "../../src/utils";
 import {InputFormats} from "../../src/constants";
 
 jest.mock('prompts', () => jest.fn());
@@ -125,16 +124,16 @@ describe('Should output file extension for a given image format', () => {
 describe('getCompressionOptions', () => {
 	it('Should return false for an unsupported image format', () => {
 		const options = {
-			jpeg: { quality: 80, progressive: true },
-			png: { },
+			".jpeg": { quality: 80, progressive: true },
+			".png": { },
 		};
 		expect(getCompressionOptions('.webp', options)).toBe(false);
 	});
 
 	it('Should return the compression options for a supported image format', () => {
 		const options = {
-			jpeg: { quality: 80, progressive: true },
-			png: { },
+			".jpeg": { quality: 80, progressive: true },
+			".png": { },
 		};
 		expect(getCompressionOptions('.jpeg', options)).toMatchObject({
 			progressive: true,
@@ -144,8 +143,8 @@ describe('getCompressionOptions', () => {
 
 	it('Should return false when no options are found for a supported image format', () => {
 		const options = {
-			jpeg: { quality: 80, progressive: true },
-			png: { },
+			".jpeg": { quality: 80, progressive: true },
+			".png": { },
 		};
 		expect(getCompressionOptions('.pdf', options)).toBe(false);
 	});
