@@ -1,30 +1,27 @@
-import { Compressor, InputFormats } from './constants';
+import { type Compressor, type InputFormats } from './constants'
+import {PluginConfig as SvgoPluginConfig} from "svgo";
 
-/* These are interfaces defining the options for compressing different types of files. */
-export interface DefaultCompressionOptions {
-	compress: string;
-	compressor?: Compressor;
-	quality?: number;
+/* These are types defining the options for compressing different types of files. */
+export type CompressionOptions = {
+	compress?: string
+	compressor?: Compressor
+	quality?: number
+	progressive?: boolean
+	plugins?: SvgoPluginConfig[]
 }
 
-export interface JPGCompressionOptions extends DefaultCompressionOptions {
-	progressive: boolean;
-}
-
-export interface SVGCompressionOptions extends DefaultCompressionOptions {
-	plugins?: string;
-}
-
-export type CompressionOptions = JPGCompressionOptions | DefaultCompressionOptions | SVGCompressionOptions ;
-
-export type CompressionOptionsMap = { [ key in InputFormats ]: CompressionOptions };
+export type CompressionOptionsMap = { [ key in InputFormats ]: CompressionOptions }
 
 /* The `ScriptOptions` interface is defining the options that can be passed to a script. */
 export interface ScriptOptions {
-	srcDir: string;
-	distDir: string;
-	configFile: string;
-	verbose: boolean;
-	interactive: boolean;
-	compressionOptions?: CompressionOptionsMap;
+  srcDir: string
+  distDir: string
+  configFile?: string
+  verbose?: boolean
+  interactive?: boolean
+  compressionOptions?: Partial<CompressionOptionsMap>
+}
+
+export type IniOptions = {
+	[ key: string ]: string | unknown;
 }

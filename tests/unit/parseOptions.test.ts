@@ -55,7 +55,7 @@ describe('getPromptOptions', () => {
 });
 
 describe('promptsToAsk', () => {
-	test('should return the correct prompts for .svg format', () => {
+	it('should return the correct prompts for .svg format', () => {
 		const format: InputFormats = '.svg';
 		const prompts = promptsToAsk(format);
 		expect(prompts).toHaveLength(2);
@@ -69,7 +69,7 @@ describe('promptsToAsk', () => {
 		expect(pluginsPrompt.choices).toHaveLength(30);
 	});
 
-	test('should return the correct prompts for .jpg format', () => {
+	it('should return the correct prompts for .jpg format', () => {
 		const format: InputFormats = '.jpg';
 		const prompts = promptsToAsk(format);
 		expect(prompts).toHaveLength(4);
@@ -90,7 +90,7 @@ describe('promptsToAsk', () => {
 		expect(progressivePrompt.initial).toBe(true);
 	});
 
-	test('should return the correct prompts for .png format', () => {
+	it('should return the correct prompts for .png format', () => {
 		const format: InputFormats = '.png';
 		const prompts = promptsToAsk(format);
 		expect(prompts).toHaveLength(4);

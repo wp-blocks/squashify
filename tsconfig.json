@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"esModuleInterop": true,
 		"target": "es6",
-
+		"esModuleInterop": true,
+		"strict": true,
+		"moduleResolution": "Node16",
 		// Import non-ES modules as default imports.
 		"outDir": "lib",
 		"rootDir": "src"

@@ -2,23 +2,22 @@ import fs from "fs";
 import {convertImages} from "../../src/compression";
 import {getIniOptions} from "../../src/ini";
 
-const srcDir = './tests/images/non-image';
-const distDir = './tests/images/dist-non-image';
-
 // get test options
-const {compressionOptions} = getIniOptions({
+const options = getIniOptions({
+	srcDir: './tests/images/non-image',
+	distDir: './tests/images/dist-non-image',
 	configFile: './tests/data/.squash'
 });
 
 describe('convertImages', () => {
 
-	test('should handle non-image files correctly', async () => {
+	it('should handle non-image files correctly', async () => {
 
-		const r = await convertImages({srcDir, distDir, compressionOptions})
+		const r = await convertImages(options)
 
 		if (r) {
 			// check if the non-image file was copied to destination directory
-			expect(fs.existsSync(`${distDir}/a.txt`)).toBe(true);
+			expect(fs.existsSync(`${options.distDir}/a.txt`)).toBe(true);
 		}
 
 	});

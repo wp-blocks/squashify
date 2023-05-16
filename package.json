@@ -1,25 +1,34 @@
 {
   "name": "squashify",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A cli that compress images",
   "license": "GPL-2.0-or-later",
+  "contributors": [
+    "Erik Golinelli <erik@codekraft.it> (https://codekraft.it/)",
+    "John Hooks <bitmachina@outlook.com> (https://johnhooks.io/)"
+  ],
+  "homepage": "https://github.com/wp-blocks/squashify/tree/main/packages/image#readme",
+  "bugs": {
+    "url": "https://github.com/wp-blocks/squashify/issues"
+  },
   "scripts": {
     "build": "tsc --build",
     "watch": "tsc --watch",
     "clean": "tsc --build --clean",
-    "squashify": "node ./lib/ --config ./tests/data/.squash --verbose",
+    "squashify": "node ./lib/index.js --interactive",
     "test": "jest --silent=false --coverage --verbose"
   },
   "files": [
-    "dist/",
-    "tests/",
+    "lib",
+    "tests",
     "*.json",
     ".gitignore",
     ".eslintrc.js",
     "LICENSE",
     "readme.md"
   ],
-  "bin": "./dist/squashify.js",
+  "main": "./lib/index.js",
+  "bin": "./lib/index.js",
   "dependencies": {
     "ini": "^4.1.0",
     "prompts": "^2.4.2",
@@ -36,12 +45,12 @@
     "@types/jest": "^29.2.6",
     "@types/node": "^18.11.18",
     "@types/prompts": "^2.4.4",
-    "@typescript-eslint/eslint-plugin": "^5.59.5",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.5",
     "eslint": "^8.40.0",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.3.1",
     "prettier": "^2.8.8",

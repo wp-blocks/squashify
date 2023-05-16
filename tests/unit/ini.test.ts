@@ -19,16 +19,16 @@ describe('getIniOptions', () => {
 	it('should load the configuration file and update the options', () => {
 		const options = {
 			configFile: './tests/data/.squash',
-			srcDir: './old',
-			distDir: './new',
+			srcDir: 'old',
+			distDir: 'new',
 			compressionOptions: null
 		};
 
 		const result = getIniOptions(options);
 
 		// check the srcDir and distDir
-		expect(result.srcDir).toEqual('./old');
-		expect(result.distDir).toEqual('./new');
+		expect(result.srcDir).toEqual('old');
+		expect(result.distDir).toEqual('new');
 
 		// check the compression options
 		expect(result.compressionOptions).toMatchObject({
@@ -36,49 +36,49 @@ describe('getIniOptions', () => {
 					"compressor": "mozjpeg",
 					"quality": 80,
 					"progressive": true,
-					"options": null
+					"plugins": undefined
 				},
 				".jpeg": {
 					"compressor": "mozjpeg",
 					"quality": 80,
 					"progressive": true,
-					"options": null
+					"plugins": undefined
 				},
 				".png": {
 					"compressor": "webp",
 					"quality": 80,
-					"progressive": null,
-					"options": null
+					"progressive": undefined,
+					"plugins": undefined
 				},
 				".webp": {
 					"compressor": "webp",
 					"quality": 80,
-					"progressive": null,
-					"options": null
+					"progressive": undefined,
+					"plugins": undefined
 				},
 				".avif": {
 					"compressor": "webp",
 					"quality": 80,
-					"progressive": null,
-					"options": null
+					"progressive": undefined,
+					"plugins": undefined
 				},
 				".tiff": {
 					"compressor": "webp",
 					"quality": 80,
-					"progressive": null,
-					"options": null
+					"progressive": undefined,
+					"plugins": undefined
 				},
 				".gif": {
 					"compressor": "webp",
 					"quality": 80,
-					"progressive": null,
-					"options": null
+					"progressive": undefined,
+					"plugins": undefined
 				},
 				".svg": {
-					"compressor": "svgo",
-					"quality": null,
-					"progressive": null,
-					"options": "CleanupAttrs, RemoveDoctype, RemoveXMLProcInst"
+					"compressor": undefined,
+					"quality": undefined,
+					"progressive": undefined,
+					"plugins": ["preset-default"]
 				}
 			}
 		);

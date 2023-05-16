@@ -5,20 +5,14 @@ import {getIniOptions} from "../../src/ini";
 const srcDir = './tests/images/test2';
 const distDir = './tests/images/dist-custom';
 
-// get test options
-const options = getIniOptions({
-	configFile: './tests/data/.squash'
-});
-
 describe('convertImages with options', () => {
 
-	test('should apply compression options correctly', async () => {
+	it('should apply compression options correctly', async () => {
 
 		const r = await convertImages({
 			srcDir,
 			distDir,
 			compressionOptions: {
-				...options.compressionOptions,
 				'.png': {compressor: 'avif', quality: 20},
 				'.gif': {compressor: 'png'},
 				'.tiff': {compressor: 'jpg', quality: 20}

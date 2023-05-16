@@ -63,7 +63,7 @@ const destinationDir = 'path/to/destination';
 const options = {
 	jpeg: { compressor: 'mozjpeg', quality: 85, progressive: true },
 	png: { compressor: 'avif', quality: 80 },
-	svg: { options: 'CleanupAttrs, RemoveDoctype' }
+	svg: { plugins: 'CleanupAttrs, RemoveDoctype' }
 };
 
 // Call the compressImages function with the defined parameters
