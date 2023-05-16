@@ -5,7 +5,7 @@ import path from 'path'
 
 import { type Compressor, inputFormats, type InputFormats } from './constants'
 import { type CompressionOptions, type CompressionOptionsMap } from './types'
-import {Config, type Config as SvgoConfig, optimize, type PluginConfig as SvgoPluginConfig} from 'svgo'
+import {type Config as SvgoConfig, optimize, type PluginConfig as SvgoPluginConfig} from 'svgo'
 
 /**
  * The function returns compression options for a given image format.
@@ -40,7 +40,7 @@ export function asInputFormats (ext: unknown): ext is InputFormats {
  * @returns An array of image formats
  */
 export function getImageFormatsInFolder (folderPath: string): any| InputFormats[] {
-	const imageFormats: InputFormats[] = []  // using a Set to store unique image formats
+	const imageFormats = new Set< InputFormats >();  // using a Set to store unique image formats
 
   /**
 	 * This function searches for all image files in a given folder
@@ -68,7 +68,7 @@ export function getImageFormatsInFolder (folderPath: string): any| InputFormats[
         // Check if the file is an image
         if (asInputFormats(ext)) {
           // check if it's an image file
-          imageFormats.push(ext) // add the image format to the Set
+          imageFormats.add( ext ); // add the image format to the Set
         }
       }
     })
@@ -76,7 +76,7 @@ export function getImageFormatsInFolder (folderPath: string): any| InputFormats[
   // Call this function on the source directory
   searchForImages(folderPath)
 
-  return imageFormats // convert the Set to an array
+  return [...imageFormats] // convert the Set to an array
 }
 
 /**
