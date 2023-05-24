@@ -33,7 +33,11 @@ export async function convertImages (options: ScriptOptions): Promise<unknown> {
 
   // check if the srcDir is a directory
   if (typeof compressionOptions === 'undefined') {
-    return await new Promise(() => { console.warn('🎃 Error! No compression options not provided... maybe you want to try the interactive mode?') })
+		if (options.interactive) {
+			return await new Promise(() => { console.warn('🎃 Error! No compression options not provided... maybe you want to try the interactive mode?') })
+		} else {
+			logMessage("🎃 Warning! no compression options provided, dafults will be used...", options.verbose)
+		}
   }
 
   // create the output directory if it doesn't exist
