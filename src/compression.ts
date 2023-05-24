@@ -13,14 +13,14 @@ import {CompressionOptionsMap, type ScriptOptions} from './types'
  *
  * @param options                    The options object
  * @param options.srcDir             The source directory from where the images will be read and
- *                               converted.
+ *                                   converted.
  * @param options.distDir            The destination directory where the converted images will be
- *                               saved. If no value is provided, the images will be saved in the same directory as
- *                               the source images.
+ *                                   saved. If no value is provided, the images will be saved in the same directory as
+ *                                   the source images.
  * @param options.compressionOptions An optional object that contains compression options
- *                               for different image formats. The default value is an empty object. The object should
- *                               have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
- *                               that are objects containing compression options for that format (e.g. "no", "mozjpeg", "jpeg").
+ *                                   for different image formats. The default value is an empty object. The object should
+ *                                   have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
+ *                                   that are objects containing compression options for that format (e.g. "no", "mozjpeg", "jpeg").
  */
 export async function convertImages (options: ScriptOptions): Promise<unknown> {
   // destructuring the options
@@ -28,15 +28,15 @@ export async function convertImages (options: ScriptOptions): Promise<unknown> {
 
   // check if the srcDir is a directory
   if (!fs.existsSync(srcDir)) {
-    return await new Promise(() => { console.warn(`🎃 Error! ${srcDir} is not a directory`) })
+    return await new Promise(() => { console.warn(`🎃 Error! The specified source directory  ${srcDir} does not exist.`) })
   }
 
   // check if the srcDir is a directory
   if (typeof compressionOptions === 'undefined') {
 		if (options.interactive) {
-			return await new Promise(() => { console.warn('🎃 Error! No compression options not provided... maybe you want to try the interactive mode?') })
+			return await new Promise(() => { console.warn('🎃  Error! Compression options were not provided.') })
 		} else {
-			logMessage("🎃 Warning! no compression options provided, dafults will be used...", options.verbose)
+			logMessage("🎃 Warning! Compression options were not provided. Default options will be used.", options.verbose)
 		}
   }
 
