@@ -7,9 +7,6 @@ import {type CompressionOptionsMap, type IniOptions, type ScriptOptions} from '.
 import {getCompressor, getJpgCompressionOptions, getQuality, getSvgoPluginOptions, logMessage} from './utils'
 import {PluginConfig as SvgoPluginConfig} from "svgo";
 
-
-
-
 /**
  * This function reads and parses a configuration file to get compression options and updates the
  * script options accordingly.

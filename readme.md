@@ -1,4 +1,4 @@
-# squashify 
+# Squashify 
 
 ## Features
 - 🖼️ Efficient: Compresses and optimizes images using various algorithms to reduce file size and make your website load faster.
@@ -100,12 +100,12 @@ The following command-line arguments are available:
 --help: Shows the help message.
 
 ### INI File
-The script also supports an INI file named .image in the project directory. The file should have the following sections and keys:
+The script also supports an INI file named `.squash` in the project directory. The file should have the following sections and keys:
 
-**path** This section contains the in and out keys, which specify the input and output directories, respectively.
+**\[path\]** This section contains the in and out keys, which specify the input and output directories, respectively.
 
-**format[]** This section specifies the compression options for a specific image format, where <format> is one of the supported formats listed above. The available keys are compressor and quality for most formats, and options for SVGs.
-Here's an example .image file:
+**\[\<format\>\]** This section specifies the compression options for a specific image format, where <format> is one of the supported formats listed above. The available keys are compressor and quality for most formats, and options for SVGs.
+Here's an example .squash file:
 
 ```ini
 [path]
@@ -147,6 +147,11 @@ The script supports the following image formats:
 
 ---
 
+### CLI command 
+
+![convert](https://github.com/wp-blocks/squashify/assets/8550908/40f6c1a2-937c-4b05-ad04-cf07bb317d94)
+
+
 ## License
 
-This script is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more information.
+This script is licensed under the MIT License. See the [LICENSE](https://github.com/wp-blocks/squashify/blob/master/LICENSE) file for more information.
