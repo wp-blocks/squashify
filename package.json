@@ -7,7 +7,7 @@
     "Erik Golinelli <erik@codekraft.it> (https://codekraft.it/)",
     "John Hooks <bitmachina@outlook.com> (https://johnhooks.io/)"
   ],
-  "homepage": "https://github.com/wp-blocks/squashify/tree/main/packages/image#readme",
+  "homepage": "https://github.com/wp-blocks/squashify/#readme",
   "bugs": {
     "url": "https://github.com/wp-blocks/squashify/issues"
   },
@@ -15,17 +15,31 @@
     "build": "tsc --build",
     "watch": "tsc --watch",
     "clean": "tsc --build --clean",
+    "doc": "npx typedoc src/*",
     "squashify": "node ./lib/index.js --interactive",
     "test": "jest --silent=false --coverage --verbose"
   },
   "files": [
     "lib",
     "tests",
-    "*.json",
+    "package.json",
     ".gitignore",
-    ".eslintrc.js",
     "LICENSE",
     "readme.md"
+  ],
+  "keywords": [
+    "image",
+    "compression",
+    "optimization",
+    "performance",
+    "CLI",
+    "tool",
+    "avif",
+    "webp",
+    "svg",
+    "development",
+    "frontend",
+    "SEO"
   ],
   "main": "./lib/index.js",
   "bin": "./lib/index.js",
@@ -54,6 +68,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.3.1",
     "prettier": "^2.8.8",
+    "typedoc": "^0.24.7",
     "typescript": "^5.0.4"
   }
 }
