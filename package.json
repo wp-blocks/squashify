@@ -1,6 +1,6 @@
 {
   "name": "squashify",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Node.js command-line tool and script to compress and optimize images, using different algorithms to reduce file size",
   "license": "GPL-2.0-or-later",
   "contributors": [
