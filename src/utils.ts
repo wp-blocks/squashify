@@ -285,7 +285,7 @@ export function defaultCompressionOptions(
 	if (!imageFormats) {
 		imageFormats = inputFormats;
 	}
-	let options: Partial<CompressionOptionsMap> = {};
+	const options: Partial<CompressionOptionsMap> = {};
 	imageFormats.forEach((format) => {
 		if (format === ".svg") {
 			options[format] = {
