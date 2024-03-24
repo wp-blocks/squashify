@@ -1,74 +1,71 @@
 {
-  "name": "squashify",
-  "version": "0.1.3",
-  "description": "A Node.js command-line tool and script to compress and optimize images, using different algorithms to reduce file size",
-  "license": "GPL-2.0-or-later",
-  "contributors": [
-    "Erik Golinelli <erik@codekraft.it> (https://codekraft.it/)",
-    "John Hooks <bitmachina@outlook.com> (https://johnhooks.io/)"
-  ],
-  "homepage": "https://github.com/wp-blocks/squashify/#readme",
-  "bugs": {
-    "url": "https://github.com/wp-blocks/squashify/issues"
-  },
-  "scripts": {
-    "build": "tsc --build",
-    "watch": "tsc --watch",
-    "clean": "tsc --build --clean",
-    "doc": "npx typedoc src/*",
-    "squashify": "node ./lib/index.js --interactive",
-    "test": "jest --silent=false --coverage --verbose"
-  },
-  "files": [
-    "lib",
-    "tests",
-    "package.json",
-    ".gitignore",
-    "LICENSE",
-    "readme.md"
-  ],
-  "keywords": [
-    "image",
-    "compression",
-    "optimization",
-    "performance",
-    "CLI",
-    "tool",
-    "avif",
-    "webp",
-    "svg",
-    "development",
-    "frontend",
-    "SEO"
-  ],
-  "main": "./lib/index.js",
-  "bin": "./lib/index.js",
-  "dependencies": {
-    "ini": "^4.1.0",
-    "prompts": "^2.4.2",
-    "sharp": "^0.32.1",
-    "svgo": "^3.0.2",
-    "yargs": "^17.7.2"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/preset-env": "^7.21.5",
-    "@babel/preset-typescript": "^7.18.6",
-    "@jest/globals": "^29.3.1",
-    "@types/ini": "^1.3.31",
-    "@types/jest": "^29.2.6",
-    "@types/node": "^18.11.18",
-    "@types/prompts": "^2.4.4",
-    "@typescript-eslint/eslint-plugin": "^5.59.6",
-    "@typescript-eslint/parser": "^5.59.5",
-    "eslint": "^8.40.0",
-    "eslint-config-standard-with-typescript": "^34.0.1",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "jest": "^29.3.1",
-    "prettier": "^2.8.8",
-    "typedoc": "^0.24.7",
-    "typescript": "^5.0.4"
-  }
+	"name": "squashify",
+	"version": "1.0.0",
+	"description": "A Node.js command-line tool and script to compress and optimize images, using different algorithms to reduce file size",
+	"license": "GPL-2.0-or-later",
+	"contributors": [
+		"Erik Golinelli <erik@codekraft.it> (https://codekraft.it/)",
+		"John Hooks <bitmachina@outlook.com> (https://johnhooks.io/)"
+	],
+	"homepage": "https://github.com/wp-blocks/squashify/#readme",
+	"bugs": {
+		"url": "https://github.com/wp-blocks/squashify/issues"
+	},
+	"scripts": {
+		"build": "tsc --build",
+		"watch": "tsc --watch",
+		"clean": "tsc --build --clean",
+		"squashify": "node ./lib/index.js",
+		"test": "jest --silent=false --coverage --verbose"
+	},
+	"files": [
+		"lib",
+		"tests",
+		"package.json",
+		".gitignore",
+		"LICENSE",
+		"readme.md"
+	],
+	"keywords": [
+		"image",
+		"compression",
+		"optimization",
+		"performance",
+		"CLI",
+		"tool",
+		"avif",
+		"webp",
+		"svg",
+		"development",
+		"frontend",
+		"SEO"
+	],
+	"main": "./lib/index.js",
+	"bin": "./lib/index.js",
+	"dependencies": {
+		"ini": "^4.1.2",
+		"prompts": "^2.4.2",
+		"sharp": "0.33.2",
+		"svgo": "^3.2.0",
+		"yargs": "^17.7.2"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.24.3",
+		"@babel/preset-env": "^7.24.3",
+		"@babel/preset-typescript": "^7.24.1",
+		"@jest/globals": "^29.7.0",
+		"@types/ini": "^4.1.0",
+		"@types/jest": "^29.5.12",
+		"@types/node": "^20.11.30",
+		"@types/prompts": "^2.4.9",
+		"@typescript-eslint/eslint-plugin": "^6.21.0",
+		"eslint": "^8.57.0",
+		"eslint-config-standard-with-typescript": "^43.0.1",
+		"eslint-plugin-import": "^2.29.1",
+		"eslint-plugin-n": "^16.6.2",
+		"eslint-plugin-promise": "^6.1.1",
+		"jest": "^29.3.1",
+		"prettier": "^3.2.5",
+		"typescript": "^5.4.3"
+	}
 }
