@@ -54,8 +54,6 @@ export default async function main(): Promise<unknown> {
 		res.forEach((result) => {
 			if (result.status !== "fulfilled") {
 				console.log("🔴 " + result.reason);
-			} else {
-				console.log("🟢 " + result.value);
 			}
 		});
 		// Print the time elapsed in seconds to the console
