@@ -1,7 +1,8 @@
-name: Documentation CI
+# Simple workflow for deploying static content to GitHub Pages
+name: TypeDoc generation
 
 on:
-  push:
+  release:
     branches: [ "master" ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -22,24 +23,20 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      contents: read
-      pages: write # to deploy to Pages
-      id-token: write # to verify the deployment originates from an appropriate source
-
     # Specify runner + deployment step
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build documentation
-        run: npx typedoc src/* --out docs
+      - name: TypeDoc Action
+        uses: erikyo/tsdoc-action@v1
+        with:
+          source_dir: ./src/**/*
+          output_dir: ./docs
+          skipErrorChecking: true
+          darkHighlightTheme: dark-plus
+          basePath: ./src/
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
