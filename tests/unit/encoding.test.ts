@@ -1,22 +1,28 @@
 import fs from "fs";
-import {convertImages} from "../../src/compression";
-import {getIniOptions} from "../../src/ini";
+import { convertImages } from "../../src/compression";
+import { getIniOptions } from "../../src/ini";
 
 // get test options
 const options = getIniOptions({
-	srcDir: './tests/images/test1',
-	distDir: './tests/images/dist',
-	configFile: './tests/data/.squash'
+	extMode: "add",
+	srcDir: "./tests/images/test1",
+	distDir: "./tests/images/dist",
+	configFile: "./tests/data/.squash",
+	compressionOptions: {},
 });
 
-describe('convertImages', () => {
-
-	it('Should handle default options correctly', async () => {
-
-		const r = await convertImages(options)
+describe("convertImages", () => {
+	it("Should handle default options correctly", async () => {
+		const r = await convertImages(options);
 
 		if (r) {
-			expect(fs.readdirSync(`${options.distDir}`)).toMatchObject(["image.gif.webp", "image.jpg", "image.png.webp", "image.svg", "image.tiff.webp"] );
+			expect(fs.readdirSync(`${options.distDir}`)).toMatchObject([
+				"image.gif.webp",
+				"image.jpg",
+				"image.png.webp",
+				"image.svg",
+				"image.tiff.webp",
+			]);
 			expect(fs.readdirSync(`${options.distDir}`).length).toBe(5);
 
 			// check if the subdirectory was created and image was converted to destination directory
