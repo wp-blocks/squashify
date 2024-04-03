@@ -15,6 +15,7 @@ export const inputFormats = [
 	".png",
 	".webp",
 	".avif",
+	".heif",
 	".tiff",
 	".gif",
 	".svg",
