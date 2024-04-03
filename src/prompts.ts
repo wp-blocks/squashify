@@ -11,7 +11,7 @@ import {
 	getImageFormatsInFolder,
 	logMessage,
 } from "./utils";
-import { defaultSvgoPlugins, InputFormats } from "./constants";
+import { InputFormats } from "./constants";
 
 export async function getInteractiveCompressorOptions(
 	imageFormats: InputFormats[],
@@ -50,8 +50,6 @@ export async function getPromptOptions(
 		options.distDir = response.distDir;
 	}
 
-	// If the compression options are not specified, prompt the user
-
 	// Get the image formats
 	const imageFormats = getImageFormatsInFolder(options.srcDir);
 
@@ -64,8 +62,16 @@ export async function getPromptOptions(
 		return options;
 	}
 
+	// If the compression options are not specified, use the default compression options
+	if (Object.keys(options.compressionOptions).length === 0) {
+		console.log(
+			"No compression options found, so we will use the default compression options",
+		);
+		options.compressionOptions = defaultCompressionOptions();
+	}
+
 	// If the compression options are not specified, prompt the user if he wants to use the default compression settings
-	if (!options.compressionOptions) {
+	if (Object.keys(options.compressionOptions).length === 0) {
 		options.compressionOptions = await getInteractiveCompressorOptions(
 			imageFormats,
 			options.verbose,
