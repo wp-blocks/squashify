@@ -15,7 +15,7 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"clean": "tsc --build --clean",
-		"squashify": "node ./lib/index.js",
+		"squashify": "node ./lib/index.js --in tests/images/test1/ --out tests/output/test1/ --verbose",
 		"test": "jest --silent=false --coverage --verbose"
 	},
 	"files": [
@@ -43,6 +43,7 @@
 	"main": "./lib/index.js",
 	"bin": "./lib/index.js",
 	"dependencies": {
+		"glob": "^10.3.12",
 		"ini": "^4.1.2",
 		"prompts": "^2.4.2",
 		"sharp": "0.33.2",
