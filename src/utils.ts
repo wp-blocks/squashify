@@ -32,8 +32,8 @@ import {
 export function getCompressionOptions(
 	imageFormat: string,
 	options: CompressionOptionsMap,
-): CompressionOptions | false {
-	return options[imageFormat as InputFormats] ?? false;
+): Partial<CompressionOptions> | undefined {
+	return options[imageFormat as keyof CompressionOptionsMap] ?? undefined;
 }
 
 /**
@@ -51,9 +51,7 @@ export function asInputFormats(ext: unknown): ext is InputFormats {
  * @param folderPath The folder to search for images in
  * @returns An array of image formats
  */
-export function getImageFormatsInFolder(
-	folderPath: string,
-): any | InputFormats[] {
+export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
 	const imageFormats = new Set<InputFormats>(); // using a Set to store unique image formats
 
 	/**
@@ -107,33 +105,30 @@ export function logMessage(message: string, verbose = false) {
  * The function optimizes an SVG file asynchronously using SVGO and writes the optimized SVG to a
  * specified output file.
  *
- * @param filePath    The path to the SVG file that needs to be optimized.
- * @param distPath    The `distPath` parameter is a string representing the file path
  *                    where the optimized SVG file will be written to.
+ * @param svg         The SVG file to optimize
  * @param svgoOptions `svgoOptions` is an object that contains options for optimizing
  *                    the SVG using SVGO (SVG Optimizer). These options can include things like removing
  *                    comments, removing empty groups, and optimizing path data. The specific options and
  *                    their values will depend on the desired optimization settings.
  */
 export async function optimizeSvg(
-	filePath: string,
-	distPath: string,
+	svg: string,
 	svgoOptions: SvgoConfig,
-): Promise<void> {
+): Promise<string | void> {
 	// Start a Promise that resolves when the file is written
-	await new Promise((resolve) => {
-		// Read the SVG file from the file system
-		// Read the SVG file from the file system
-		const svg = fs.readFileSync(filePath, "utf8");
-
+	await new Promise((resolve, reject) => {
 		// Optimize the SVG with SVGO
 		const optimizedSvg = optimize(svg, svgoOptions);
 
-		// Write the optimized SVG to the output file
-		fs.writeFileSync(distPath, optimizedSvg.data);
+		if (!optimizedSvg.data) {
+			reject("Failed to optimize SVG");
+		}
 
 		// Resolve the Promise with the optimized SVG
-		resolve(optimizedSvg);
+		return resolve(optimizedSvg.data);
+	}).catch((err) => {
+		console.error(err);
 	});
 }
 
