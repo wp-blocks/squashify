@@ -47,7 +47,7 @@ export const distDirQuestion: PromptObject = {
 };
 
 /**
- * The function prompts the user for the image compression options for different image formats
+ * The function prompts the user for the image compression settings for different image formats
  *
  * @param format The image format
  * @returns An array of prompts
@@ -61,10 +61,10 @@ export const promptsToAsk = (format: InputFormats): PromptObject[] => {
 				message: 'Would you like to compress ".svg" files with SVGO?',
 				choices: [
 					{
-						title: "Yes, with default options",
+						title: "Yes, with default settings",
 						value: "default",
 					},
-					{ title: "Yes, with custom options", value: "custom" },
+					{ title: "Yes, with custom settings", value: "custom" },
 					{ title: "No", value: "no" },
 				],
 			},
@@ -138,14 +138,14 @@ export const promptsToAsk = (format: InputFormats): PromptObject[] => {
 };
 
 /**
- * This function prompts the user for options to compress different image formats,
+ * This function prompts the user for settings to compress different image formats,
  * including SVG files with custom SVGO plugins.
  *
  * @param imageFormats - An array of image file formats (e.g. ['.jpg', '.png', '.svg'])
  *                     that the function will prompt the user about compressing.
  * @param verbose - Whether to log messages
- * @returns an object containing compression options for different image formats. The
- * options are obtained through a series of prompts that ask the user whether they want
+ * @returns an object containing compression settings for different image formats. The
+ * settings are obtained through a series of prompts that ask the user whether they want
  * to compress each format, which compressor to use (if applicable), and the quality
  * level (if applicable). For SVG files, the user can also choose which SVGO plugins to
  * use for compression.
@@ -162,7 +162,7 @@ export async function getImageCompressionOptions(
 			promptsToAsk(format),
 		)) as CompressionOptions;
 
-		if (response.compress === "no") {
+		if (!response.compressor) {
 			logMessage(`Skipping ${format} files...`, verbose);
 			continue;
 		}

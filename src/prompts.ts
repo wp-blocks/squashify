@@ -20,17 +20,17 @@ export async function getInteractiveCompressorOptions(
 	const response = await prompts({
 		type: "confirm",
 		name: "useDefaultCompressionOptions",
-		message: "Do you want to use the default compression options?",
+		message: "Do you want to use the default compression settings?",
 		initial: true,
 	});
 
 	if (response.useDefaultCompressionOptions) {
-		//return a promise that resolves with the default compression options
+		//return a promise that resolves with the default compression settings
 		return await new Promise((resolve) => {
 			resolve(defaultCompressionOptions(imageFormats));
 		});
 	} else {
-		// Prompt the user for compression options
+		// Prompt the user for compression settings
 		return await getImageCompressionOptions(imageFormats, verbose);
 	}
 }
@@ -62,15 +62,15 @@ export async function getPromptOptions(
 		return options;
 	}
 
-	// If the compression options are not specified, use the default compression options
+	// If the compression settings are not specified, use the default compression settings
 	if (Object.keys(options.compressionOptions).length === 0) {
 		console.log(
-			"No compression options found, so we will use the default compression options",
+			"No compression settings found, so we will use the default compression settings",
 		);
 		options.compressionOptions = defaultCompressionOptions();
 	}
 
-	// If the compression options are not specified, prompt the user if he wants to use the default compression settings
+	// If the compression settings are not specified, prompt the user if he wants to use the default compression settings
 	if (Object.keys(options.compressionOptions).length === 0) {
 		options.compressionOptions = await getInteractiveCompressorOptions(
 			imageFormats,
