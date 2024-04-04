@@ -89,12 +89,11 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 					encodeSetup.compressor,
 				);
 				paths.distFullPath = path.join(outPath, outputFile);
-				console.log("📄 " + src, "➡️", outputFile);
-				process.exit();
+				console.log("📄 " + src, "➡️", paths.distFullPath);
 				/**
 				 * The rest of the image formats
 				 */
-				return encodeImage(src, outputFile, encodeSetup);
+				return encodeImage(src, paths.distFullPath, encodeSetup);
 			}
 		} else {
 			console.log(

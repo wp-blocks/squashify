@@ -271,7 +271,11 @@ export function getFileName(
 	paths: CompressImagePaths,
 	compressor: Compressor,
 ) {
-	return extMode !== "add" && paths?.ext.substring(1) === compressor
-		? paths?.base + "." + compressor
-		: paths?.name + "." + compressor;
+	if (compressor === "mozjpeg") {
+		compressor = "jpg";
+	}
+	const ext = "." + compressor;
+	return extMode === "add" && paths?.ext === ext
+		? paths?.base + ext
+		: paths?.name + ext;
 }
