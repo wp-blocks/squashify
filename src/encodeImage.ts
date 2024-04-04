@@ -1,31 +1,20 @@
 import { CompressImagePaths, CompressionOptions } from "./types";
-import sharp from "sharp";
-import { getOutputExtension } from "./utils";
-import path from "path";
+import sharp, { OutputInfo } from "sharp";
 
 export function encodeImage(
-	filePath: string,
-	destFile: string,
-	compressOpt = {} as CompressionOptions,
-): (Promise<sharp.OutputInfo> | Promise<sharp.Metadata>)[] {
-	const { basename, ext, file } = compressOpt.paths as CompressImagePaths;
-	// Get the output extension
-	const outputExt = getOutputExtension(compressOpt.compressor, ext);
-	// Get the extension of the file
-	const outputFile =
-		compressOpt.options?.extMode === "add" &&
-		ext.substring(1) !== compressOpt.compressor
-			? file + outputExt
-			: basename + outputExt;
-	// Save the image to the destination directory
-	const distFileName = path.join(destFile, outputFile);
+	compressOpt: CompressionOptions,
+	distFileName: string,
+): Promise<OutputInfo> {
+	const { paths } = compressOpt as {
+		paths: CompressImagePaths;
+	};
 
 	/** @var {any} image Load the image with sharp */
-	let image = sharp(filePath);
+	let image = sharp(paths?.source);
 
 	/**
 	 * The rest of the image formats
-	 * Will apply compression options if specified in the options
+	 * Will apply compression settings if specified in the settings
 	 */
 	if (compressOpt.compressor) {
 		switch (compressOpt.compressor) {
@@ -57,19 +46,14 @@ export function encodeImage(
 		}
 	}
 
-	// Get image metadata
-	const imageMeta = image.metadata();
-
 	// Save the image to the destination directory
-	if (compressOpt.resizeType !== "none") {
+	if (compressOpt.options?.resizeType !== "none") {
 		image = image.resize({
-			width: compressOpt.maxSize,
-			height: compressOpt.maxSize,
-			fit: compressOpt.resizeType,
+			width: compressOpt.options?.maxSize,
+			height: compressOpt.options?.maxSize,
+			fit: compressOpt.options?.resizeType,
 		});
 	}
 
-	const writeFile = image.toFile(distFileName);
-
-	return [writeFile, imageMeta];
+	return image.toFile(distFileName);
 }
