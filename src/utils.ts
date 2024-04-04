@@ -260,14 +260,18 @@ export function defaultCompressionOptions(
 	return options as CompressionOptionsMap;
 }
 
-// Get the extension of the file
+/**
+ * Get the file name based on the extension mode, extension, paths, and compressor.
+ * @param extMode - the extension mode
+ * @param paths - the paths
+ * @param compressor - the compressor
+ */
 export function getFileName(
 	extMode: ExtModes = "replace",
-	ext: InputFormats,
 	paths: CompressImagePaths,
 	compressor: Compressor,
 ) {
 	return extMode !== "add" && paths?.ext.substring(1) === compressor
-		? paths?.base + ext
-		: paths?.name + ext;
+		? paths?.base + "." + compressor
+		: paths?.name + "." + compressor;
 }

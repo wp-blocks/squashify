@@ -35,9 +35,7 @@ export interface ScriptOptions {
 export type CompressImagePaths = {
 	src: string;
 	dist: string;
-	source: string;
-	destination: string;
-	distFileName?: string; // dist file
+	distFullPath?: string; // dist file
 } & ParsedPath;
 
 export interface CompressionOption {
