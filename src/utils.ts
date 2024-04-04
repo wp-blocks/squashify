@@ -9,24 +9,28 @@ import {
 	inputFormats,
 	type InputFormats,
 } from "./constants";
-import { type CompressionOptions, type CompressionOptionsMap } from "./types";
+import {
+	CompressImagePaths,
+	type CompressionOptions,
+	type CompressionOptionsMap,
+	ExtModes,
+} from "./types";
 import {
 	type Config as SvgoConfig,
-	optimize,
 	type PluginConfig as SvgoPluginConfig,
 } from "svgo";
 
 /**
- * The function returns compression options for a given image format.
+ * The function returns compression settings for a given image format.
  *
  * @param imageFormat The format of the image that needs to be compressed, such as
  *                    "jpeg", "png", etc.
- * @param options     The options parameter is an object that contains compression
- *                    options for different image formats. It is expected to have properties for each
+ * @param options     The settings parameter is an object that contains compression
+ *                    settings for different image formats. It is expected to have properties for each
  *                    supported image format, where the property name is the format name (e.g. "jpeg",
- *                    "png") and the value is an object containing compression options for that format.
- * @returns either the compression options for the specified image format from the
- * provided options object, or false if no compression options are found for that
+ *                    "png") and the value is an object containing compression settings for that format.
+ * @returns either the compression settings for the specified image format from the
+ * provided settings object, or false if no compression settings are found for that
  * format.
  */
 export function getCompressionOptions(
@@ -102,37 +106,6 @@ export function logMessage(message: string, verbose = false) {
 }
 
 /**
- * The function optimizes an SVG file asynchronously using SVGO and writes the optimized SVG to a
- * specified output file.
- *
- *                    where the optimized SVG file will be written to.
- * @param svg         The SVG file to optimize
- * @param svgoOptions `svgoOptions` is an object that contains options for optimizing
- *                    the SVG using SVGO (SVG Optimizer). These options can include things like removing
- *                    comments, removing empty groups, and optimizing path data. The specific options and
- *                    their values will depend on the desired optimization settings.
- */
-export async function optimizeSvg(
-	svg: string,
-	svgoOptions: SvgoConfig,
-): Promise<string | void> {
-	// Start a Promise that resolves when the file is written
-	await new Promise((resolve, reject) => {
-		// Optimize the SVG with SVGO
-		const optimizedSvg = optimize(svg, svgoOptions);
-
-		if (!optimizedSvg.data) {
-			reject("Failed to optimize SVG");
-		}
-
-		// Resolve the Promise with the optimized SVG
-		return resolve(optimizedSvg.data);
-	}).catch((err) => {
-		console.error(err);
-	});
-}
-
-/**
  * Returns the output file extension for a given image format
  * is needed because the mozjpeg compressor needs to be saved with the jpg extension
  * and to avoid the jpeg extension being added to the output file when saving a jpeg file
@@ -175,13 +148,15 @@ export function getOutputExtension(
  * is '.svg', it returns undefined. For all other formats, it returns the input compressor if it is not
  * null or undefined, otherwise it returns 'webp'.
  */
-export function getCompressor(compressor: Compressor, format: string) {
-	if (format === ".jpg" || format === ".jpeg") {
-		return compressor ?? "mozjpeg";
-	} else if (format === ".svg") {
-		return undefined;
-	} else {
-		return compressor ?? "webp";
+export function getDefaultCompressor(compressor: Compressor, format: string) {
+	switch (format) {
+		case ".jpg":
+		case ".jpeg":
+			return compressor ?? "mozjpeg";
+		case ".svg":
+			return "svgo";
+		default:
+			return compressor ?? "webp";
 	}
 }
 
@@ -204,7 +179,7 @@ export function getQuality(
 }
 
 /**
- * The function returns progressive compression options for JPEG images, or undefined for other image
+ * The function returns progressive compression settings for JPEG images, or undefined for other image
  * formats.
  * @param {boolean | undefined} progressive - A boolean value that indicates whether the JPEG
  * compression should be progressive or not. If it is undefined, the default value of true will be
@@ -223,11 +198,11 @@ export function getJpgCompressionOptions(
 }
 
 /**
- * The function returns a set of options for an SVGO plugin based on the input format and plugins.
+ * The function returns a set of settings for an SVGO plugin based on the input format and plugins.
  * optimizing SVG files. If it is undefined, the function will use a default set of plugins.
- * @param optionsProvided - a string that contains a comma-separated list of options for configuring the `svgo` plugin
+ * @param optionsProvided - a string that contains a comma-separated list of settings for configuring the `svgo` plugin
  * @param {string} format - a string representing the file format, with a leading dot (e.g. ".svg")
- * @returns The function `getSvgoPluginOptions` returns a string of SVGO plugin options if the `format`
+ * @returns The function `getSvgoPluginOptions` returns a string of SVGO plugin settings if the `format`
  * parameter is `.svg`, otherwise it returns `undefined`. The `plugins` parameter is optional and if it
  * is not provided, the function returns a default set of SVGO plugins for cleaning up SVG attributes,
  * removing doctype, and removing XML processing instructions.
@@ -249,14 +224,14 @@ export function getSvgoPluginOptions(
 }
 
 /**
- * The function takes in a string of options, splits it by commas, and returns an object with the
- * options as an array under the "plugins" key.
+ * The function takes in a string of settings, splits it by commas, and returns an object with the
+ * settings as an array under the "plugins" key.
  *
- * @param options The `options` parameter is a string that contains a comma-separated list of options
- *                for configuring the `svgo` plugin. These options will be split into an array and trimmed before
+ * @param options The `settings` parameter is a string that contains a comma-separated list of settings
+ *                for configuring the `svgo` plugin. These settings will be split into an array and trimmed before
  *                being returned as an object with a `plugins` property.
- * @returns A function is being returned that takes in an argument `options` and returns an object of
- * type `SvgoConfig`. The function splits the `options` string by commas and trims each option, then
+ * @returns A function is being returned that takes in an argument `settings` and returns an object of
+ * type `SvgoConfig`. The function splits the `settings` string by commas and trims each option, then
  * maps the resulting array to an array of `SvgoPluginConfig` objects. Finally, the function returns an
  * object with a `plugins` property set to the `conf` array.
  */
@@ -270,7 +245,7 @@ export function getSvgoOptions(
 
 /**
  * The function takes in an array of image formats and returns
- * an object with the default compression options
+ * an object with the default compression settings
  *
  * @param {InputFormats[]} imageFormats - an array of image formats
  */
@@ -294,4 +269,16 @@ export function defaultCompressionOptions(
 		}
 	});
 	return options as CompressionOptionsMap;
+}
+
+// Get the extension of the file
+export function getFileName(
+	extMode: ExtModes = "replace",
+	ext: InputFormats,
+	paths: CompressImagePaths,
+	compressor: Compressor,
+) {
+	return extMode !== "add" && paths?.ext.substring(1) === compressor
+		? paths?.base + ext
+		: paths?.name + ext;
 }
