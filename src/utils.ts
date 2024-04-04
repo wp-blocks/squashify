@@ -148,7 +148,7 @@ export function getOutputExtension(
  * is '.svg', it returns undefined. For all other formats, it returns the input compressor if it is not
  * null or undefined, otherwise it returns 'webp'.
  */
-export function getDefaultCompressor(compressor: Compressor, format: string) {
+export function getDefaultCompressor(compressor: string, format: string) {
 	switch (format) {
 		case ".jpg":
 		case ".jpeg":
@@ -188,39 +188,28 @@ export function getQuality(
  * @returns either the value of `progressive` if the `format` parameter is `.jpg` or `.jpeg`, or
  * `undefined` if it is not. If `progressive` is not provided, it defaults to `true`.
  */
-export function getJpgCompressionOptions(
-	progressive: boolean | undefined,
-	format: string,
-) {
-	return format === ".jpg" || format === ".jpeg"
-		? progressive ?? true
-		: undefined;
+export function getJpgCompressionOptions(progressive: boolean | undefined) {
+	return progressive ?? true;
 }
 
 /**
  * The function returns a set of settings for an SVGO plugin based on the input format and plugins.
  * optimizing SVG files. If it is undefined, the function will use a default set of plugins.
  * @param optionsProvided - a string that contains a comma-separated list of settings for configuring the `svgo` plugin
- * @param {string} format - a string representing the file format, with a leading dot (e.g. ".svg")
  * @returns The function `getSvgoPluginOptions` returns a string of SVGO plugin settings if the `format`
  * parameter is `.svg`, otherwise it returns `undefined`. The `plugins` parameter is optional and if it
  * is not provided, the function returns a default set of SVGO plugins for cleaning up SVG attributes,
  * removing doctype, and removing XML processing instructions.
  */
 export function getSvgoPluginOptions(
-	optionsProvided: string | undefined,
-	format: string,
-) {
-	if (format === ".svg") {
-		// If a string is provided, split it by commas and trim each option otherwise return the default
-		const plugins: string[] = optionsProvided
-			? optionsProvided.split(",").map((option) => option.trim())
-			: ["preset-default"];
+	optionsProvided: string[],
+): SvgoPluginConfig[] {
+	// If a string is provided, split it by commas and trim each option otherwise return the default
+	const plugins = optionsProvided
+		? optionsProvided.map((option) => option.trim() as SvgoPluginConfig)
+		: (["preset-default"] as SvgoPluginConfig[]);
 
-		return plugins;
-	} else {
-		return undefined;
-	}
+	return plugins;
 }
 
 /**

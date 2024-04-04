@@ -71,3 +71,10 @@ export const svgOptions: Choice[] = [
 
 export const defaultSvgoPlugins: PluginConfig[] = ["preset-default"];
 export const extModes = ["replace", "add"];
+
+export const transparentColor = {
+	r: 0,
+	g: 0,
+	b: 0,
+	alpha: 0,
+};

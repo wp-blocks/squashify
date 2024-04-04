@@ -44,6 +44,8 @@ export interface CompressionOption {
 	extMode: ExtModes;
 	maxSize?: number | undefined;
 	resizeType?: ResizeType;
+	outMargin?: number;
+	background?: string;
 }
 
 /* These are types defining the settings for compressing different types of files. */
