@@ -4,7 +4,7 @@ import { ExtModes, type ScriptOptions } from "./types";
 import { hideBin } from "yargs/helpers";
 
 /**
- * Get the command-line options
+ * Get the command-line settings
  */
 export function getCliOptions(
 	rawArgs: yargs.Argv<object> | undefined,
@@ -14,7 +14,7 @@ export function getCliOptions(
 	}
 	// Check for command-line arguments
 	const argv = rawArgs
-		.usage("Usage: $0 [options]")
+		.usage("Usage: $0 [settings]")
 		.option("input", {
 			describe: "Source directory",
 			type: "string",
@@ -58,8 +58,10 @@ export function getCliOptions(
 		distDir: argv.output ?? "",
 		configFile: argv.config ?? defaultConfigFile,
 		interactive: !!argv.interactive,
-		extMode: argv.extMode ?? "replace",
 		verbose: Boolean(argv.verbose),
 		compressionOptions: {},
+		options: {
+			extMode: argv.extMode ?? "replace",
+		},
 	};
 }
