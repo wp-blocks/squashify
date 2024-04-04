@@ -2,6 +2,7 @@ import { Config as SvgoConfig, optimize } from "svgo";
 import { readFile, writeFile } from "node:fs/promises";
 import { getSvgoOptions } from "./utils";
 import { CompressImagePaths, CompressionOptions } from "./types";
+import path from "path";
 
 /**
  * The function optimizes an SVG file asynchronously using SVGO and writes the optimized SVG to a
@@ -39,7 +40,10 @@ export async function encodeSvg(
 ): Promise<void> {
 	const paths = options?.paths as CompressImagePaths;
 	// Read the SVG file from the file system
-	const originalSvg = await readFile(paths?.source, "utf8");
+	const originalSvg = await readFile(
+		path.join(paths.source, paths.base),
+		"utf8",
+	);
 
 	/**
 	 * Read the SVG file from the file system and optimize it using SVGO
