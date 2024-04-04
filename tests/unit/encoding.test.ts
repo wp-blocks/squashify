@@ -2,7 +2,7 @@ import fs from "fs";
 import { convertImages } from "../../src/compression";
 import { getIniOptions } from "../../src/ini";
 
-// get test options
+// get test settings
 const options = getIniOptions({
 	extMode: "add",
 	srcDir: "./tests/images/test1",
@@ -12,7 +12,7 @@ const options = getIniOptions({
 });
 
 describe("convertImages", () => {
-	it("Should handle default options correctly", async () => {
+	it("Should handle default settings correctly", async () => {
 		const r = await convertImages(options);
 
 		if (r) {

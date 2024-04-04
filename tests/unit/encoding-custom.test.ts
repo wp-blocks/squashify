@@ -5,8 +5,8 @@ import { getIniOptions } from "../../src/ini";
 const srcDir = "./tests/images/test2";
 const distDir = "./tests/images/dist-custom";
 
-describe("convertImages with options", () => {
-	it("should apply compression options correctly", async () => {
+describe("convertImages with settings", () => {
+	it("should apply compression settings correctly", async () => {
 		const thisdistDir = distDir + "-1";
 		const r = await convertImages({
 			srcDir,
@@ -37,7 +37,7 @@ describe("convertImages with options", () => {
 			);
 		}
 	});
-	it("should apply compression options correctly when extMode is 'add'", async () => {
+	it("should apply compression settings correctly when extMode is 'add'", async () => {
 		const thisdistDir = distDir + "-2";
 		const r = await convertImages({
 			srcDir,

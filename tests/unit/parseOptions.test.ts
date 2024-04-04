@@ -39,7 +39,7 @@ describe("getPromptOptions", () => {
 		expect(prompts).toBeCalledTimes(1);
 	});
 
-	it("Should not prompt for compression options when already provided", async () => {
+	it("Should not prompt for compression settings when already provided", async () => {
 		const options = {
 			srcDir: "./src",
 			distDir: "./dist",
@@ -133,7 +133,7 @@ describe("getCompressionOptions", () => {
 		expect(getCompressionOptions(".webp", options)).toBe(false);
 	});
 
-	it("Should return the compression options for a supported image format", () => {
+	it("Should return the compression settings for a supported image format", () => {
 		const options = {
 			".jpeg": { quality: 80, progressive: true },
 			".png": {},
@@ -144,7 +144,7 @@ describe("getCompressionOptions", () => {
 		});
 	});
 
-	it("Should return false when no options are found for a supported image format", () => {
+	it("Should return false when no settings are found for a supported image format", () => {
 		const options = {
 			".jpeg": { quality: 80, progressive: true },
 			".png": {},
