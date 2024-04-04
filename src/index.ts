@@ -3,10 +3,11 @@ import yargs from "yargs";
 
 import { getCliOptions } from "./args";
 import { convertImages } from "./compression";
-import { getIniOptions, parseOptions } from "./ini";
+import { getIniOptions } from "./parseIni";
 import { getPromptOptions } from "./prompts";
 import { hideBin } from "yargs/helpers";
 import process from "process";
+import { parseOptions } from "./parseOptions";
 
 /**
  * Prompts the user for the source and destination directories
@@ -24,7 +25,7 @@ export default async function main() {
 	// Parse the settings
 	let options = parseOptions(cliOptions, iniOptions);
 
-	// check for missing settings
+	// Check for missing settings
 	const missingOptions = ["srcDir", "distDir"].filter(
 		(option) => !options[option as keyof typeof options],
 	);

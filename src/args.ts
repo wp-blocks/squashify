@@ -58,7 +58,7 @@ export function getCliOptions(
 		distDir: argv.output ?? "",
 		configFile: argv.config ?? defaultConfigFile,
 		interactive: !!argv.interactive,
-		verbose: Boolean(argv.verbose),
+		verbose: !!argv.verbose,
 		compressionOptions: {},
 		options: {
 			extMode: argv.extMode ?? "replace",

@@ -67,13 +67,12 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 			paths,
 		};
 
-		if (asInputFormats(paths.ext) && encodeSetup.compressor !== undefined) {
+		if (encodeSetup.compressor && asInputFormats(paths.ext)) {
 			if (paths.ext === ".svg" && encodeSetup.compressor === "svgo") {
 				/**
 				 * SVG optimization
 				 */
 				const outputFile = path.join(paths.destination, paths.base);
-				console.log("- 📐 ", outputFile);
 				return encodeSvg(encodeSetup, outputFile);
 			} else {
 				/**
@@ -85,15 +84,23 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 					paths as CompressImagePaths,
 					encodeSetup.compressor,
 				);
-				const outPath = path.join(paths.destination, outputFile);
-				console.log("- 🖼️ ", outPath);
+				const outFile = path.join(paths.destination, outputFile);
 				/**
 				 * The rest of the image formats
 				 */
-				return encodeImage(encodeSetup, path.join(paths?.destination, outPath));
+				return encodeImage(encodeSetup, outFile);
 			}
 		} else {
-			return copyFile(paths.src, paths.dist);
+			console.log(
+				"the image format is not enabled " + paths.ext,
+				encodeSetup.compressor,
+			);
+			console.log("📄 " + paths.base);
+
+			return copyFile(
+				path.join(paths.source, paths.base),
+				path.join(paths.destination, paths.base),
+			);
 		}
 	}
 
