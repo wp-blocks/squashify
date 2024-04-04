@@ -5,7 +5,14 @@ export const defaultSrc = "src/images";
 export const defaultDist = "images";
 export const defaultConfigFile = ".squash";
 
-export const compressors = ["avif", "webp", "mozjpeg", "jpg", "png"] as const;
+export const compressors = [
+	"avif",
+	"webp",
+	"mozjpeg",
+	"jpg",
+	"png",
+	"svgo",
+] as const;
 
 export type Compressor = (typeof compressors)[number] | undefined;
 

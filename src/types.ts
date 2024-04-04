@@ -14,28 +14,30 @@ export type ResizeType =
 	| "none";
 
 export type CompressionOptionsMap = {
-	[key in InputFormats]?: CompressionOptions;
+	[key in InputFormats]: CompressionOptions;
 };
 
 export type IniOptions = {
 	[key: string]: string | unknown;
 };
 
-/* The `ScriptOptions` interface is defining the options that can be passed to a script. */
+/* The `ScriptOptions` interface is defining the settings that can be passed to a script. */
 export interface ScriptOptions {
 	srcDir: string;
 	distDir: string;
-	configFile?: string;
+	configFile: string;
 	verbose?: boolean;
-	options: CompressionOption;
 	interactive?: boolean;
+	options: CompressionOption;
 	compressionOptions: CompressionOptionsMap;
 }
 
 export type CompressImagePaths = {
-	file: Path;
 	src: string;
 	dist: string;
+	source: string;
+	destination: string;
+	distFileName?: string; // dist file
 } & ParsedPath;
 
 export interface CompressionOption {
@@ -44,13 +46,13 @@ export interface CompressionOption {
 	resizeType?: ResizeType;
 }
 
-/* These are types defining the options for compressing different types of files. */
+/* These are types defining the settings for compressing different types of files. */
 export type CompressionOptions = {
-	compress?: string;
 	compressor?: Compressor;
 	quality?: number;
 	progressive?: boolean;
-	plugins?: SvgoPluginConfig[];
+	originalSize?: number;
 	paths?: CompressImagePaths;
+	plugins?: SvgoPluginConfig[];
 	options?: CompressionOption;
 };
