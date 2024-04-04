@@ -2,7 +2,6 @@ import fs from "fs";
 import ini from "ini";
 import { Compressor, inputFormats } from "./constants";
 import {
-	CompressionOptions,
 	ExtModes,
 	type IniOptions,
 	ResizeType,
@@ -15,7 +14,6 @@ import {
 	getSvgoPluginOptions,
 	logMessage,
 } from "./utils";
-import { PluginConfig as SvgoPluginConfig } from "svgo";
 import path from "path";
 
 /**
@@ -77,28 +75,28 @@ export function parseOptions(
 	inputFormats
 		// then parse the settings for each format
 		.forEach((format) => {
-			const currentIniOption = iniOptions[format] as {
-				compressor?: Compressor;
-				quality?: string;
-				progressive?: boolean;
-				plugins?: string;
-			};
+			const currentIniOption = iniOptions[format] as Record<string, string>;
 
 			options.compressionOptions[format] = {
-				compressor: getDefaultCompressor(currentIniOption?.compressor, format),
-				quality: getQuality(Number(currentIniOption?.quality), format),
+				compressor: getDefaultCompressor(
+					currentIniOption?.compressor,
+					format,
+				) as Compressor,
+				quality: getQuality(
+					Number(currentIniOption?.quality),
+					format,
+				) as number,
 			};
 
 			if (format === ".svg") {
 				options.compressionOptions[format].plugins = getSvgoPluginOptions(
-					currentIniOption?.plugins,
-					format,
-				) as SvgoPluginConfig[] | undefined;
+					currentIniOption?.plugins.split(","),
+				);
 			}
 
 			if (format === ".jpg") {
 				options.compressionOptions[format].progressive =
-					getJpgCompressionOptions(currentIniOption?.progressive, format);
+					getJpgCompressionOptions(Boolean(currentIniOption?.progressive));
 			}
 		});
 
