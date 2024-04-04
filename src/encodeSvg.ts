@@ -30,24 +30,24 @@ export function optimizeSvg(svg: string, svgoOptions: SvgoConfig) {
 /**
  * Encodes an SVG file, optimizes it, and saves it to a destination directory.
  *
+ * @param srcFilename - The path to the SVG file.
+ * @param distFileName - The path to the destination file.
  * @param {SvgoPluginConfig[] | undefined} options - Optional Svgo plugin configurations.
- * @param distFileName
  * @return {Promise<Metadata>} A promise that resolves with the metadata of the optimized image.
  */
 export async function encodeSvg(
-	options: CompressionOptions,
+	srcFilename: string,
 	distFileName: string,
+	options: CompressionOptions,
 ): Promise<void> {
-	const paths = options?.paths as CompressImagePaths;
 	// Read the SVG file from the file system
-	const originalSvg = await readFile(
-		path.join(paths.source, paths.base),
-		"utf8",
-	);
+	const originalSvg = await readFile(srcFilename, "utf8");
 
 	/**
 	 * Read the SVG file from the file system and optimize it using SVGO
 	 */
 	const result = optimizeSvg(originalSvg, getSvgoOptions(options?.plugins));
+
+	// Write the optimized SVG to the destination directory
 	return writeFile(distFileName, result, "utf8");
 }

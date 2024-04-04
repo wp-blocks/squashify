@@ -44,18 +44,22 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 	}
 
 	// Get a list of files in the source directory
-	const globResults = new Glob(srcDir + "/**", {});
+	const globResults = new Glob("**", {
+		cwd: srcDir,
+		exclude: "**/node_modules/**",
+	});
 
 	const promises = [];
 
-	function copyFileAsync(res: string): Promise<void | OutputInfo> {
+	function copyFileAsync(
+		src: string,
+		outPath: string,
+	): Promise<void | OutputInfo> {
 		// Get the file path and extension
 		const paths: CompressImagePaths = {
-			src: srcDir,
-			dist: distDir,
-			source: path.join(process.cwd(), srcDir),
-			destination: path.join(process.cwd(), distDir),
-			...(path.parse(res) as ParsedPath),
+			src: src,
+			dist: outPath,
+			...(path.parse(src) as ParsedPath),
 		};
 
 		/**
@@ -72,50 +76,55 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 				/**
 				 * SVG optimization
 				 */
-				const outputFile = path.join(paths.destination, paths.base);
-				return encodeSvg(encodeSetup, outputFile);
+
+				paths.distFullPath = path.join(outPath, paths.base);
+				return encodeSvg(src, paths.distFullPath, encodeSetup);
 			} else {
 				/**
 				 * Images compression
 				 */
 				const outputFile = getFileName(
 					settings.options?.extMode,
-					paths.ext,
 					paths as CompressImagePaths,
 					encodeSetup.compressor,
 				);
-				const outFile = path.join(paths.destination, outputFile);
+				paths.distFullPath = path.join(outPath, outputFile);
+				console.log("📄 " + src, "➡️", outputFile);
+				process.exit();
 				/**
 				 * The rest of the image formats
 				 */
-				return encodeImage(encodeSetup, outFile);
+				return encodeImage(src, outputFile, encodeSetup);
 			}
 		} else {
 			console.log(
 				"the image format is not enabled " + paths.ext,
 				encodeSetup.compressor,
 			);
-			console.log("📄 " + paths.base);
+			console.log("📄 copying " + paths.base);
 
 			return copyFile(
-				path.join(paths.source, paths.base),
-				path.join(paths.destination, paths.base),
+				path.join(paths.src, paths.base),
+				path.join(paths.dist, paths.base),
 			);
 		}
 	}
 
 	// Loop through the files in the directory
 	for await (const res of globResults as AsyncIterable<string>) {
+		const srcPath = path.join(process.cwd(), srcDir, res);
+		const outPath = path.join(process.cwd(), distDir);
+		const srcLstat = lstatSync(srcPath);
 		// if is a directory creating the copy of the directory if the src is different from the dist
-		if (lstatSync(res).isDirectory()) {
-			console.log("📁 " + res);
+		if (srcLstat?.isDirectory()) {
+			console.log("📁 " + srcPath, "➡️", outPath);
 			// check if the directory exists
-			if (!fs.existsSync(res)) {
-				fs.mkdirSync(res);
+			if (!fs.existsSync(outPath)) {
+				fs.mkdirSync(outPath);
 			}
-			settings.srcDir = res;
+			settings.srcDir = outPath;
 		} else {
-			promises.push(copyFileAsync(res));
+			promises.push(copyFileAsync(srcPath, outPath));
 		}
 	}
 
