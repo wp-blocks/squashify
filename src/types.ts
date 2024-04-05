@@ -18,7 +18,7 @@ export type CompressionOptionsMap = {
 };
 
 export type IniOptions = {
-	[key: string]: string | unknown;
+	[key: string]: unknown;
 };
 
 /* The `ScriptOptions` interface is defining the settings that can be passed to a script. */

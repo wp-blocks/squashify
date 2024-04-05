@@ -16,19 +16,18 @@ export function parseOptions(
 	options.srcDir = options.srcDir || String(iniOptions?.in) || "";
 	options.distDir = options.distDir || String(iniOptions?.out) || "";
 
+	const { resizeType, maxSize }: { resizeType?: ResizeType; maxSize?: number } =
+		iniOptions.options ?? {
+			resizeType: "none",
+			maxSize: undefined,
+		};
+
 	options.options = {
 		// the ext format settings
-		extMode:
-			options.options.extMode ?? (iniOptions.extMode as ExtModes) ?? "replace",
+		extMode: (iniOptions.extMode as ExtModes) ?? "replace",
 		// the resize settings
-		resizeType:
-			options.options.resizeType ??
-			(iniOptions.resizeType as ResizeType) ??
-			"none",
-		maxSize:
-			Number(options.options.maxSize) ??
-			Number(iniOptions.maxSize) ??
-			undefined,
+		resizeType: resizeType ?? "none",
+		maxSize: Number(maxSize) ?? undefined,
 	};
 
 	// parse known settings about formats

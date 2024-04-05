@@ -29,5 +29,7 @@ export function getIniOptions(
 		);
 	}
 
+	console.log(iniOptions);
+
 	return iniOptions;
 }
