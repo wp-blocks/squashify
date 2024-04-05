@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { getIniOptions } from "../../src/ini";
+import { getIniOptions } from "../../src/parseIni";
 import { inputFormats } from "../../src/constants";
 
 describe("getIniOptions", () => {

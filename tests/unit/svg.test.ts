@@ -1,28 +1,27 @@
 import fs from "fs";
 import path from "path";
-import {optimizeSvg} from "../../src/utils";
+import { optimizeSvg } from "../../src/encodeSvg";
 
-describe('optimizeSvg', () => {
-	const filePath = path.join(__dirname, '../images/test3/image.svg');
+describe("optimizeSvg", () => {
+	const filePath = path.join(__dirname, "../images/test3/image.svg");
 
-	const distPath = path.join(__dirname, '../images/image.min.svg');
+	const distPath = path.join(__dirname, "../images/image.min.svg");
 
-	afterAll(( ) => {
+	afterAll(() => {
 		// Cleanup
 		fs.unlinkSync(distPath);
-	})
+	});
 
-	it('optimizes an SVG file and writes it to the specified output file', async () => {
-		// Call the optimizeSvg function with test arguments
-		await optimizeSvg(filePath, distPath, { plugins: ['preset-default'] } )
-
+	it("optimizes an SVG file and writes it to the specified output file", async () => {
 		// Check if the optimized SVG was written to the correct location
-		const writtenSvgContent = fs.readFileSync(distPath, 'utf8');
+		const svg = fs.readFileSync(filePath, "utf8");
+		// Call the optimizeSvg function with test arguments
+		const optimizedSvg = optimizeSvg(svg, { plugins: ["preset-default"] });
 
 		// the file was written
-		expect(writtenSvgContent).toBeDefined();
+		expect(optimizedSvg).toBeDefined();
 
 		// the file has content
-		expect(writtenSvgContent.length).toBeGreaterThan(0);
+		expect(optimizedSvg.length).toBeGreaterThan(0);
 	});
 });
