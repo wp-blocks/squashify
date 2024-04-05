@@ -77,7 +77,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 				 * SVG optimization
 				 */
 
-				paths.distFullPath = path.join(outPath, paths.base);
+				paths.distFullPath = path.join(paths.dist, paths.base);
 				return encodeSvg(src, paths.distFullPath, encodeSetup);
 			} else {
 				/**
@@ -88,8 +88,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 					paths as CompressImagePaths,
 					encodeSetup.compressor,
 				);
-				paths.distFullPath = path.join(outPath, outputFile);
-				console.log("📄 " + src, "➡️", paths.distFullPath);
+				paths.distFullPath = path.join(paths.dist, outputFile);
 				/**
 				 * The rest of the image formats
 				 */
@@ -97,33 +96,32 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 			}
 		} else {
 			console.log(
-				"the image format is not enabled " + paths.ext,
+				"This is not an image file or the compression is not enabled for " +
+					paths.ext,
 				encodeSetup.compressor,
 			);
-			console.log("📄 copying " + paths.base);
+			console.log("📄 Copying to" + paths.base);
 
-			return copyFile(
-				path.join(paths.src, paths.base),
-				path.join(paths.dist, paths.base),
-			);
+			return copyFile(paths.src, path.join(paths.dist, paths.base));
 		}
 	}
 
 	// Loop through the files in the directory
 	for await (const res of globResults as AsyncIterable<string>) {
 		const srcPath = path.join(process.cwd(), srcDir, res);
-		const outPath = path.join(process.cwd(), distDir);
+		const outPath = path.join(process.cwd(), distDir, res);
 		const srcLstat = lstatSync(srcPath);
 		// if is a directory creating the copy of the directory if the src is different from the dist
 		if (srcLstat?.isDirectory()) {
-			console.log("📁 " + srcPath, "➡️", outPath);
+			console.log("📁 New Folder created " + srcPath + " ➡️ " + outPath);
 			// check if the directory exists
 			if (!fs.existsSync(outPath)) {
 				fs.mkdirSync(outPath);
 			}
 			settings.srcDir = outPath;
 		} else {
-			promises.push(copyFileAsync(srcPath, outPath));
+			console.log("📄 Processing " + srcPath + " ➡️ " + outPath);
+			promises.push(copyFileAsync(srcPath, path.join(process.cwd(), distDir)));
 		}
 	}
 

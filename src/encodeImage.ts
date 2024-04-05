@@ -45,7 +45,10 @@ export function encodeImage(
 	}
 
 	// Save the image to the destination directory
-	if (compressOpt.options?.resizeType !== "none") {
+	if (
+		compressOpt.options?.maxSize &&
+		compressOpt.options?.resizeType !== "none"
+	) {
 		image = image.resize({
 			width: compressOpt.options?.maxSize,
 			height: compressOpt.options?.maxSize,
