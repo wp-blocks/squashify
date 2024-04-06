@@ -1,4 +1,7 @@
 # Squashify 
+[![](https://img.shields.io/npm/v/squashify.svg?label=npm%20version)](https://www.npmjs.com/package/squashify)
+[![](https://img.shields.io/npm/l/squashify)](https://github.com/wp-blocks/squashify?tab=GPL-3.0-1-ov-file#readme)
+[![](https://github.com/wp-blocks/squashify/actions/workflows/node.js.yml/badge.svg)](https://github.com/wp-blocks/squashify/actions/workflows/node.js.yml)
 
 ## Features
 - 🖼️ Efficient: Compresses and optimizes images using various algorithms to reduce file size and make your website load faster.
@@ -87,13 +90,15 @@ The script will prompt you to enter the source and destination directory paths. 
 ### Command-Line Arguments
 The following command-line arguments are available:
 
---in <path>: Specifies the path to the input directory.
+--in <path>: Specify the path to the input directory.
 
 --out <path>: Specifies the path to the output directory.
 
 --config <path>: Specifies the configuration file path.
 
 --verbose: Verbose mode
+
+--extMode: Specify whenever to replace or add image extensions. Options are 'replace' or 'add' (default: 'replace').
 
 --interactive: prompts for required options that aren't provided 
 
@@ -104,7 +109,7 @@ The script also supports an INI file named `.squash` in the project directory. T
 
 **\[path\]** This section contains the in and out keys, which specify the input and output directories, respectively.
 
-**\[\<format\>\]** This section specifies the compression options for a specific image format, where <format> is one of the supported formats listed above. The available keys are compressor and quality for most formats, and options for SVGs.
+**\[\<format\>\]** This section specifies the compression options for a specific image format, where <format> is one of the supported formats listed above. The available keys are compressor and quality for most formats, and settings for SVGs.
 Here's an example .squash file:
 
 ```ini
@@ -125,7 +130,7 @@ compressor = avif
 quality = 50
 
 [.svg]
-options = CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs
+plugins = CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs
 ```
 ### Supported Image Formats
 

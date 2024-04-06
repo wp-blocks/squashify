@@ -12,11 +12,11 @@
 		"url": "https://github.com/wp-blocks/squashify/issues"
 	},
 	"scripts": {
-		"build": "tsc --build",
+		"build": "tsc --build --clean",
 		"watch": "tsc --watch",
-		"clean": "tsc --build --clean",
-		"squashify": "node ./lib/index.js --in tests/images/test1/ --out tests/output/test1/ --verbose",
-		"test": "jest --silent=false --coverage --verbose"
+		"squashify": "node ./lib/index.js --in tests/images/ --out tests/output --verbose",
+		"test": "jest --silent=false --coverage --verbose",
+		"posttest": "rimraf tests/images/dist-*"
 	},
 	"files": [
 		"lib",
