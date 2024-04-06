@@ -1,7 +1,12 @@
 import { Config as SvgoConfig, optimize } from "svgo";
 import { readFile, writeFile } from "node:fs/promises";
 import { getSvgoOptions } from "./utils";
-import { CompressImagePaths, CompressionOptions } from "./types";
+import {
+	CompressImagePaths,
+	CompressionMeta,
+	CompressionOption,
+	CompressionOptions,
+} from "./types";
 import path from "path";
 
 /**
@@ -38,7 +43,7 @@ export function optimizeSvg(svg: string, svgoOptions: SvgoConfig) {
 export async function encodeSvg(
 	srcFilename: string,
 	distFileName: string,
-	options: CompressionOptions,
+	options: CompressionOption,
 ): Promise<void> {
 	// Read the SVG file from the file system
 	const originalSvg = await readFile(srcFilename, "utf8");

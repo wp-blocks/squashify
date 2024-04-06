@@ -1,14 +1,14 @@
-import { CompressionOptions } from "./types";
+import { CompressionMeta } from "./types";
 import sharp, { OutputInfo } from "sharp";
 import { transparentColor } from "./constants";
 
 export function encodeImage(
-	srcFilename: string,
-	distFileName: string,
-	compressOpt: CompressionOptions,
+	src: string,
+	dist: string,
+	compressOpt: CompressionMeta,
 ): Promise<OutputInfo> {
 	/** @var {any} image Load the image with sharp */
-	let image = sharp(srcFilename);
+	let image = sharp(src);
 
 	/**
 	 * The rest of the image formats
@@ -68,5 +68,5 @@ export function encodeImage(
 	}
 
 	// Save the image to the destination directory
-	return image.toFile(distFileName);
+	return image.toFile(dist);
 }
