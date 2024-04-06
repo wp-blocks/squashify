@@ -9,12 +9,12 @@ import {
 } from "./utils";
 
 export function parseOptions(
-	options: ScriptOptions,
+	settings: ScriptOptions,
 	iniOptions: IniOptions,
 ): ScriptOptions {
 	// the source and destination directories
-	options.srcDir = options.srcDir || String(iniOptions?.in) || "";
-	options.distDir = options.distDir || String(iniOptions?.out) || "";
+	settings.srcDir = settings.srcDir || String(iniOptions?.in) || "";
+	settings.distDir = settings.distDir || String(iniOptions?.out) || "";
 
 	const { resizeType, maxSize }: { resizeType?: ResizeType; maxSize?: number } =
 		iniOptions.options ?? {
@@ -22,7 +22,7 @@ export function parseOptions(
 			maxSize: undefined,
 		};
 
-	options.options = {
+	settings.options = {
 		// the ext format settings
 		extMode: (iniOptions.extMode as ExtModes) ?? "replace",
 		// the resize settings
@@ -31,7 +31,7 @@ export function parseOptions(
 	};
 
 	// parse known settings about formats
-	options.compressionOptions = { ...options.compressionOptions };
+	settings.compressionOptions = { ...settings.compressionOptions };
 
 	// parse the settings for all formats in the inputFormats array
 	inputFormats
@@ -39,7 +39,7 @@ export function parseOptions(
 		.forEach((format) => {
 			const currentIniOption = iniOptions[format] as Record<string, string>;
 
-			options.compressionOptions[format] = {
+			settings.compressionOptions[format] = {
 				compressor: getDefaultCompressor(
 					currentIniOption?.compressor,
 					format,
@@ -51,19 +51,19 @@ export function parseOptions(
 			};
 
 			if (format === ".svg") {
-				options.compressionOptions[format].plugins = getSvgoPluginOptions(
+				settings.options.plugins = getSvgoPluginOptions(
 					currentIniOption?.plugins.split(","),
 				);
 			}
 
 			if (format === ".jpg") {
-				options.compressionOptions[format].progressive =
+				settings.compressionOptions[format].progressive =
 					getJpgCompressionOptions(Boolean(currentIniOption?.progressive));
 			}
 		});
 
 	logMessage(
-		`Configuration file loaded, options: ${JSON.stringify(options)} ${options.verbose}`,
+		`Configuration file loaded, options: ${JSON.stringify(settings)} ${settings.verbose}`,
 	);
-	return options;
+	return settings;
 }

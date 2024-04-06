@@ -247,9 +247,7 @@ export function defaultCompressionOptions(
 	const options: Partial<CompressionOptionsMap> = {};
 	imageFormats.forEach((format) => {
 		if (format === ".svg") {
-			options[format] = {
-				plugins: defaultSvgoPlugins,
-			};
+			options[format as "svg"] = {};
 		} else {
 			options[format] = {
 				compressor: "avif",

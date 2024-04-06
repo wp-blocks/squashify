@@ -33,9 +33,13 @@ export interface ScriptOptions {
 }
 
 export type CompressImagePaths = {
-	src: string;
-	dist: string;
-	distFullPath?: string; // dist file
+	srcDir: string;
+	distDir: string;
+	relativePath: string;
+	filePath: string;
+	srcPath: string;
+	distPath: string;
+	cwd: string;
 } & ParsedPath;
 
 export interface CompressionOption {
@@ -44,6 +48,7 @@ export interface CompressionOption {
 	resizeType?: ResizeType;
 	outMargin?: number;
 	background?: string;
+	plugins?: SvgoPluginConfig[];
 }
 
 /* These are types defining the settings for compressing different types of files. */
@@ -52,7 +57,9 @@ export type CompressionOptions = {
 	quality?: number;
 	progressive?: boolean;
 	originalSize?: number;
-	paths?: CompressImagePaths;
-	plugins?: SvgoPluginConfig[];
-	options?: CompressionOption;
 };
+
+export interface CompressionMeta extends CompressionOptions {
+	paths: CompressImagePaths;
+	options: CompressionOption;
+}
