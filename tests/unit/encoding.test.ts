@@ -1,9 +1,9 @@
 import fs from "fs";
 import { convertImages } from "../../src/compression";
-import { getIniOptions } from "../../src/ini";
+import { getIniOptions } from "../../src/parseIni";
 
 // get test settings
-const options = getIniOptions({
+const options = getIniOptions("./tests/data/.squash", {
 	extMode: "add",
 	srcDir: "./tests/images/test1",
 	distDir: "./tests/images/dist",
@@ -13,7 +13,7 @@ const options = getIniOptions({
 
 describe("convertImages", () => {
 	it("Should handle default settings correctly", async () => {
-		const r = await convertImages(options);
+		const r = await convertImages(options as any);
 
 		if (r) {
 			expect(fs.readdirSync(`${options.distDir}`)).toMatchObject([

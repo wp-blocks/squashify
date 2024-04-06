@@ -9,7 +9,9 @@ describe("optimizeSvg", () => {
 
 	afterAll(() => {
 		// Cleanup
-		fs.unlinkSync(distPath);
+		if (fs.existsSync(distPath)) {
+			fs.unlinkSync(distPath);
+		}
 	});
 
 	it("optimizes an SVG file and writes it to the specified output file", async () => {

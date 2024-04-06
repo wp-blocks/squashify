@@ -3,12 +3,7 @@
 import fs from "fs";
 import path from "path";
 
-import {
-	type Compressor,
-	defaultSvgoPlugins,
-	inputFormats,
-	type InputFormats,
-} from "./constants";
+import { type Compressor, inputFormats, type InputFormats } from "./constants";
 import {
 	CompressImagePaths,
 	type CompressionOptions,
@@ -205,11 +200,9 @@ export function getSvgoPluginOptions(
 	optionsProvided: string[],
 ): SvgoPluginConfig[] {
 	// If a string is provided, split it by commas and trim each option otherwise return the default
-	const plugins = optionsProvided
+	return optionsProvided
 		? optionsProvided.map((option) => option.trim() as SvgoPluginConfig)
 		: (["preset-default"] as SvgoPluginConfig[]);
-
-	return plugins;
 }
 
 /**

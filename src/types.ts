@@ -1,7 +1,6 @@
 import { type Compressor, type InputFormats } from "./constants";
 import { PluginConfig as SvgoPluginConfig } from "svgo";
 import { ParsedPath } from "path";
-import { Path } from "glob";
 
 export type ExtModes = "add" | "replace";
 
