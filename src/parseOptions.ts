@@ -39,6 +39,8 @@ export function parseOptions(
 		.forEach((format) => {
 			const currentIniOption = iniOptions[format] as Record<string, string>;
 
+			console.log(currentIniOption);
+
 			settings.compressionOptions[format] = {
 				compressor: getDefaultCompressor(
 					currentIniOption?.compressor,
@@ -56,7 +58,7 @@ export function parseOptions(
 				);
 			}
 
-			if (format === ".jpg") {
+			if (format === ".jpg" || format === ".jpeg") {
 				settings.compressionOptions[format].progressive =
 					getJpgCompressionOptions(Boolean(currentIniOption?.progressive));
 			}
