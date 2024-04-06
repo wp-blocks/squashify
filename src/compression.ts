@@ -6,7 +6,6 @@ import { asInputFormats, getCompressionOptions, getFileName } from "./utils";
 import {
 	CompressImagePaths,
 	CompressionMeta,
-	CompressionOptions,
 	type ScriptOptions,
 } from "./types";
 import { copyFile } from "node:fs/promises";
@@ -53,17 +52,6 @@ function copyFileAsync(
 				encodeSetup,
 			);
 		}
-	} else {
-		console.log(
-			"This is not an image file or the compression is not enabled for " +
-				paths.ext,
-			encodeSetup.compressor,
-		);
-		console.log(
-			`📄 Copying ${paths.srcPath} file to ${path.join(paths.distPath, paths.base)}`,
-		);
-
-		return copyFile(paths.srcPath, path.join(paths.distPath, paths.base));
 	}
 }
 
@@ -121,7 +109,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 			distPath: path.join(process.cwd(), distDir, file.dir),
 		};
 
-		/** Check if the src is a directory */
+		/** If the src is a directory */
 		const srcLstat = lstatSync(filePaths.srcPath);
 		// if is a directory creating the copy of the directory if the src is different from the dist
 		if (srcLstat?.isDirectory()) {
@@ -131,9 +119,9 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 			if (!fs.existsSync(dirPath)) {
 				fs.mkdirSync(dirPath);
 			}
-		} else {
+		} else if (compressionOptions) {
 			/**
-			 * Set the default settings for the image format
+			 * If the compression is enabled for the image format
 			 */
 			const encodeSetup: CompressionMeta = {
 				...settings,
@@ -144,6 +132,23 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
 			promises.push(
 				/* return the promise to copy/encode the file */
 				copyFileAsync(encodeSetup),
+			);
+		} else {
+			/**
+			 * Otherwise the compression is not enabled, or the file is not an image,
+			 * so we copy it to the destination directory
+			 */
+			console.log(
+				"This is not an image file or the compression is not enabled for " +
+					paths.ext,
+			);
+			console.log(
+				`📄 Copying ${paths.srcPath} file to ${path.join(filePaths.distPath, filePaths.base)}`,
+			);
+
+			return copyFile(
+				filePaths.srcPath,
+				path.join(filePaths.distPath, filePaths.base),
 			);
 		}
 	}
