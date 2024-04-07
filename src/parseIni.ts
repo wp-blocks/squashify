@@ -1,6 +1,6 @@
 import fs from "fs";
 import ini from "ini";
-import { CompressionOptions, type IniOptions, ScriptOptions } from "./types";
+import { CompressionOption, type IniOptions, ScriptOptions } from "./types";
 import path from "path";
 import { Compressor, InputFormats, inputFormats } from "./constants";
 import {
@@ -35,8 +35,8 @@ function processOption(opt: string): string {
  */
 function processSingleOption(
   opt: string,
-  iniOptions: CompressionOptions,
-): [InputFormats, CompressionOptions] | undefined {
+  iniOptions: CompressionOption,
+): [InputFormats, CompressionOption] | undefined {
   // cleanup the option
   opt = processOption(opt);
 
@@ -45,7 +45,7 @@ function processSingleOption(
     opt = "jpg";
   }
   return inputFormats.includes(opt)
-    ? ([opt, iniOptions] as [InputFormats, CompressionOptions])
+    ? ([opt, iniOptions] as [InputFormats, CompressionOption])
     : undefined;
 }
 
@@ -92,17 +92,17 @@ export function getIniOptions(
      * @param opt
      * @param dataset
      */
-    function addOption(opt: string, dataset: CompressionOptions) {
+    function addOption(opt: string, dataset: CompressionOption) {
       const resp = processSingleOption(opt, dataset);
       if (resp) {
-        const [format, options] = resp as [InputFormats, CompressionOptions];
+        const [format, options] = resp as [InputFormats, CompressionOption];
         iniOptionsParsed.compressionOptions[format] = options;
       }
     }
 
     function addRecursiveOptions(
       opt: string,
-      iniOptions: Record<string, CompressionOptions> | CompressionOptions,
+      iniOptions: Record<string, CompressionOption> | CompressionOption,
     ) {
       if (opt.endsWith(",")) {
         const opts = [];
@@ -110,32 +110,32 @@ export function getIniOptions(
           opts.push(opt.slice(0, -1));
           opt = Object.keys(iniOptions)[0];
           iniOptions = iniOptions[
-            opt as keyof CompressionOptions
-          ] as CompressionOptions;
+            opt as keyof CompressionOption
+          ] as CompressionOption;
         }
-        const resp = processSingleOption(opt, iniOptions as CompressionOptions);
+        const resp = processSingleOption(opt, iniOptions as CompressionOption);
         if (typeof resp === "object") {
-          const [format, options] = resp as [InputFormats, CompressionOptions];
+          const [format, options] = resp as [InputFormats, CompressionOption];
           opts.push(format);
           opts.forEach((o) => addOption(o, options));
         }
       } else if (opt === "") {
-        for (const o in iniOptions[opt as keyof CompressionOptions] as Record<
+        for (const o in iniOptions[opt as keyof CompressionOption] as Record<
           string,
-          CompressionOptions
+          CompressionOption
         >) {
           addRecursiveOptions(
             o,
-            iniOptions[opt as keyof CompressionOptions] as Record<
+            iniOptions[opt as keyof CompressionOption] as Record<
               string,
-              CompressionOptions
+              CompressionOption
             >,
           );
         }
       } else {
         addOption(
           opt,
-          iniOptions[opt as keyof CompressionOptions] as CompressionOptions,
+          iniOptions[opt as keyof CompressionOption] as CompressionOption,
         );
       }
     }

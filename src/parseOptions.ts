@@ -13,12 +13,7 @@ export function parseOptions(
   newSettings.verbose = settings.verbose || false;
   newSettings.interactive = settings.interactive || false;
 
-  newSettings.options = iniOptions?.options || {};
-
-  // if the user has specified an extMode, use it
-  if (settings.extMode) {
-    newSettings.options.extMode = settings.extMode;
-  }
+  newSettings.options = { ...iniOptions?.options, ...settings.options };
 
   // parse known settings about formats
   newSettings.compressionOptions = iniOptions

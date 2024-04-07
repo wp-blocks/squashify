@@ -29,17 +29,13 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
    * If the compression is enabled for the image format and the extension is an image file
    */
   if (compressor && options && asInputFormats(paths.ext)) {
-    if (paths.ext === ".gif" && options.encodeAnimated) {
+    if (paths.ext === ".gif" && "encodeAnimated" in encodeSetup) {
       /**
        * GIF optimization
        */
       const filePath = path.join(paths.distPath, paths.base);
       logMessage("🎬️ Processing " + filePath);
-      return encodeAnimation(
-        paths.srcPath,
-        filePath,
-        encodeSetup as CompressionMeta,
-      );
+      return encodeAnimation(paths.srcPath, filePath);
     } else if (paths.ext === ".svg" && compressor === "svgo") {
       /**
        * SVG optimization
@@ -69,11 +65,6 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
       );
     }
   }
-  return new Promise(() => {
-    return {
-      copy: true,
-    } as OutputData;
-  });
 }
 
 /**
@@ -93,7 +84,7 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
  */
 export async function convertImages(settings: ScriptOptions): Promise<void> {
   // destructuring the settings
-  const { srcDir, distDir, compressionOptions } = settings;
+  const { srcDir, distDir, compressionOptions } = settings as ScriptOptions;
 
   // check if the srcDir is a directory
   if (!fs.existsSync(srcDir)) {
@@ -140,6 +131,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
       }
+      return;
     } else if (compressionOptions) {
       /**
        * If the compression is enabled for the image format
@@ -167,7 +159,13 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
       );
       logMessage(`📄 Copying ${filePaths.srcPath} file to ${destPath}`);
 
-      return copyFile(filePaths.srcPath, destPath);
+      await copyFile(filePaths.srcPath, destPath);
+
+      return new Promise(() => {
+        return {
+          copy: true,
+        } as OutputData;
+      });
     }
   }
 

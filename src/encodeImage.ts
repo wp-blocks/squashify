@@ -1,6 +1,6 @@
 import {
   CompressionMeta,
-  CompressionOptions,
+  CompressionOption,
   OutputData,
   ResizeType,
 } from "./types";

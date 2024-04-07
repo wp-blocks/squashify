@@ -6,7 +6,7 @@ import path from "path";
 import { type Compressor, inputFormats, type InputFormats } from "./constants";
 import {
   CompressImagePaths,
-  type CompressionOptions,
+  type CompressionOption,
   type CompressionOptionsMap,
   ExtMode,
 } from "./types";
@@ -31,7 +31,7 @@ import {
 export function getCompressionOptions(
   imageFormat: string,
   options: CompressionOptionsMap,
-): Partial<CompressionOptions> | undefined {
+): Partial<CompressionOption> | undefined {
   return options[imageFormat as keyof CompressionOptionsMap] ?? undefined;
 }
 

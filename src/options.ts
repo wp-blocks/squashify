@@ -10,7 +10,7 @@ import {
   defaultSrc,
   defaultDist,
 } from "./constants";
-import { type CompressionOptions } from "./types";
+import { type CompressionOption } from "./types";
 import { logMessage } from "./utils";
 
 /**
@@ -153,14 +153,14 @@ export const promptsToAsk = (format: InputFormats): PromptObject[] => {
 export async function getImageCompressionOptions(
   imageFormats: InputFormats[],
   verbose = false,
-): Promise<{ [key in InputFormats]: CompressionOptions }> {
-  const options = {} as { [key in InputFormats]: CompressionOptions };
+): Promise<{ [key in InputFormats]: CompressionOption }> {
+  const options = {} as { [key in InputFormats]: CompressionOption };
 
   for (const format of imageFormats) {
     logMessage("==".concat(format, "=="), verbose);
-    const response: CompressionOptions = (await prompts(
+    const response: CompressionOption = (await prompts(
       promptsToAsk(format),
-    )) as CompressionOptions;
+    )) as CompressionOption;
 
     if (!response.compressor) {
       logMessage(`Skipping ${format} files...`, verbose);

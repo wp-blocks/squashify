@@ -24,14 +24,14 @@ describe("getIniOptions", () => {
     expect(result).not.toBeNull();
 
     // check the srcDir and distDir
-    expect(result.srcDir).toEqual("src/image");
-    expect(result.distDir).toEqual("images");
+    expect(result.srcDir).toEqual("tests/images/test1");
+    expect(result.distDir).toEqual("tests/images/dist-1");
 
     expect(result.options).toMatchObject({
       overwrite: false,
-      extMode: "replace",
+      extMode: "add",
       maxSize: 50,
-      resizeMode: "contain",
+      resizeType: "contain",
     });
 
     // check the compression settings

@@ -19,7 +19,7 @@ export const resizeType = [
 export type ResizeType = (typeof resizeType)[number];
 
 export type CompressionOptionsMap = {
-  [key in InputFormats]: CompressionOptions;
+  [key in InputFormats]: CompressionOption;
 };
 
 export interface GenericCompressionOptions {
@@ -90,18 +90,11 @@ export type CompressImagePaths = {
   cwd: string;
 } & ParsedPath;
 
-/* These are types defining the settings for compressing different types of files. */
-export type CompressionOptions = {
+export type CompressionMeta = {
   compressor?: Compressor;
-  quality?: number;
-  progressive?: boolean;
-};
-
-export interface CompressionMeta extends SquashOptions {
-  compressor: Compressor;
   paths: CompressImagePaths;
   options?: SquashOptions;
-}
+} & CompressionOption;
 
 export type OutputData =
   | OutputInfo
