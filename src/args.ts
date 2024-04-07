@@ -64,8 +64,8 @@ export function getCliOptions(
     srcDir: argv.input ?? "",
     distDir: argv.output ?? "",
     configFile: argv.config ?? defaultConfigFile,
-    interactive: !!argv.interactive,
-    verbose: !!argv.verbose,
+    interactive: Boolean(argv.interactive),
+    verbose: Boolean(argv.verbose),
     options: extMode
       ? {
           extMode: (extMode as ExtMode) || "replace",

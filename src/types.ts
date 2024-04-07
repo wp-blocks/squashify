@@ -1,5 +1,5 @@
 import { type Compressor, type InputFormats } from "./constants";
-import { Config as SvgoConfig } from "svgo";
+import { Config as SvgoConfig, PluginConfig } from "svgo";
 import { ParsedPath } from "path";
 import { OutputInfo } from "sharp";
 
@@ -23,7 +23,7 @@ export type CompressionOptionsMap = {
 };
 
 export interface GenericCompressionOptions {
-  Compressor?: Compressor;
+  compressor?: Compressor;
 }
 
 export interface SVGCompressionOption extends SvgoConfig {}
@@ -37,11 +37,10 @@ export interface JpegCompressionOption extends GenericCompressionOptions {
   progressive?: boolean;
 }
 
-export type CompressionOption =
-  | JpegCompressionOption
-  | SVGCompressionOption
-  | GifCompressionOption
-  | GenericCompressionOptions;
+export type CompressionOption = JpegCompressionOption &
+  SVGCompressionOption &
+  GifCompressionOption &
+  GenericCompressionOptions;
 
 /**
  * The `SquashOptions` interface is defining the settings that can be passed with the `.squash` .ini file that defines the general Squashify script settings.

@@ -9,6 +9,7 @@ import {
   type CompressionOption,
   type CompressionOptionsMap,
   ExtMode,
+  GenericCompressionOptions,
 } from "./types";
 import {
   type Config as SvgoConfig,
@@ -252,7 +253,7 @@ export function defaultCompressionOptions(
       options[format] = {
         compressor: "avif",
         quality: 50,
-      };
+      } as GenericCompressionOptions;
     }
   });
   return options as CompressionOptionsMap;

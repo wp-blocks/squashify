@@ -9,6 +9,7 @@ import {
   getQuality,
   getSvgoPluginOptions,
 } from "./utils";
+import { string } from "yargs";
 
 /**
  * Clean up an option in the ini file
@@ -150,7 +151,7 @@ export function getIniOptions(
       .forEach((format) => {
         const currentIniOption = iniOptionsParsed.compressionOptions[
           format
-        ] as Record<string, string>;
+        ] as Record<string, unknown>;
 
         // if the format was specified in the ini file
         if (iniOptionsParsed.compressionOptions?.hasOwnProperty(format)) {
@@ -174,19 +175,24 @@ export function getIniOptions(
             iniOptionsParsed.compressionOptions.gif.compressor = "webp";
           }
 
+          // if the format is .svg and the plugins option is set
           if (
             format === "svg" &&
             "plugins" in iniOptionsParsed.compressionOptions.svg
           ) {
             iniOptionsParsed.compressionOptions.svg.plugins =
               getSvgoPluginOptions(
-                iniOptionsParsed.compressionOptions.svg.plugins
+                (
+                  iniOptionsParsed.compressionOptions.svg
+                    .plugins as unknown as string
+                )
                   .split(",")
                   .map((plugin: string) => plugin.trim())
                   .filter(Boolean),
               );
           }
 
+          // if the format is .jpg and the progressive option is set
           if (format === "jpg") {
             iniOptionsParsed.compressionOptions.jpg.progressive =
               getJpgCompressionOptions(Boolean(currentIniOption?.progressive));
