@@ -2,14 +2,22 @@
 in = src/image
 out = images
 
-[.jpg]
+[options]
+extMode = replace
+maxSize = 50
+resizeMode = contain
+
+[.jpg,.jpeg]
 compressor = mozjpeg
 quality = 85
 progressive = true
 
-[.png]
+[png]
 compressor = avif
 quality = 50
+
+[.gif]
+encodeAnimated = true
 
 [.svg]
 plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
