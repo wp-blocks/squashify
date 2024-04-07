@@ -1,6 +1,6 @@
 import { defaultConfigFile, extModes } from "./constants";
 import yargs from "yargs";
-import { ExtModes, type ScriptOptions } from "./types";
+import { CliOptions, ExtMode } from "./types";
 import { hideBin } from "yargs/helpers";
 
 /**
@@ -8,7 +8,7 @@ import { hideBin } from "yargs/helpers";
  */
 export function getCliOptions(
 	rawArgs: yargs.Argv<object> | undefined,
-): ScriptOptions {
+): CliOptions {
 	if (!rawArgs) {
 		rawArgs = yargs(hideBin(process.argv));
 	}
@@ -42,7 +42,9 @@ export function getCliOptions(
 			choices: ["add", "replace"],
 			default: "replace",
 			coerce: (value: string) =>
-				(extModes.includes(value) && (value as ExtModes)) || "replace",
+				(extModes.includes(value) && value in extModes) ||
+				undefined ||
+				"replace",
 		})
 		.option("verbose", {
 			alias: "v",
@@ -53,15 +55,21 @@ export function getCliOptions(
 		.alias("h", "help")
 		.parseSync();
 
+	const extMode =
+		typeof argv.extMode === "string" && argv?.extMode in extModes
+			? (argv.extMode as ExtMode)
+			: "replace";
+
 	return {
 		srcDir: argv.input ?? "",
 		distDir: argv.output ?? "",
 		configFile: argv.config ?? defaultConfigFile,
 		interactive: !!argv.interactive,
 		verbose: !!argv.verbose,
-		compressionOptions: {},
-		options: {
-			extMode: argv.extMode ?? "replace",
-		},
+		options: extMode
+			? {
+					extMode: extMode,
+				}
+			: undefined,
 	};
 }
