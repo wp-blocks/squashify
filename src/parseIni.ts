@@ -73,12 +73,12 @@ export function getIniOptions(
     );
 
     // parse the settings for all formats in the inputFormats array
-    const iniOptionsParsed: Partial<ScriptOptions> = {
+    const iniOptionsParsed: ScriptOptions = {
       srcDir: iniOptions.path.in ?? undefined,
       distDir: iniOptions.path.out ?? undefined,
       options: {
         extMode: iniOptions.options.extMode ?? undefined,
-        resizeMode: iniOptions.options.resizeMode ?? undefined,
+        resizeType: iniOptions.options.resizeType ?? undefined,
         overwrite: iniOptions.options.overwrite ?? undefined,
         maxSize: Number(iniOptions.options.maxSize) ?? undefined,
         outMargin: iniOptions.options.outMargin ?? undefined,

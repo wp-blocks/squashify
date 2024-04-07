@@ -63,13 +63,12 @@ export function getCliOptions(
   return {
     srcDir: argv.input ?? "",
     distDir: argv.output ?? "",
-    extMode: (extMode as ExtMode) || "replace",
     configFile: argv.config ?? defaultConfigFile,
     interactive: !!argv.interactive,
     verbose: !!argv.verbose,
     options: extMode
       ? {
-          extMode: extMode,
+          extMode: (extMode as ExtMode) || "replace",
         }
       : undefined,
   };

@@ -1,10 +1,4 @@
-import {
-  CliOptions,
-  ExtMode,
-  IniOptions,
-  ResizeType,
-  ScriptOptions,
-} from "./types";
+import { CliOptions, ScriptOptions } from "./types";
 import { logMessage } from "./utils";
 
 export function parseOptions(
