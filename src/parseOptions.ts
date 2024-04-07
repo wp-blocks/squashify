@@ -9,30 +9,26 @@ import { logMessage } from "./utils";
 
 export function parseOptions(
   settings: CliOptions,
-  iniOptions: IniOptions | null = null,
+  iniOptions: ScriptOptions | null = null,
 ): ScriptOptions {
   const newSettings: Partial<ScriptOptions> = {};
 
   // the source and destination directories
-  newSettings.srcDir = settings.srcDir || String(iniOptions?.in) || "";
-  newSettings.distDir = settings.distDir || String(iniOptions?.out) || "";
+  newSettings.srcDir = settings.srcDir || String(iniOptions?.srcDir) || "";
+  newSettings.distDir = settings.distDir || String(iniOptions?.distDir) || "";
   newSettings.verbose = settings.verbose || false;
   newSettings.interactive = settings.interactive || false;
 
-  newSettings.options = iniOptions
-    ? {
-        // the ext format settings
-        extMode: (iniOptions.options?.extMode as ExtMode) ?? "replace",
-        // the resize settings
-        resizeType: (iniOptions.options?.resizeType as ResizeType) ?? "none",
-        // the maximum image size in pixels
-        maxSize: Number(iniOptions.options?.maxSize) ?? undefined,
-      }
-    : undefined;
+  newSettings.options = iniOptions?.options || {};
+
+  // if the user has specified an extMode, use it
+  if (settings.extMode) {
+    newSettings.options.extMode = settings.extMode;
+  }
 
   // parse known settings about formats
   newSettings.compressionOptions = iniOptions
-    ? { ...iniOptions.compressionOptions }
+    ? iniOptions.compressionOptions
     : undefined;
 
   logMessage(
