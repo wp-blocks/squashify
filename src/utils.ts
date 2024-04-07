@@ -8,7 +8,7 @@ import {
 	CompressImagePaths,
 	type CompressionOptions,
 	type CompressionOptionsMap,
-	ExtModes,
+	ExtMode,
 } from "./types";
 import {
 	type Config as SvgoConfig,
@@ -258,7 +258,7 @@ export function defaultCompressionOptions(
  * @param compressor - the compressor
  */
 export function getFileName(
-	extMode: ExtModes = "replace",
+	extMode: ExtMode = "replace",
 	paths: CompressImagePaths,
 	compressor: Compressor,
 ) {
