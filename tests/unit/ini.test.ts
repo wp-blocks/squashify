@@ -5,78 +5,89 @@ import { parseOptions } from "../../src/parseOptions";
 import { ScriptOptions } from "../../src/types";
 
 describe("getIniOptions", () => {
-	it("should return the input settings when no configuration file is found", () => {
-		const options = {
-			configFile: "invalid_path",
-			srcDir: "src",
-			distDir: "dist",
-			compressionOptions: null,
-		};
+  it("should return the input settings when no configuration file is found", () => {
+    const options = {
+      configFile: "invalid_path",
+      srcDir: "src",
+      distDir: "dist",
+      compressionOptions: null,
+    };
 
-		const result = getIniOptions("fakepath", options);
+    const result = getIniOptions("fakepath", options);
 
-		expect(result).toEqual(options);
-	});
+    expect(result).toEqual(options);
+  });
 
-	it("should load the configuration file and update the settings", () => {
-		const options = {
-			configFile: "./tests/data/.squash",
-			srcDir: "old",
-			distDir: "new",
-			compressionOptions: null,
-		};
+  it("should load the configuration file and update the settings", () => {
+    let result = getIniOptions("./tests/data/.squash");
 
-		let result = getIniOptions(options.configFile);
+    expect(result).not.toBeNull();
 
-		// parse the settings for all formats in the inputFormats array
+    // check the srcDir and distDir
+    expect(result.srcDir).toEqual("src/image");
+    expect(result.distDir).toEqual("images");
 
-		const parsedOptions = parseOptions(options as any, result);
+    expect(result.options).toMatchObject({
+      overwrite: false,
+      extMode: "replace",
+      maxSize: 50,
+      resizeMode: "contain",
+    });
 
-		// check the srcDir and distDir
-		expect(parsedOptions.srcDir).toEqual("old");
-		expect(parsedOptions.distDir).toEqual("new");
-		/*
-		// check the compression settings
-		expect(parsedOptions.compressionOptions).toMatchObject({
-			".jpg": {
-				compressor: "mozjpeg",
-				quality: 80,
-				progressive: true,
-			},
-			".jpeg": {
-				compressor: "mozjpeg",
-				quality: 80,
-				progressive: true,
-			},
-			".png": {
-				compressor: "webp",
-				quality: 80,
-			},
-			".webp": {
-				compressor: "webp",
-				quality: 80,
-			},
-			".avif": {
-				compressor: "webp",
-				quality: 80,
-			},
-			".tiff": {
-				compressor: "webp",
-				quality: 80,
-			},
-			".gif": {
-				compressor: "webp",
-				quality: 80,
-			},
-			".svg": {
-				compressor: "svgo",
-				plugins: ["preset-default"],
-			},
-		});
-
-		// Check that settings for all input formats have been parsed
-		inputFormats.forEach((format) => {
-			expect(parsedOptions.compressionOptions[format]).toBeDefined();
-		});*/
-	});
+    // check the compression settings
+    expect(result.compressionOptions).toMatchObject({
+      jpg: {
+        compressor: "mozjpeg",
+        quality: 85,
+        progressive: true,
+      },
+      png: {
+        compressor: "avif",
+        quality: 50,
+      },
+      gif: {
+        compressor: "webp",
+        encodeAnimated: true,
+      },
+      tiff: {
+        compressor: "mozjpeg",
+        quality: 85,
+      },
+      svg: {
+        compressor: "svgo",
+        plugins: [
+          "cleanupAttrs",
+          "removeDoctype",
+          "removeXMLProcInst",
+          "removeComments",
+          "RemoveMetadata",
+          "RemoveXMLNS",
+          "RemoveEditorsNSData",
+          "RemoveTitle",
+          "RemoveDesc",
+          "RemoveUselessDefs",
+          "RemoveEmptyAttrs",
+          "RemoveHiddenElems",
+          "RemoveEmptyContainers",
+          "RemoveEmptyText",
+          "RemoveUnusedNS",
+          "ConvertShapeToPath",
+          "SortAttrs",
+          "MergePaths",
+          "SortDefsChildren",
+          "RemoveDimensions",
+          "RemoveStyleElement",
+          "RemoveScriptElement",
+          "InlineStyles",
+          "removeViewBox",
+          "removeElementsByAttr",
+          "cleanupIDs",
+          "convertColors",
+          "removeRasterImages",
+          "removeUselessStrokeAndFill",
+          "removeNonInheritableGroupAttrs",
+        ],
+      },
+    });
+  });
 });

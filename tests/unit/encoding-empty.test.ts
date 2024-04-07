@@ -10,10 +10,14 @@ const options = getIniOptions("./tests/data/.squash", {
 });
 
 describe("convertImages", () => {
+	afterAll(() => {
+		fs.rmdirSync(options.distDir as string, { recursive: true });
+	});
+
 	it("should handle non-image files correctly", async () => {
 		await convertImages(options as any);
 
 		// check if the non-image file was copied to destination directory
-		/*expect(fs.existsSync(`${options.distDir}/a.txt`)).toBe(true);*/
+		expect(fs.existsSync(`${options.distDir}/a.txt`)).toBe(true);
 	});
 });
