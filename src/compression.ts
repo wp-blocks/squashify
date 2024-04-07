@@ -2,7 +2,12 @@
 import fs from "fs";
 import path, { ParsedPath } from "path";
 
-import { asInputFormats, getCompressionOptions, getFileName } from "./utils";
+import {
+  asInputFormats,
+  getCompressionOptions,
+  getFileName,
+  logMessage,
+} from "./utils";
 import {
   CompressImagePaths,
   CompressionMeta,
@@ -14,8 +19,8 @@ import { copyFile } from "node:fs/promises";
 import { Glob } from "glob";
 import { encodeImage } from "./encodeImage";
 import { encodeSvg } from "./encodeSvg";
-import { OutputInfo } from "sharp";
 import { lstatSync } from "node:fs";
+import { encodeAnimation } from "./encodeAnimation";
 
 function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
   /** destructuring the settings */
@@ -23,13 +28,24 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
   /**
    * If the compression is enabled for the image format and the extension is an image file
    */
-  if (compressor && asInputFormats(paths.ext)) {
-    if (paths.ext === ".svg" && compressor === "svgo") {
+  if (compressor && options && asInputFormats(paths.ext)) {
+    if (paths.ext === ".gif" && options.encodeAnimated) {
+      /**
+       * GIF optimization
+       */
+      const filePath = path.join(paths.distPath, paths.base);
+      logMessage("🎬️ Processing " + filePath);
+      return encodeAnimation(
+        paths.srcPath,
+        filePath,
+        encodeSetup as CompressionMeta,
+      );
+    } else if (paths.ext === ".svg" && compressor === "svgo") {
       /**
        * SVG optimization
        */
       const filePath = path.join(paths.distPath, paths.base);
-      console.log("📐 Processing", filePath);
+      logMessage("📐 Processing " + filePath);
       return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
     } else {
       /**
@@ -41,7 +57,7 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
         compressor,
       );
 
-      console.log("🖼️ Processing", outputFile);
+      logMessage("🖼️ Processing " + outputFile);
 
       /**
        * The rest of the image formats
@@ -119,7 +135,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
     // if is a directory creating the copy of the directory if the src is different from the dist
     if (srcLstat?.isDirectory()) {
       const dirPath = path.join(process.cwd(), distDir, res);
-      console.log("📁 New Folder created " + dirPath);
+      logMessage("📁 New Folder created " + dirPath);
       // check if the directory exists
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
@@ -145,11 +161,11 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
        * Otherwise the compression is not enabled, or the file is not an image,
        * so we copy it to the destination directory
        */
-      console.log(
+      logMessage(
         "This is not an image file or the compression is not enabled for " +
           filePaths.ext,
       );
-      console.log(`📄 Copying ${filePaths.srcPath} file to ${destPath}`);
+      logMessage(`📄 Copying ${filePaths.srcPath} file to ${destPath}`);
 
       return copyFile(filePaths.srcPath, destPath);
     }
@@ -160,13 +176,13 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
     if (res) {
       res.forEach((result) => {
         if (result.status !== "fulfilled") {
-          console.log("🔴 " + result.reason);
+          logMessage("🔴 " + result.reason);
         } else {
           // Print the result to the console
           if (Array.isArray(result.value) && result.value.length) {
             result.value?.map((x: OutputData) => {
               if (x && "size" in x) console.log("✅ " + x.size);
-              else console.log("✅ svg optimized to ");
+              else logMessage("✅ svg optimized to ");
             });
           }
         }
