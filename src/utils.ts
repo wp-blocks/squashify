@@ -74,7 +74,11 @@ export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
         searchForImages(filePath);
       } else {
         // Get the extension of the file
-        const ext = path.extname(file).toLowerCase(); // get the file extension in lowercase
+        let ext = path.extname(file).toLowerCase(); // get the file extension in lowercase
+
+        if (ext.startsWith(".")) {
+          ext = ext.substring(1); // remove the dot from the extension
+        }
 
         // Check if the file is an image
         if (asInputFormats(ext)) {

@@ -28,6 +28,10 @@ export interface GenericCompressionOptions {
 
 export interface SVGCompressionOption extends SvgoConfig {}
 
+export interface GifCompressionOption extends GenericCompressionOptions {
+  encodeAnimated?: boolean;
+}
+
 export interface JpegCompressionOption extends GenericCompressionOptions {
   quality?: number;
   progressive?: boolean;
@@ -36,6 +40,7 @@ export interface JpegCompressionOption extends GenericCompressionOptions {
 export type CompressionOption =
   | JpegCompressionOption
   | SVGCompressionOption
+  | GifCompressionOption
   | GenericCompressionOptions;
 
 /**
@@ -55,7 +60,6 @@ export interface CliOptions {
   distDir: string;
   verbose?: boolean;
   configFile?: string;
-  extMode?: ExtMode;
   interactive?: boolean;
   options?: SquashOptions;
 }
@@ -93,11 +97,10 @@ export type CompressionOptions = {
   progressive?: boolean;
 };
 
-export interface CompressionMeta extends CompressionOptions {
+export interface CompressionMeta extends SquashOptions {
+  compressor: Compressor;
   paths: CompressImagePaths;
   options?: SquashOptions;
-  background?: string;
-  outMargin?: number;
 }
 
 export type OutputData =
