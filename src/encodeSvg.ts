@@ -2,12 +2,15 @@ import { Config as SvgoConfig, optimize } from "svgo";
 import { readFile, writeFile } from "node:fs/promises";
 import { getSvgoOptions } from "./utils";
 import {
-	CompressImagePaths,
-	CompressionMeta,
-	CompressionOption,
-	CompressionOptions,
+  CompressImagePaths,
+  CompressionMeta,
+  CompressionOption,
+  CompressionOptions,
+  OutputData,
+  SVGCompressionOption,
 } from "./types";
 import path from "path";
+import sharp, { Metadata, OutputInfo, Stats } from "sharp";
 
 /**
  * The function optimizes an SVG file asynchronously using SVGO and writes the optimized SVG to a
@@ -21,15 +24,15 @@ import path from "path";
  *                    their values will depend on the desired optimization settings.
  */
 export function optimizeSvg(svg: string, svgoOptions: SvgoConfig) {
-	// Optimize the SVG with SVGO
-	const optimizedSvg = optimize(svg, svgoOptions);
+  // Optimize the SVG with SVGO
+  const optimizedSvg = optimize(svg, svgoOptions);
 
-	if (!optimizedSvg.data) {
-		throw new Error("Failed to optimize SVG");
-	}
+  if (!optimizedSvg.data) {
+    throw new Error("Failed to optimize SVG");
+  }
 
-	// Resolve the Promise with the optimized SVG
-	return optimizedSvg.data;
+  // Resolve the Promise with the optimized SVG
+  return optimizedSvg.data;
 }
 
 /**
@@ -41,18 +44,24 @@ export function optimizeSvg(svg: string, svgoOptions: SvgoConfig) {
  * @return {Promise<Metadata>} A promise that resolves with the metadata of the optimized image.
  */
 export async function encodeSvg(
-	srcFilename: string,
-	distFileName: string,
-	options: CompressionOption,
-): Promise<void> {
-	// Read the SVG file from the file system
-	const originalSvg = await readFile(srcFilename, "utf8");
+  srcFilename: string,
+  distFileName: string,
+  options: SVGCompressionOption,
+): Promise<OutputData> {
+  // Read the SVG file from the file system
+  const originalSvg = await readFile(srcFilename, "utf8");
 
-	/**
-	 * Read the SVG file from the file system and optimize it using SVGO
-	 */
-	const result = optimizeSvg(originalSvg, getSvgoOptions(options?.plugins));
+  /**
+   * Read the SVG file from the file system and optimize it using SVGO
+   */
+  const result = optimizeSvg(originalSvg, getSvgoOptions(options.plugins));
 
-	// Write the optimized SVG to the destination directory
-	return writeFile(distFileName, result, "utf8");
+  // Write the optimized SVG to the destination directory
+  return writeFile(distFileName, result, "utf8").then(() => {
+    // Return the metadata of the optimized image
+    return {
+      originalSize: originalSvg.length,
+      size: result.length,
+    };
+  });
 }

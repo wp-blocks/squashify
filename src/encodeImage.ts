@@ -1,72 +1,76 @@
-import { CompressionMeta } from "./types";
-import sharp, { OutputInfo } from "sharp";
+import {
+  CompressionMeta,
+  CompressionOptions,
+  OutputData,
+  ResizeType,
+} from "./types";
+import sharp, { FitEnum } from "sharp";
 import { transparentColor } from "./constants";
 
 export function encodeImage(
-	src: string,
-	dist: string,
-	compressOpt: CompressionMeta,
-): Promise<OutputInfo> {
-	/** @var {any} image Load the image with sharp */
-	let image = sharp(src);
+  src: string,
+  dist: string,
+  compressOpt: CompressionMeta,
+): Promise<OutputData> {
+  /** @var {any} image Load the image with sharp */
+  let image = sharp(src);
 
-	/**
-	 * The rest of the image formats
-	 * Will apply compression settings if specified in the settings
-	 */
-	if (compressOpt.compressor) {
-		switch (compressOpt.compressor) {
-			case "avif":
-				image = image.avif({
-					quality: compressOpt.quality,
-				});
-				break;
-			case "webp":
-				image = image.webp({
-					quality: compressOpt.quality,
-				});
-				break;
-			case "png":
-				image = image.png();
-				break;
-			case "mozjpeg":
-				image = image.jpeg({
-					mozjpeg: true,
-					quality: compressOpt.quality,
-				});
-				break;
-			case "jpg":
-				image = image.jpeg({
-					quality: compressOpt.quality,
-					progressive: compressOpt.progressive,
-				});
-				break;
-		}
-	}
+  const options = compressOpt.options;
 
-	// Save the image to the destination directory
-	if (
-		compressOpt.options?.maxSize &&
-		compressOpt.options?.resizeType !== "none"
-	) {
-		image = image.resize({
-			width: compressOpt.options?.maxSize,
-			height: compressOpt.options?.maxSize,
-			fit: compressOpt.options?.resizeType,
-			background: compressOpt.options?.background ?? transparentColor,
-		});
+  /**
+   * The rest of the image formats
+   * Will apply compression settings if specified in the settings
+   */
+  if (compressOpt.compressor) {
+    switch (compressOpt.compressor) {
+      case "avif":
+        image = image.avif({
+          quality: compressOpt.quality,
+        });
+        break;
+      case "webp":
+        image = image.webp({
+          quality: compressOpt.quality,
+        });
+        break;
+      case "png":
+        image = image.png();
+        break;
+      case "mozjpeg":
+        image = image.jpeg({
+          mozjpeg: true,
+          quality: compressOpt.quality,
+        });
+        break;
+      case "jpg":
+        image = image.jpeg({
+          quality: compressOpt.quality,
+          progressive: compressOpt.progressive,
+        });
+        break;
+    }
+  }
 
-		if (compressOpt.options?.outMargin) {
-			image.extend({
-				top: compressOpt.options?.outMargin,
-				bottom: compressOpt.options?.outMargin,
-				left: compressOpt.options?.outMargin,
-				right: compressOpt.options?.outMargin,
-				background: compressOpt.options?.background ?? transparentColor,
-			});
-		}
-	}
+  // Save the image to the destination directory
+  if (options?.maxSize && options?.resizeType !== "none") {
+    image = image.resize({
+      width: options?.maxSize,
+      height: options?.maxSize,
+      fit: options?.resizeType as keyof FitEnum,
+      background: options?.background ?? transparentColor,
+    });
 
-	// Save the image to the destination directory
-	return image.toFile(dist);
+    if (options?.outMargin) {
+      image.extend({
+        top: options?.outMargin,
+        bottom: options?.outMargin,
+        left: options?.outMargin,
+        right: options?.outMargin,
+        background: options?.background ?? transparentColor,
+      });
+    }
+  }
+
+  // Save the image to the destination directory
+  return image.toFile(dist);
 }
