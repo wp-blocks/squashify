@@ -1,6 +1,6 @@
 import fs from "fs";
 import ini from "ini";
-import { CompressionOptions, type IniOptions } from "./types";
+import { CompressionOptions, type IniOptions, ScriptOptions } from "./types";
 import path from "path";
 import { Compressor, InputFormats, inputFormats } from "./constants";
 import {
@@ -63,7 +63,7 @@ function processSingleOption(
 export function getIniOptions(
   configFile: string | undefined = ".squash",
   override?: IniOptions,
-): IniOptions | null {
+): ScriptOptions | null {
   // Get the compression settings in the configuration file
   if (override) return override as IniOptions;
   // Get the compression settings in the configuration file
@@ -73,56 +73,128 @@ export function getIniOptions(
     );
 
     // parse the settings for all formats in the inputFormats array
-    const iniOptionsParsed: Record<string, CompressionOptions> = {};
+    const iniOptionsParsed: Partial<ScriptOptions> = {
+      srcDir: iniOptions.path.in ?? undefined,
+      distDir: iniOptions.path.out ?? undefined,
+      options: {
+        extMode: iniOptions.options.extMode ?? undefined,
+        resizeMode: iniOptions.options.resizeMode ?? undefined,
+        overwrite: iniOptions.options.overwrite ?? undefined,
+        maxSize: Number(iniOptions.options.maxSize) ?? undefined,
+        outMargin: iniOptions.options.outMargin ?? undefined,
+        background: iniOptions.options.background ?? undefined,
+      },
+      compressionOptions: {},
+    };
 
-    function addOption(opt, ini) {
-      const resp = processSingleOption(opt, ini[opt]);
+    /**
+     * Add an option to the iniOptionsParsed object
+     * @param opt
+     * @param dataset
+     */
+    function addOption(opt: string, dataset: CompressionOptions) {
+      const resp = processSingleOption(opt, dataset);
       if (resp) {
         const [format, options] = resp as [InputFormats, CompressionOptions];
-        iniOptionsParsed[format] = options;
+        iniOptionsParsed.compressionOptions[format] = options;
       }
     }
 
-    // the args with the comma for example ["jpg,webp"]
-    for (const opt in iniOptions) {
-      if (opt === "") {
-        iniOptions[opt].forEach((o) => addOption(o, iniOptionsParsed));
+    function addRecursiveOptions(
+      opt: string,
+      iniOptions: Record<string, CompressionOptions> | CompressionOptions,
+    ) {
+      if (opt.endsWith(",")) {
+        const opts = [];
+        while (opt.endsWith(",")) {
+          opts.push(opt.slice(0, -1));
+          opt = Object.keys(iniOptions)[0];
+          iniOptions = iniOptions[
+            opt as keyof CompressionOptions
+          ] as CompressionOptions;
+        }
+        const resp = processSingleOption(opt, iniOptions as CompressionOptions);
+        if (typeof resp === "object") {
+          const [format, options] = resp as [InputFormats, CompressionOptions];
+          opts.push(format);
+          opts.forEach((o) => addOption(o, options));
+        }
+      } else if (opt === "") {
+        for (const o in iniOptions[opt as keyof CompressionOptions] as Record<
+          string,
+          CompressionOptions
+        >) {
+          addRecursiveOptions(
+            o,
+            iniOptions[opt as keyof CompressionOptions] as Record<
+              string,
+              CompressionOptions
+            >,
+          );
+        }
       } else {
-        addOption(opt, iniOptionsParsed);
+        addOption(
+          opt,
+          iniOptions[opt as keyof CompressionOptions] as CompressionOptions,
+        );
       }
     }
 
-    // parse the settings for all formats in the inputFormats array
+    for (const opt in iniOptions) {
+      addRecursiveOptions(opt, iniOptions);
+    }
+
+    // fill the missing formats with default values and clean up the options
     inputFormats
       // then parse the settings for each format
       .forEach((format) => {
-        const currentIniOption = iniOptions[format] as Record<string, string>;
+        const currentIniOption = iniOptionsParsed.compressionOptions[
+          format
+        ] as Record<string, string>;
 
-        iniOptions[format] = {
-          compressor: getDefaultCompressor(
-            currentIniOption?.compressor,
+        // if the format was specified in the ini file
+        if (iniOptionsParsed.compressionOptions?.hasOwnProperty(format)) {
+          // Set the default compressor type
+          iniOptionsParsed.compressionOptions[format].compressor =
+            getDefaultCompressor(
+              iniOptionsParsed.compressionOptions[format]?.compressor,
+              format,
+            ) as Compressor;
+
+          iniOptionsParsed.compressionOptions[format].quality = getQuality(
+            Number(iniOptionsParsed.compressionOptions[format].quality),
             format,
-          ) as Compressor,
-          quality: getQuality(
-            Number(currentIniOption?.quality),
-            format,
-          ) as number,
-        };
+          ) as number;
 
-        if (format === "svg" && iniOptions.svg.plugins) {
-          iniOptions["svg"].plugins = getSvgoPluginOptions(
-            currentIniOption?.plugins.split(",").map((plugin) => plugin.trim()),
-          );
-        }
+          // if the format is .gif and the encodeAnimated option is set to true force the compressor to webp mode
+          if (
+            format === "gif" &&
+            "encodeAnimated" in iniOptionsParsed.compressionOptions.gif
+          ) {
+            iniOptionsParsed.compressionOptions.gif.compressor = "webp";
+          }
 
-        if (format === "jpg") {
-          iniOptions["jpg"].progressive = getJpgCompressionOptions(
-            Boolean(currentIniOption?.progressive),
-          );
+          if (
+            format === "svg" &&
+            "plugins" in iniOptionsParsed.compressionOptions.svg
+          ) {
+            iniOptionsParsed.compressionOptions.svg.plugins =
+              getSvgoPluginOptions(
+                iniOptionsParsed.compressionOptions.svg.plugins
+                  .split(",")
+                  .map((plugin: string) => plugin.trim())
+                  .filter(Boolean),
+              );
+          }
+
+          if (format === "jpg") {
+            iniOptionsParsed.compressionOptions.jpg.progressive =
+              getJpgCompressionOptions(Boolean(currentIniOption?.progressive));
+          }
         }
       });
 
-    return iniOptions as IniOptions;
+    return iniOptionsParsed as ScriptOptions;
   }
   return null;
 }
