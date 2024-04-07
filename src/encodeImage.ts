@@ -1,9 +1,4 @@
-import {
-  CompressionMeta,
-  CompressionOption,
-  OutputData,
-  ResizeType,
-} from "./types";
+import { CompressionMeta, OutputData } from "./types";
 import sharp, { FitEnum } from "sharp";
 import { transparentColor } from "./constants";
 
@@ -15,7 +10,7 @@ export function encodeImage(
   /** @var {any} image Load the image with sharp */
   let image = sharp(src);
 
-  const options = compressOpt.options;
+  const options = compressOpt;
 
   /**
    * The rest of the image formats
@@ -26,21 +21,21 @@ export function encodeImage(
       case "avif":
         image = image.avif({
           quality: compressOpt.quality,
-        });
+        } as sharp.AvifOptions);
         break;
       case "webp":
         image = image.webp({
           quality: compressOpt.quality,
-        });
+        } as sharp.WebpOptions);
         break;
       case "png":
-        image = image.png();
+        image = image.png({} as sharp.PngOptions);
         break;
       case "mozjpeg":
         image = image.jpeg({
           mozjpeg: true,
           quality: compressOpt.quality,
-        });
+        } as sharp.JpegOptions);
         break;
       case "jpg":
         image = image.jpeg({
@@ -52,21 +47,21 @@ export function encodeImage(
   }
 
   // Save the image to the destination directory
-  if (options?.maxSize && options?.resizeType !== "none") {
+  if (options.options?.maxSize && options?.options?.resizeType !== "none") {
     image = image.resize({
-      width: options?.maxSize,
-      height: options?.maxSize,
-      fit: options?.resizeType as keyof FitEnum,
-      background: options?.background ?? transparentColor,
+      width: options.options?.maxSize,
+      height: options.options?.maxSize,
+      fit: options.options?.resizeType as keyof FitEnum,
+      background: options.options?.background ?? transparentColor,
     });
 
-    if (options?.outMargin) {
+    if (options.options?.outMargin) {
       image.extend({
-        top: options?.outMargin,
-        bottom: options?.outMargin,
-        left: options?.outMargin,
-        right: options?.outMargin,
-        background: options?.background ?? transparentColor,
+        top: options.options?.outMargin,
+        bottom: options.options?.outMargin,
+        left: options.options?.outMargin,
+        right: options.options?.outMargin,
+        background: options.options?.background ?? transparentColor,
       });
     }
   }
