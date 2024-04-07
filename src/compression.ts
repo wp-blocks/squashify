@@ -28,42 +28,40 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
   /**
    * If the compression is enabled for the image format and the extension is an image file
    */
-  if (compressor && options && asInputFormats(paths.ext)) {
-    if (paths.ext === ".gif" && "encodeAnimated" in encodeSetup) {
-      /**
-       * GIF optimization
-       */
-      const filePath = path.join(paths.distPath, paths.base);
-      logMessage("🎬️ Processing " + filePath);
-      return encodeAnimation(paths.srcPath, filePath);
-    } else if (paths.ext === ".svg" && compressor === "svgo") {
-      /**
-       * SVG optimization
-       */
-      const filePath = path.join(paths.distPath, paths.base);
-      logMessage("📐 Processing " + filePath);
-      return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
-    } else {
-      /**
-       * Images compression
-       */
-      const outputFile = getFileName(
-        options?.extMode,
-        paths as CompressImagePaths,
-        compressor,
-      );
+  if (paths.ext === ".gif" && "encodeAnimated" in encodeSetup) {
+    /**
+     * GIF optimization
+     */
+    const filePath = path.join(paths.distPath, paths.base);
+    logMessage("🎬️ Processing " + filePath);
+    return encodeAnimation(paths.srcPath, filePath);
+  } else if (paths.ext === ".svg" && compressor === "svgo") {
+    /**
+     * SVG optimization
+     */
+    const filePath = path.join(paths.distPath, paths.base);
+    logMessage("📐 Processing " + filePath);
+    return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
+  } else {
+    /**
+     * Images compression
+     */
+    const outputFile = getFileName(
+      options?.extMode,
+      paths as CompressImagePaths,
+      compressor,
+    );
 
-      logMessage("🖼️ Processing " + outputFile);
+    logMessage("🖼️ Processing " + outputFile);
 
-      /**
-       * The rest of the image formats
-       */
-      return encodeImage(
-        paths.srcPath,
-        path.join(paths.distPath, outputFile),
-        encodeSetup,
-      );
-    }
+    /**
+     * The rest of the image formats
+     */
+    return encodeImage(
+      paths.srcPath,
+      path.join(paths.distPath, outputFile),
+      encodeSetup,
+    );
   }
 }
 
@@ -131,8 +129,18 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
       }
-      return;
-    } else if (compressionOptions) {
+      promises.push(
+        /* return the promise to copy the directory */
+        new Promise(() => {
+          return {
+            copy: true,
+          } as OutputData;
+        }),
+      );
+      continue;
+    }
+
+    if (compressionOptions) {
       /**
        * If the compression is enabled for the image format
        */
@@ -143,30 +151,43 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
         options: settings.options,
       };
 
-      promises.push(
-        /* return the promise to copy/encode the file */
-        copyFileAsync(encodeSetup),
-      );
-    } else {
-      const destPath = path.join(filePaths.distPath, filePaths.base);
-      /**
-       * Otherwise the compression is not enabled, or the file is not an image,
-       * so we copy it to the destination directory
-       */
-      logMessage(
-        "This is not an image file or the compression is not enabled for " +
-          filePaths.ext,
-      );
-      logMessage(`📄 Copying ${filePaths.srcPath} file to ${destPath}`);
+      if (
+        encodeSetup.compressor &&
+        encodeSetup.options &&
+        asInputFormats(paths.ext)
+      ) {
+        promises.push(
+          /* return the promise to copy/encode the file */
+          copyFileAsync(encodeSetup),
+        );
+        continue;
+      }
+    }
 
-      await copyFile(filePaths.srcPath, destPath);
+    const destPath = path.join(filePaths.distPath, filePaths.base);
+    /**
+     * Otherwise the compression is not enabled, or the file is not an image,
+     * so we copy it to the destination directory
+     */
+    logMessage(
+      "This is not an image file or the compression is not enabled for " +
+        filePaths.ext,
+      settings.verbose,
+    );
+    logMessage(
+      `📄 Copying ${filePaths.srcPath} file to ${destPath}`,
+      settings.verbose,
+    );
 
-      return new Promise(() => {
+    /** Copy the file */
+    promises.push(
+      /* return the promise to copy the file */
+      copyFile(filePaths.srcPath, destPath).then(() => {
         return {
           copy: true,
-        } as OutputData;
-      });
-    }
+        };
+      }),
+    );
   }
 
   // Wait for all promises to resolve before returning
