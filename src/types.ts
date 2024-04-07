@@ -44,6 +44,7 @@ export type CompressionOption =
 export type SquashOptions = {
   extMode?: ExtMode;
   resizeType?: ResizeType;
+  overwrite?: boolean;
   maxSize?: number;
   outMargin?: number;
   background?: string;
@@ -54,6 +55,7 @@ export interface CliOptions {
   distDir: string;
   verbose?: boolean;
   configFile?: string;
+  extMode?: ExtMode;
   interactive?: boolean;
   options?: SquashOptions;
 }

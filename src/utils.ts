@@ -5,14 +5,14 @@ import path from "path";
 
 import { type Compressor, inputFormats, type InputFormats } from "./constants";
 import {
-	CompressImagePaths,
-	type CompressionOptions,
-	type CompressionOptionsMap,
-	ExtMode,
+  CompressImagePaths,
+  type CompressionOptions,
+  type CompressionOptionsMap,
+  ExtMode,
 } from "./types";
 import {
-	type Config as SvgoConfig,
-	type PluginConfig as SvgoPluginConfig,
+  type Config as SvgoConfig,
+  type PluginConfig as SvgoPluginConfig,
 } from "svgo";
 
 /**
@@ -29,10 +29,10 @@ import {
  * format.
  */
 export function getCompressionOptions(
-	imageFormat: string,
-	options: CompressionOptionsMap,
+  imageFormat: string,
+  options: CompressionOptionsMap,
 ): Partial<CompressionOptions> | undefined {
-	return options[imageFormat as keyof CompressionOptionsMap] ?? undefined;
+  return options[imageFormat as keyof CompressionOptionsMap] ?? undefined;
 }
 
 /**
@@ -41,7 +41,7 @@ export function getCompressionOptions(
  * @param ext the image format to check
  */
 export function asInputFormats(ext: unknown): ext is InputFormats {
-	return inputFormats.includes(ext as InputFormats);
+  return inputFormats.includes(ext as InputFormats);
 }
 
 /**
@@ -51,43 +51,43 @@ export function asInputFormats(ext: unknown): ext is InputFormats {
  * @returns An array of image formats
  */
 export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
-	const imageFormats = new Set<InputFormats>(); // using a Set to store unique image formats
+  const imageFormats = new Set<InputFormats>(); // using a Set to store unique image formats
 
-	/**
-	 * This function searches for all image files in a given folder
-	 *
-	 * @param {string} dir The folder to search for images in.
-	 */
-	function searchForImages(dir: string) {
-		const files = fs.readdirSync(dir);
+  /**
+   * This function searches for all image files in a given folder
+   *
+   * @param {string} dir The folder to search for images in.
+   */
+  function searchForImages(dir: string) {
+    const files = fs.readdirSync(dir);
 
-		// iterate over each file
-		files.forEach((file) => {
-			const filePath = path.join(dir, file);
+    // iterate over each file
+    files.forEach((file) => {
+      const filePath = path.join(dir, file);
 
-			// Get the stats of the file
-			const stats = fs.statSync(filePath);
+      // Get the stats of the file
+      const stats = fs.statSync(filePath);
 
-			// Check if the file is a directory
-			if (stats.isDirectory()) {
-				// Recursively call this function on the subdirectory
-				searchForImages(filePath);
-			} else {
-				// Get the extension of the file
-				const ext = path.extname(file).toLowerCase(); // get the file extension in lowercase
+      // Check if the file is a directory
+      if (stats.isDirectory()) {
+        // Recursively call this function on the subdirectory
+        searchForImages(filePath);
+      } else {
+        // Get the extension of the file
+        const ext = path.extname(file).toLowerCase(); // get the file extension in lowercase
 
-				// Check if the file is an image
-				if (asInputFormats(ext)) {
-					// check if it's an image file
-					imageFormats.add(ext); // add the image format to the Set
-				}
-			}
-		});
-	}
-	// Call this function on the source directory
-	searchForImages(folderPath);
+        // Check if the file is an image
+        if (asInputFormats(ext)) {
+          // check if it's an image file
+          imageFormats.add(ext); // add the image format to the Set
+        }
+      }
+    });
+  }
+  // Call this function on the source directory
+  searchForImages(folderPath);
 
-	return [...imageFormats]; // convert the Set to an array
+  return [...imageFormats]; // convert the Set to an array
 }
 
 /**
@@ -97,7 +97,7 @@ export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
  * @param verbose Whether or not to log the message
  */
 export function logMessage(message: string, verbose = false) {
-	if (verbose) console.log(message);
+  if (verbose) console.log(message);
 }
 
 /**
@@ -110,25 +110,25 @@ export function logMessage(message: string, verbose = false) {
  * @returns The output file extension
  */
 export function getOutputExtension(
-	compressor: Compressor | undefined,
-	originalExt: InputFormats,
+  compressor: Compressor | undefined,
+  originalExt: InputFormats,
 ) {
-	// If no compressor is found, return the original extension
-	if (!compressor) return originalExt;
+  // If no compressor is found, return the original extension
+  if (!compressor) return originalExt;
 
-	// If the original extension is not jpg, return the original extension
-	let newExt = ".".concat(compressor);
+  // If the original extension is not jpg, return the original extension
+  let newExt = ".".concat(compressor);
 
-	// If the original extension is jpg, add the jpg extension
-	switch (compressor) {
-		case "jpg":
-		case "mozjpeg":
-			newExt = ".jpg";
-			break;
-	}
+  // If the original extension is jpg, add the jpg extension
+  switch (compressor) {
+    case "jpg":
+    case "mozjpeg":
+      newExt = ".jpg";
+      break;
+  }
 
-	// Return the new extension
-	return originalExt !== newExt ? newExt : "";
+  // Return the new extension
+  return originalExt !== newExt ? newExt : "";
 }
 
 /**
@@ -143,16 +143,19 @@ export function getOutputExtension(
  * is '.svg', it returns undefined. For all other formats, it returns the input compressor if it is not
  * null or undefined, otherwise it returns 'webp'.
  */
-export function getDefaultCompressor(compressor: string, format: string) {
-	switch (format) {
-		case ".jpg":
-		case ".jpeg":
-			return compressor ?? "mozjpeg";
-		case ".svg":
-			return "svgo";
-		default:
-			return compressor ?? "webp";
-	}
+export function getDefaultCompressor(
+  compressor: string | undefined,
+  format: string,
+) {
+  switch (format) {
+    case "jpg":
+    case "jpeg":
+      return compressor ?? "mozjpeg";
+    case "svg":
+      return "svgo";
+    default:
+      return compressor ?? "webp";
+  }
 }
 
 /**
@@ -167,10 +170,10 @@ export function getDefaultCompressor(compressor: string, format: string) {
  * 80 is returned. The return type is `number | undefined`.
  */
 export function getQuality(
-	quality: number,
-	format: string,
+  quality: number,
+  format: string,
 ): number | undefined {
-	return format === ".svg" ? undefined : quality || 80;
+  return format === ".svg" ? undefined : quality || 80;
 }
 
 /**
@@ -184,7 +187,7 @@ export function getQuality(
  * `undefined` if it is not. If `progressive` is not provided, it defaults to `true`.
  */
 export function getJpgCompressionOptions(progressive: boolean | undefined) {
-	return progressive ?? true;
+  return progressive ?? true;
 }
 
 /**
@@ -197,12 +200,12 @@ export function getJpgCompressionOptions(progressive: boolean | undefined) {
  * removing doctype, and removing XML processing instructions.
  */
 export function getSvgoPluginOptions(
-	optionsProvided: string[],
+  optionsProvided: string[],
 ): SvgoPluginConfig[] {
-	// If a string is provided, split it by commas and trim each option otherwise return the default
-	return optionsProvided
-		? optionsProvided.map((option) => option.trim() as SvgoPluginConfig)
-		: (["preset-default"] as SvgoPluginConfig[]);
+  // If a string is provided, split it by commas and trim each option otherwise return the default
+  return optionsProvided
+    ? optionsProvided.map((option) => option.trim() as SvgoPluginConfig)
+    : (["preset-default"] as SvgoPluginConfig[]);
 }
 
 /**
@@ -218,11 +221,11 @@ export function getSvgoPluginOptions(
  * object with a `plugins` property set to the `conf` array.
  */
 export function getSvgoOptions(
-	options: SvgoPluginConfig[] | undefined,
+  options: SvgoPluginConfig[] | undefined,
 ): SvgoConfig {
-	return {
-		plugins: options ?? ["preset-default"],
-	};
+  return {
+    plugins: options ?? ["preset-default"],
+  };
 }
 
 /**
@@ -232,23 +235,23 @@ export function getSvgoOptions(
  * @param {InputFormats[]} imageFormats - an array of image formats
  */
 export function defaultCompressionOptions(
-	imageFormats?: InputFormats[],
+  imageFormats?: InputFormats[],
 ): CompressionOptionsMap {
-	if (!imageFormats) {
-		imageFormats = inputFormats;
-	}
-	const options: Partial<CompressionOptionsMap> = {};
-	imageFormats.forEach((format) => {
-		if (format === ".svg") {
-			options[format as "svg"] = {};
-		} else {
-			options[format] = {
-				compressor: "avif",
-				quality: 50,
-			};
-		}
-	});
-	return options as CompressionOptionsMap;
+  if (!imageFormats) {
+    imageFormats = inputFormats;
+  }
+  const options: Partial<CompressionOptionsMap> = {};
+  imageFormats.forEach((format) => {
+    if (format === ".svg") {
+      options[format as "svg"] = {};
+    } else {
+      options[format] = {
+        compressor: "avif",
+        quality: 50,
+      };
+    }
+  });
+  return options as CompressionOptionsMap;
 }
 
 /**
@@ -258,15 +261,15 @@ export function defaultCompressionOptions(
  * @param compressor - the compressor
  */
 export function getFileName(
-	extMode: ExtMode = "replace",
-	paths: CompressImagePaths,
-	compressor: Compressor,
+  extMode: ExtMode = "replace",
+  paths: CompressImagePaths,
+  compressor: Compressor,
 ) {
-	if (compressor === "mozjpeg") {
-		compressor = "jpg";
-	}
-	const ext = "." + compressor;
-	return extMode === "add" && paths?.ext === ext
-		? paths?.base + ext
-		: paths?.name + ext;
+  if (compressor === "mozjpeg") {
+    compressor = "jpg";
+  }
+  const ext = "." + compressor;
+  return extMode === "add" && paths?.ext === ext
+    ? paths?.base + ext
+    : paths?.name + ext;
 }
