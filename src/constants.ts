@@ -18,7 +18,6 @@ export type Compressor = (typeof compressors)[number] | undefined;
 
 export const inputFormats = [
   "jpg",
-  "jpeg",
   "png",
   "webp",
   "avif",
