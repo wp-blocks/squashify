@@ -4,9 +4,11 @@ import path, { ParsedPath } from "path";
 
 import { asInputFormats, getCompressionOptions, getFileName } from "./utils";
 import {
-	CompressImagePaths,
-	CompressionMeta,
-	type ScriptOptions,
+  CompressImagePaths,
+  CompressionMeta,
+  OutputData,
+  type ScriptOptions,
+  SVGCompressionOption,
 } from "./types";
 import { copyFile } from "node:fs/promises";
 import { Glob } from "glob";
@@ -15,44 +17,47 @@ import { encodeSvg } from "./encodeSvg";
 import { OutputInfo } from "sharp";
 import { lstatSync } from "node:fs";
 
-function copyFileAsync(
-	encodeSetup: CompressionMeta,
-): Promise<void | OutputInfo> {
-	/** destructuring the settings */
-	const { compressor, paths } = encodeSetup as CompressionMeta;
-	/**
-	 * If the compression is enabled for the image format and the extension is an image file
-	 */
-	if (compressor && asInputFormats(paths.ext)) {
-		if (paths.ext === ".svg" && compressor === "svgo") {
-			/**
-			 * SVG optimization
-			 */
-			const filePath = path.join(paths.distPath, paths.base);
-			console.log("📐 Processing", filePath);
-			return encodeSvg(paths.srcDir, filePath, encodeSetup.options);
-		} else {
-			/**
-			 * Images compression
-			 */
-			const outputFile = getFileName(
-				encodeSetup.options?.extMode,
-				paths as CompressImagePaths,
-				compressor,
-			);
+function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
+  /** destructuring the settings */
+  const { compressor, paths, options } = encodeSetup as CompressionMeta;
+  /**
+   * If the compression is enabled for the image format and the extension is an image file
+   */
+  if (compressor && asInputFormats(paths.ext)) {
+    if (paths.ext === ".svg" && compressor === "svgo") {
+      /**
+       * SVG optimization
+       */
+      const filePath = path.join(paths.distPath, paths.base);
+      console.log("📐 Processing", filePath);
+      return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
+    } else {
+      /**
+       * Images compression
+       */
+      const outputFile = getFileName(
+        options?.extMode,
+        paths as CompressImagePaths,
+        compressor,
+      );
 
-			console.log("🖼️ Processing", outputFile);
+      console.log("🖼️ Processing", outputFile);
 
-			/**
-			 * The rest of the image formats
-			 */
-			return encodeImage(
-				paths.srcPath,
-				path.join(paths.distPath, outputFile),
-				encodeSetup,
-			);
-		}
-	}
+      /**
+       * The rest of the image formats
+       */
+      return encodeImage(
+        paths.srcPath,
+        path.join(paths.distPath, outputFile),
+        encodeSetup,
+      );
+    }
+  }
+  return new Promise(() => {
+    return {
+      copy: true,
+    } as OutputData;
+  });
 }
 
 /**
@@ -71,104 +76,101 @@ function copyFileAsync(
  *                                   that are objects containing compression settings for that format (e.g. "no", "mozjpeg", "jpeg").
  */
 export async function convertImages(settings: ScriptOptions): Promise<void> {
-	// destructuring the settings
-	const { srcDir, distDir, compressionOptions } = settings;
+  // destructuring the settings
+  const { srcDir, distDir, compressionOptions } = settings;
 
-	// check if the srcDir is a directory
-	if (!fs.existsSync(srcDir)) {
-		return new Promise(() => {
-			console.warn(
-				`🎃 Error! The specified source directory ${srcDir} does not exist.`,
-			);
-		});
-	}
+  // check if the srcDir is a directory
+  if (!fs.existsSync(srcDir)) {
+    return new Promise(() => {
+      console.warn(
+        `🎃 Error! The specified source directory ${srcDir} does not exist.`,
+      );
+    });
+  }
 
-	// Get a list of files in the source directory
-	const globResults = new Glob("**", {
-		cwd: srcDir,
-		exclude: "**/node_modules/**",
-	});
+  // Get a list of files in the source directory
+  const globResults = new Glob("**", {
+    cwd: srcDir,
+    exclude: "**/node_modules/**",
+  });
 
-	const promises: Promise<void | OutputInfo>[] = [];
+  const promises: Promise<OutputData>[] = [];
 
-	const paths: Partial<CompressImagePaths> = {
-		srcDir: srcDir,
-		distDir: distDir,
-		cwd: process.cwd(),
-	};
+  const paths: Partial<CompressImagePaths> = {
+    srcDir: srcDir,
+    distDir: distDir,
+    cwd: process.cwd(),
+  };
 
-	// Loop through the files in the directory
-	for await (const res of globResults as AsyncIterable<string>) {
-		/** Collect the source and destination paths */
-		const file = path.parse(res) as ParsedPath;
-		const filePaths = {
-			...paths,
-			...file,
-			res,
-			srcPath: path.join(process.cwd(), srcDir, res),
-			distPath: path.join(process.cwd(), distDir, file.dir),
-		};
+  // Loop through the files in the directory
+  for await (const res of globResults as AsyncIterable<string>) {
+    /** Collect the source and destination paths */
+    const file = path.parse(res) as ParsedPath;
+    const filePaths = {
+      ...paths,
+      ...file,
+      res,
+      srcPath: path.join(process.cwd(), srcDir, res),
+      distPath: path.join(process.cwd(), distDir, file.dir),
+    };
 
-		/** If the src is a directory */
-		const srcLstat = lstatSync(filePaths.srcPath);
-		// if is a directory creating the copy of the directory if the src is different from the dist
-		if (srcLstat?.isDirectory()) {
-			const dirPath = path.join(process.cwd(), distDir, res);
-			console.log("📁 New Folder created " + dirPath);
-			// check if the directory exists
-			if (!fs.existsSync(dirPath)) {
-				fs.mkdirSync(dirPath);
-			}
-		} else if (compressionOptions) {
-			/**
-			 * If the compression is enabled for the image format
-			 */
-			const encodeSetup: CompressionMeta = {
-				...settings,
-				...getCompressionOptions(filePaths.ext, compressionOptions),
-				paths: filePaths as CompressImagePaths,
-			};
+    /** If the src is a directory */
+    const srcLstat = lstatSync(filePaths.srcPath);
+    // if is a directory creating the copy of the directory if the src is different from the dist
+    if (srcLstat?.isDirectory()) {
+      const dirPath = path.join(process.cwd(), distDir, res);
+      console.log("📁 New Folder created " + dirPath);
+      // check if the directory exists
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath);
+      }
+    } else if (compressionOptions) {
+      /**
+       * If the compression is enabled for the image format
+       */
+      const encodeSetup: CompressionMeta = {
+        ...settings,
+        ...getCompressionOptions(filePaths.ext, compressionOptions),
+        paths: filePaths as CompressImagePaths,
+        options: settings.options,
+      };
 
-			promises.push(
-				/* return the promise to copy/encode the file */
-				copyFileAsync(encodeSetup),
-			);
-		} else {
-			/**
-			 * Otherwise the compression is not enabled, or the file is not an image,
-			 * so we copy it to the destination directory
-			 */
-			console.log(
-				"This is not an image file or the compression is not enabled for " +
-					paths.ext,
-			);
-			console.log(
-				`📄 Copying ${paths.srcPath} file to ${path.join(filePaths.distPath, filePaths.base)}`,
-			);
+      promises.push(
+        /* return the promise to copy/encode the file */
+        copyFileAsync(encodeSetup),
+      );
+    } else {
+      const destPath = path.join(filePaths.distPath, filePaths.base);
+      /**
+       * Otherwise the compression is not enabled, or the file is not an image,
+       * so we copy it to the destination directory
+       */
+      console.log(
+        "This is not an image file or the compression is not enabled for " +
+          filePaths.ext,
+      );
+      console.log(`📄 Copying ${filePaths.srcPath} file to ${destPath}`);
 
-			return copyFile(
-				filePaths.srcPath,
-				path.join(filePaths.distPath, filePaths.base),
-			);
-		}
-	}
+      return copyFile(filePaths.srcPath, destPath);
+    }
+  }
 
-	// Wait for all promises to resolve before returning
-	return Promise.allSettled(promises).then((res) => {
-		if (res) {
-			res.forEach((result) => {
-				if (result.status !== "fulfilled") {
-					console.log("🔴 " + result.reason);
-				} else {
-					// Print the result to the console
-					if (Array.isArray(result.value) && result.value.length) {
-						result.value?.map((x: void | OutputInfo) => {
-							if (x && "size" in x) console.log("✅ " + x.size);
-							else console.log("✅ svg optimized to ");
-						});
-					}
-				}
-			});
-		}
-	});
+  // Wait for all promises to resolve before returning
+  return Promise.allSettled(promises).then((res) => {
+    if (res) {
+      res.forEach((result) => {
+        if (result.status !== "fulfilled") {
+          console.log("🔴 " + result.reason);
+        } else {
+          // Print the result to the console
+          if (Array.isArray(result.value) && result.value.length) {
+            result.value?.map((x: OutputData) => {
+              if (x && "size" in x) console.log("✅ " + x.size);
+              else console.log("✅ svg optimized to ");
+            });
+          }
+        }
+      });
+    }
+  });
 }
