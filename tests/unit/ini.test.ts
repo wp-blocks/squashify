@@ -57,7 +57,7 @@ describe("getIniOptions", () => {
           "removeDoctype",
           "removeXMLProcInst",
           "removeComments",
-          "RemoveMetadata",
+          "removeMetadata",
           "RemoveXMLNS",
           "RemoveEditorsNSData",
           "RemoveTitle",

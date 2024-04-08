@@ -22,9 +22,9 @@ describe("convertImages with settings", () => {
       distDir: distDir,
       options: { extMode: "replace" },
       compressionOptions: {
-        ".png": { compressor: "avif", quality: 20 },
-        ".gif": { compressor: "png" },
-        ".tiff": { compressor: "jpg", quality: 20 },
+        png: { compressor: "avif", quality: 20 },
+        gif: { compressor: "png" },
+        tiff: { compressor: "jpg", quality: 20 },
       },
     });
 
@@ -43,9 +43,9 @@ describe("convertImages with settings", () => {
       distDir: distDir,
       options: { extMode: "add" },
       compressionOptions: {
-        ".png": { compressor: "avif", quality: 20 },
-        ".gif": { compressor: "png" },
-        ".tiff": { compressor: "jpg", quality: 20 },
+        png: { compressor: "avif", quality: 20 },
+        gif: { compressor: "png" },
+        tiff: { compressor: "jpg", quality: 20 },
       },
     });
 
