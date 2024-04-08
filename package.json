@@ -25,8 +25,9 @@
 	"reqire": "lib/cjs/index.js",
 	"types": "lib/@types/index.d.ts",
 	"scripts": {
+    "prebuild": "rimraf lib && tsc --emitDeclarationOnly --outDir lib/@types/",
 		"build": "npx esbuild ./src/* --outdir=lib/esm/ --format=esm --platform=node --minify",
-		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify && tsc --emitDeclarationOnly --outDir lib/@types/",
+		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify",
 		"watch": "tsc --watch --sourceMap --outDir lib/esm/",
 		"squashify": "node . --in tests/images/ --out tests/output --verbose",
 		"squashifyDefaults": "node . -d",

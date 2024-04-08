@@ -6,6 +6,7 @@
 		"esModuleInterop": true,
 		"strict": true,
 		"pretty": false,
+    "removeComments": false,
 		// Import non-ES modules as default imports.
 		"outDir": "lib/esm",
 		"rootDir": "src",
