@@ -6,5 +6,5 @@ export function encodeAnimation(
   dist: string,
 ): Promise<OutputData> {
   /** @var {any} image Load the image with sharp */
-  return sharp(src, { animated: true, pages: -1 }).toFile(dist);
+  return sharp(src, { animated: true, pages: -1 }).webp({}).toFile(dist);
 }
