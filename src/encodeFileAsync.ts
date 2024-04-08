@@ -1,14 +1,9 @@
-import {
-  CompressImagePaths,
-  CompressionMeta,
-  OutputData,
-  SVGCompressionOption,
-} from "./types";
+import { CompressImagePaths, CompressionMeta, OutputData } from "./types.js";
 import path from "path";
-import { getFileName, logMessage } from "./utils";
-import { encodeSvg } from "./encodeSvg";
-import { encodeAnimation } from "./encodeAnimation";
-import { encodeImage } from "./encodeImage";
+import { getFileName, logMessage } from "./utils.js";
+import { encodeSvg } from "./encodeSvg.js";
+import { encodeAnimation } from "./encodeAnimation.js";
+import { encodeImage } from "./encodeImage.js";
 
 export function encodeFileAsync(
   encodeSetup: CompressionMeta,

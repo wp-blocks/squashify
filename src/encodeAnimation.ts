@@ -1,4 +1,4 @@
-import { OutputData } from "./types";
+import { OutputData } from "./types.js";
 import sharp from "sharp";
 
 export function encodeAnimation(

@@ -1,13 +1,14 @@
 import fs from "fs";
-import { convertImages } from "../../src/compression";
-import { getIniOptions } from "../../src/parseIni";
+import { describe, expect, it, afterAll } from "vitest";
+import { convertImages } from "../../src/compression.js";
+import { getIniOptions } from "../../src/parseIni.js";
 
 // get test settings
 const options = getIniOptions("./tests/data/.squash", {
   srcDir: "tests/images/non-image/",
   distDir: "tests/images/dist-non-image/",
   configFile: "tests/data/.squash",
-});
+} as any);
 
 describe("convertImages", () => {
   afterAll(() => {

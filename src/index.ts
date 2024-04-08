@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 import yargs from "yargs";
-
-import { getCliOptions } from "./args";
-import { convertImages } from "./compression";
-import { getIniOptions } from "./parseIni";
-import { getPromptOptions } from "./prompts";
 import { hideBin } from "yargs/helpers";
 import process from "node:process";
-import { parseOptions } from "./parseOptions";
-import { logMessage } from "./utils";
+
+import { getCliOptions } from "./args.js";
+import { convertImages } from "./compression.js";
+import { getIniOptions } from "./parseIni.js";
+import { getPromptOptions } from "./prompts.js";
+import { parseOptions } from "./parseOptions.js";
+import { logMessage } from "./utils.js";
 
 /**
  * Prompts the user for the source and destination directories

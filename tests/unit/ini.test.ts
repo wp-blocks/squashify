@@ -1,13 +1,15 @@
-import { describe, expect, it } from "@jest/globals";
-import { getIniOptions } from "../../src/parseIni";
+import { describe, expect, it } from "vitest";
+import { getIniOptions } from "../../src/parseIni.js";
 
 describe("getIniOptions", () => {
   it("should return the input settings when no configuration file is found", () => {
     const options = {
+      in: "invalid_path",
+      out: "invalid_path",
       configFile: "invalid_path",
       srcDir: "src",
       distDir: "dist",
-      compressionOptions: null,
+      compressionOptions: {},
     };
 
     const result = getIniOptions("fakepath", options);

@@ -1,5 +1,5 @@
-import { CliOptions, ScriptOptions } from "./types";
-import { logMessage } from "./utils";
+import { CliOptions, ScriptOptions } from "./types.js";
+import { logMessage } from "./utils.js";
 
 export function parseOptions(
   settings: CliOptions,

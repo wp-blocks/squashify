@@ -1,7 +1,7 @@
 import { Config as SvgoConfig, optimize } from "svgo";
 import { readFile, writeFile } from "node:fs/promises";
-import { getSvgoOptions } from "./utils";
-import { OutputData, SVGCompressionOption } from "./types";
+import { getSvgoOptions } from "./utils.js";
+import { OutputData, SVGCompressionOption } from "./types.js";
 
 /**
  * The function optimizes an SVG file asynchronously using SVGO and writes the optimized SVG to a

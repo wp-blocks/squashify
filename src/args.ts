@@ -1,6 +1,6 @@
-import { defaultConfigFile, extModes } from "./constants";
+import { defaultConfigFile, extModes } from "./constants.js";
 import yargs from "yargs";
-import { CliOptions, ExtMode } from "./types";
+import { CliOptions, ExtMode } from "./types.js";
 import { hideBin } from "yargs/helpers";
 
 /**

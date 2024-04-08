@@ -9,9 +9,9 @@ import {
   type InputFormats,
   defaultSrc,
   defaultDist,
-} from "./constants";
-import { type CompressionOption } from "./types";
-import { logMessage } from "./utils";
+} from "./constants.js";
+import { type CompressionOption } from "./types.js";
+import { logMessage } from "./utils.js";
 
 /**
  * Prompts the user for the source directory

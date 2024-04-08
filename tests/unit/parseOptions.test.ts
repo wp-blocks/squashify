@@ -1,22 +1,31 @@
 import prompts from "prompts";
-import { getPromptOptions } from "../../src/prompts";
-import { promptsToAsk } from "../../src/options";
-import { getCompressionOptions, getOutputExtension } from "../../src/utils";
-import { InputFormats } from "../../src/constants";
-import sharp from "sharp";
-
-jest.mock("prompts", () => jest.fn());
+import {
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  MockedFunction,
+  vi,
+} from "vitest";
+import { getPromptOptions } from "../../src/prompts.js";
+import { promptsToAsk } from "../../src/options.js";
+import { getCompressionOptions, getOutputExtension } from "../../src/utils.js";
+import { InputFormats } from "../../src/constants.js";
 
 describe("getPromptOptions", () => {
+  beforeAll(() => {
+    vi.mock("prompts", () => ({ default: vi.fn() }));
+  });
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("Should prompt for source directory when not provided", async () => {
     const options = { distDir: "./dist" };
 
     // Mock the prompts function to return the user's input
-    (prompts as jest.MockedFunction<typeof prompts>).mockResolvedValueOnce({
+    (prompts as MockedFunction<typeof prompts>).mockResolvedValueOnce({
       srcDir: "./src",
     });
 
@@ -30,7 +39,7 @@ describe("getPromptOptions", () => {
     const options = { srcDir: "./src" };
 
     // Mock the prompts function to return the user's input
-    (prompts as jest.MockedFunction<typeof prompts>).mockResolvedValueOnce({
+    (prompts as MockedFunction<typeof prompts>).mockResolvedValueOnce({
       distDir: "./dist",
     });
 

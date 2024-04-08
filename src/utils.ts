@@ -1,20 +1,23 @@
 /* eslint-disable no-console */
-
 import fs from "fs";
 import path from "path";
+import {
+  type Config as SvgoConfig,
+  type PluginConfig as SvgoPluginConfig,
+} from "svgo";
 
-import { type Compressor, inputFormats, type InputFormats } from "./constants";
+import {
+  type Compressor,
+  inputFormats,
+  type InputFormats,
+} from "./constants.js";
 import {
   CompressImagePaths,
   type CompressionOption,
   type CompressionOptionsMap,
   ExtMode,
   GenericCompressionOptions,
-} from "./types";
-import {
-  type Config as SvgoConfig,
-  type PluginConfig as SvgoPluginConfig,
-} from "svgo";
+} from "./types.js";
 
 /**
  * The function returns compression settings for a given image format.
