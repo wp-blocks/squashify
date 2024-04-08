@@ -71,7 +71,10 @@ export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
    * @param {string} dir The folder to search for images in.
    */
   function searchForImages(dir: string) {
-    const files = fs.readdirSync(dir);
+    const sourceDir = path.join(process.cwd(), dir);
+    logMessage("Searching for images in " + path.resolve(sourceDir), true);
+
+    const files = fs.readdirSync(sourceDir);
 
     // iterate over each file
     files.forEach((file) => {
@@ -316,7 +319,7 @@ export function generateDefaultConfigFile(
     resizeType: (argv.resizeType as ResizeType) || undefined,
   } as Record<string, unknown>;
 
-  let defaultConfig: Record<string, unknown> = {
+  const defaultConfig: Record<string, unknown> = {
     path: {
       in: argv.input ?? "images",
       out: argv.output ?? "optimized",
