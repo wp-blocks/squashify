@@ -12,7 +12,7 @@
 		"url": "https://github.com/wp-blocks/squashify/issues"
 	},
 	"scripts": {
-		"build": "tsc --build --clean",
+		"build": "tsc --build --clean && tsc",
 		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify",
 		"watch": "tsc --watch --sourceMap",
 		"squashify": "node ./lib/esm/index.js --in tests/images/ --out tests/output --verbose",

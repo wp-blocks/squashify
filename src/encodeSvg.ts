@@ -48,20 +48,15 @@ export async function encodeSvg(
   const result = optimizeSvg(originalSvg, getSvgoOptions(options.plugins));
 
   // Write the optimized SVG to the destination directory
-  writeFile(distFileName, result, "utf8")
-    .then(() => {
-      /**
-       * Mock the output data
-       */
-      const outputData: OutputData = {
-        originalSize: originalSvg.length,
-        size: result.length,
-        src: srcFilename,
-        dist: distFileName,
-      };
-      return outputData;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  return writeFile(distFileName, result, "utf8").then(() => {
+    /**
+     * Mock the output data
+     */
+    return {
+      originalSize: originalSvg.length,
+      size: result.length,
+      src: srcFilename,
+      dist: distFileName,
+    } as OutputData;
+  });
 }

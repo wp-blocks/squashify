@@ -9,9 +9,10 @@
 		// Import non-ES modules as default imports.
 		"outDir": "lib/esm",
 		"rootDir": "src",
-		"declaration": true
-	},
-	"include": [
+		"declaration": true,
+    "sourceMap": false
+  },
+  "include": [
 		"./src/**/*"
 	]
 }
