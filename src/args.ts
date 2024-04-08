@@ -79,6 +79,16 @@ export function getCliOptions(
       ? (argv.extMode as ExtMode)
       : "replace";
 
+  const configFileName = argv.config ?? defaultConfigFile;
+
+  if (Boolean(argv.defaultIni) && configFileName) {
+    generateDefaultConfigFile(configFileName, argv as Record<string, string>);
+
+    console.log(`Generated default config file: ${configFileName}`);
+
+    process.exit(0);
+  }
+
   return {
     srcDir: argv.input ?? "",
     distDir: argv.output ?? "",
