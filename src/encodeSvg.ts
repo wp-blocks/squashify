@@ -21,7 +21,7 @@ async function getSVGMetadata(svgString: string): Promise<{
   metadata: SVGMetadata;
   itemCount: number;
 }> {
-  return new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     parseString(svgString, (err, result) => {
       if (err) {
         reject(err);
