@@ -3,9 +3,9 @@ import fs from "fs";
 import path, { ParsedPath } from "path";
 
 import {
-  asInputFormats,
+  defaultCompressionOptions,
   getCompressionOptions,
-  getFileName,
+  getImageFormatsInFolder,
   logMessage,
 } from "./utils";
 import {
@@ -13,57 +13,11 @@ import {
   CompressionMeta,
   OutputData,
   type ScriptOptions,
-  SVGCompressionOption,
 } from "./types";
-import { copyFile } from "node:fs/promises";
+import { copyFile, mkdir } from "node:fs/promises";
 import { Glob } from "glob";
-import { encodeImage } from "./encodeImage";
-import { encodeSvg } from "./encodeSvg";
 import { lstatSync } from "node:fs";
-import { encodeAnimation } from "./encodeAnimation";
-
-function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
-  /** destructuring the settings */
-  const { compressor, paths, options } = encodeSetup as CompressionMeta;
-  /**
-   * If the compression is enabled for the image format and the extension is an image file
-   */
-  if (paths.ext === ".gif" && "encodeAnimated" in encodeSetup) {
-    /**
-     * GIF optimization
-     */
-    const filePath = path.join(paths.distPath, paths.base);
-    logMessage("🎬️ Processing " + filePath);
-    return encodeAnimation(paths.srcPath, filePath);
-  } else if (paths.ext === ".svg" && compressor === "svgo") {
-    /**
-     * SVG optimization
-     */
-    const filePath = path.join(paths.distPath, paths.base);
-    logMessage("📐 Processing " + filePath);
-    return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
-  } else {
-    /**
-     * Images compression
-     */
-    const outputFile = getFileName(
-      options?.extMode,
-      paths as CompressImagePaths,
-      compressor,
-    );
-
-    logMessage("🖼️ Processing " + outputFile);
-
-    /**
-     * The rest of the image formats
-     */
-    return encodeImage(
-      paths.srcPath,
-      path.join(paths.distPath, outputFile),
-      encodeSetup,
-    );
-  }
-}
+import { encodeFileAsync } from "./encodeFileAsync";
 
 /**
  * The function converts images in a source directory to a specified format and
@@ -80,7 +34,7 @@ function copyFileAsync(encodeSetup: CompressionMeta): Promise<OutputData> {
  *                                   have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
  *                                   that are objects containing compression settings for that format (e.g. "no", "mozjpeg", "jpeg").
  */
-export async function convertImages(settings: ScriptOptions): Promise<void> {
+export async function convertImages(settings: ScriptOptions): Promise<boolean> {
   // destructuring the settings
   const { srcDir, distDir, compressionOptions } = settings as ScriptOptions;
 
@@ -93,10 +47,15 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
     });
   }
 
+  if (settings.compressionOptions == undefined) {
+    const inputFormats = getImageFormatsInFolder(settings.srcDir);
+    settings.compressionOptions = defaultCompressionOptions(inputFormats);
+  }
+
   // Get a list of files in the source directory
   const globResults = new Glob("**", {
     cwd: srcDir,
-    exclude: "**/node_modules/**",
+    exclude: "**/node_modules/**,**/.git/**,**/.DS_Store",
   });
 
   const promises: Promise<OutputData>[] = [];
@@ -124,88 +83,91 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
     // if is a directory creating the copy of the directory if the src is different from the dist
     if (srcLstat?.isDirectory()) {
       const dirPath = path.join(process.cwd(), distDir, res);
-      logMessage("📁 New Folder created " + dirPath);
       // check if the directory exists
-      if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath);
-      }
-      promises.push(
-        /* return the promise to copy the directory */
-        new Promise(() => {
-          return {
-            copy: true,
-          } as OutputData;
-        }),
-      );
-      continue;
-    }
-
-    if (compressionOptions) {
-      /**
-       * If the compression is enabled for the image format
-       */
-      const encodeSetup: CompressionMeta = {
-        ...settings,
-        ...getCompressionOptions(filePaths.ext, compressionOptions),
-        paths: filePaths as CompressImagePaths,
-        options: settings.options,
-      };
-
-      if (
-        encodeSetup.compressor &&
-        encodeSetup.options &&
-        asInputFormats(paths.ext)
-      ) {
+      const exists = fs.existsSync(dirPath);
+      if (exists) {
+        logMessage("📁 Folder already exists " + dirPath, settings.verbose);
+        continue;
+      } else {
+        logMessage("📁 Folder created " + dirPath, settings.verbose);
         promises.push(
-          /* return the promise to copy/encode the file */
-          copyFileAsync(encodeSetup),
+          mkdir(dirPath).then(() => {
+            return {
+              copy: true,
+              srcPath: filePaths.srcPath,
+              distPath: dirPath,
+            } as OutputData;
+          }),
         );
         continue;
       }
     }
 
-    const destPath = path.join(filePaths.distPath, filePaths.base);
     /**
-     * Otherwise the compression is not enabled, or the file is not an image,
-     * so we copy it to the destination directory
+     * If the compression is enabled for the image format
      */
-    logMessage(
-      "This is not an image file or the compression is not enabled for " +
-        filePaths.ext,
-      settings.verbose,
-    );
-    logMessage(
-      `📄 Copying ${filePaths.srcPath} file to ${destPath}`,
-      settings.verbose,
-    );
+    const encodeSetup: CompressionMeta = {
+      ...getCompressionOptions(filePaths.ext.substring(1), compressionOptions),
+      compressor:
+        settings.compressionOptions[filePaths.ext?.substring(1)]?.compressor ??
+        undefined,
+      paths: filePaths as CompressImagePaths,
+      options: settings.options,
+      verbose: settings.verbose,
+    };
 
-    /** Copy the file */
-    promises.push(
-      /* return the promise to copy the file */
-      copyFile(filePaths.srcPath, destPath).then(() => {
-        return {
-          copy: true,
-        };
-      }),
-    );
+    console.log(encodeSetup);
+
+    if (encodeSetup.compressor !== undefined) {
+      promises.push(
+        /* return the promise to copy/encode the file */
+        encodeFileAsync(encodeSetup),
+      );
+    } else {
+      const destPath = path.join(filePaths.distPath, filePaths.base);
+      /**
+       * Otherwise the compression is not enabled, or the file is not an image,
+       * so we copy it to the destination directory
+       */
+      logMessage(
+        "This is not an image file or the compression is not enabled for " +
+          filePaths.ext,
+        settings.verbose,
+      );
+      logMessage(
+        `📄 Copying ${filePaths.srcPath} file to ${destPath}`,
+        settings.verbose,
+      );
+
+      /** Copy the file */
+      promises.push(
+        copyFile(filePaths.srcPath, destPath).then(() => {
+          return {
+            copy: true,
+            srcPath: filePaths.srcPath,
+            distPath: destPath,
+          } as OutputData;
+        }),
+      );
+    }
   }
 
   // Wait for all promises to resolve before returning
-  return Promise.allSettled(promises).then((res) => {
-    if (res) {
-      res.forEach((result) => {
-        if (result.status !== "fulfilled") {
-          logMessage("🔴 " + result.reason);
-        } else {
-          // Print the result to the console
-          if (Array.isArray(result.value) && result.value.length) {
-            result.value?.map((x: OutputData) => {
-              if (x && "size" in x) console.log("✅ " + x.size);
-              else logMessage("✅ svg optimized to ");
-            });
-          }
-        }
-      });
-    }
-  });
+  const res = await Promise.allSettled(promises);
+  if (res.length) {
+    res.forEach((result) => {
+      if (result.status !== "fulfilled") {
+        logMessage("🔴 " + result.reason, settings.verbose);
+      } else {
+        logMessage(
+          "✅ " +
+            JSON.stringify(
+              (result as PromiseFulfilledResult<OutputData>).value,
+            ),
+          settings.verbose,
+        );
+      }
+    });
+    return true;
+  } else return false;
 }
