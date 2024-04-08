@@ -8,10 +8,9 @@ export function parseOptions(
   const newSettings: Partial<ScriptOptions> = {};
 
   // the source and destination directories
-  newSettings.srcDir = settings.srcDir || String(iniOptions?.srcDir) || "";
-  newSettings.distDir = settings.distDir || String(iniOptions?.distDir) || "";
-  newSettings.verbose = settings.verbose || false;
-  newSettings.interactive = settings.interactive || false;
+  newSettings.srcDir = settings.srcDir ?? iniOptions?.srcDir ?? undefined;
+  newSettings.distDir = settings.distDir ?? iniOptions?.distDir ?? undefined;
+  newSettings.verbose = settings.verbose ?? false;
 
   newSettings.options = { ...iniOptions?.options, ...settings.options };
 

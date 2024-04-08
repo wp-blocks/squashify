@@ -94,10 +94,10 @@ export function getCliOptions(rawArgs: Argv<object> | undefined): CliOptions {
   };
 
   return {
-    srcDir: argv.input ?? "",
-    distDir: argv.output ?? "",
+    srcDir: argv.input ?? undefined,
+    distDir: argv.output ?? undefined,
     configFile: configFileName,
-    interactive: Boolean(argv.interactive),
+    interactive: argv.interactive ?? false,
     verbose: Boolean(argv.verbose),
     options: JSON.parse(JSON.stringify(options)),
   };
