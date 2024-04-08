@@ -90,24 +90,40 @@ The script will prompt you to enter the source and destination directory paths. 
 ### Command-Line Arguments
 The following command-line arguments are available:
 
---in <path>: Specify the path to the input directory.
+--in `<path>`: Specify the path to the input directory.
 
---out <path>: Specifies the path to the output directory.
+--out `<path>`: Specifies the path to the output directory.
 
---config <path>: Specifies the configuration file path.
+--config `<path>`: Specifies the configuration file path.
 
 --verbose: Verbose mode
 
 --extMode: Specify whenever to replace or add image extensions. Options are 'replace' or 'add' (default: 'replace').
+
+--generateIni: Generates an INI file in the project directory.
+
+--size `<number>`: The maximum size of the compressed image in pixels.
+
+--resizeMode: The mode to resize the image. Options are "contain", "cover", "fill", "inside", "outside", "none".
 
 --interactive: prompts for required options that aren't provided 
 
 --help: Shows the help message.
 
 ### INI File
-The script also supports an INI file named `.squash` in the project directory. The file should have the following sections and keys:
+The script also supports an INI file named `.squash` in the project directory. 
+
+in order to generate the INI file, run the following command:
+
+```bash
+npx squashify --config .squash --defaultIni
+```
+
+The file should have the following sections and keys:
 
 **\[path\]** This section contains the in and out keys, which specify the input and output directories, respectively.
+
+**\[options\]** This section contains the options key, which specifies the compression options for all image formats. The available keys are extMode, maxSize, resizeMode, outMargin, background.
 
 **\[\<format\>\]** This section specifies the compression options for a specific image format, where <format> is one of the supported formats listed above. The available keys are compressor and quality for most formats, and settings for SVGs.
 Here's an example .squash file:
@@ -118,27 +134,33 @@ in = src/image
 out = images
 
 [options]
-extMode = replace
+extMode = replace | add
+overwrite = true | false
+outMargin = 0
 maxSize = 50
-resizeMode = contain
+resizeType = contain | cover | fill | inside | outside | none
+background = color | transparent | undefined
 
 [.jpg,.jpeg]
 compressor = mozjpeg
 quality = 85
 progressive = true
 
-# you can use the extension with and without the dot
-[png] 
+
+# the extension is allowed with and without the dot
+[png]
 compressor = avif
 quality = 50
 
 [.gif]
-encodeAnimated = true
+animation = true
 
 [.svg]
 plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, removeMetadata, removeXMLNS, removeEditorsNSData, removeTitle, removeDesc, removeUselessDefs, removeEmptyAttrs, removeHiddenElems, removeEmptyContainers, removeEmptyText, removeUnusedNS, convertShapeToPath, sortAttrs, mergePaths, sortDefsChildren, removeDimensions, removeStyleElement, removeScriptElement, inlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
 ```
 ### SVGO plugins
+
+You can specify SVGO plugins in the `plugins` key of the `svg` section. 
 
 This is the list of plugins supported by SVGO:
 https://svgo.dev/docs/plugins/
