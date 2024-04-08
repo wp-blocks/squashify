@@ -22,4 +22,4 @@ encodeAnimated = true
 
 [.svg]
 compressor = svgo
-plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
+plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, removeMetadata, removeXMLNS, removeEditorsNSData, removeTitle, removeDesc, removeUselessDefs, removeEmptyAttrs, removeHiddenElems, removeEmptyContainers, removeEmptyText, removeUnusedNS, convertShapeToPath, sortAttrs, mergePaths, sortDefsChildren, removeDimensions, removeStyleElement, removeScriptElement, inlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,

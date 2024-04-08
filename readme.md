@@ -15,7 +15,7 @@
 A Node.js command-line tool and script to compress and optimize images, using different algorithms to reduce file size.
 
 ## Why Use This?
-If you have a large number of images in a folder that need to be compressed and optimized, this package can be a lifesaver. With just one command, you can easily reduce the size of your images, making them load faster on your website. Whether you need to compress JPGs, optimize SVGs, or generate compressed AVIF or WebP images, this package has got you covered. It's a simple and effective way to make your website more efficient and your users happier. Give it a try and see the difference it can make!
+If you have a large number of images in a folder that need to be compressed and optimized, this package can be a lifesaver. With just one command, you can reduce the size of your images, making them load faster on your website. Whether you need to compress JPGs, optimize SVGs, or generate compressed AVIF or WebP images, this package has got you covered. It's a simple and effective way to make your website more efficient and your users happier. Give it a try and see the difference it can make!
 
 ## How Use This?
 There are three ways to use squashify:
@@ -113,31 +113,38 @@ The script also supports an INI file named `.squash` in the project directory. T
 Here's an example .squash file:
 
 ```ini
+[path]
+in = src/image
+out = images
+
 [options]
 extMode = replace
+maxSize = 50
+resizeMode = contain
 
-[path]
-in = ./src/images
-out = ./images
-
-[.jpg]
+[.jpg,.jpeg]
 compressor = mozjpeg
 quality = 85
 progressive = true
 
-[.png]
+# you can use the extension with and without the dot
+[png] 
 compressor = avif
 quality = 50
 
+[.gif]
+encodeAnimated = true
+
 [.svg]
-plugins = CleanupAttrs, RemoveDoctype, RemoveXMLProcInst, RemoveComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs
+plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, removeMetadata, removeXMLNS, removeEditorsNSData, removeTitle, removeDesc, removeUselessDefs, removeEmptyAttrs, removeHiddenElems, removeEmptyContainers, removeEmptyText, removeUnusedNS, convertShapeToPath, sortAttrs, mergePaths, sortDefsChildren, removeDimensions, removeStyleElement, removeScriptElement, inlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
 ```
 ### Supported Image Formats
 
 The script supports the following image formats:
 
-- AVIF (.avif)
 - WEBP (.webp)
+- AVIF (.avif)
+- HEIF (.heif)
 - JPEG (.jpg, .jpeg)
 - PNG (.png)
 - GIF (.gif)
@@ -155,7 +162,7 @@ The script supports the following image formats:
 
 ---
 
-### CLI command 
+### CLI command (video)
 
 ![convert](https://github.com/wp-blocks/squashify/assets/8550908/40f6c1a2-937c-4b05-ad04-cf07bb317d94)
 
