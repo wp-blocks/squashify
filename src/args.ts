@@ -1,15 +1,13 @@
 import { defaultConfigFile, extModes } from "./constants.js";
-import yargs from "yargs";
+import yargs, { Argv } from "yargs";
 import { CliOptions, ExtMode, ResizeType, resizeType } from "./types.js";
 import { hideBin } from "yargs/helpers";
-import { generateDefaultConfigFile } from "./utils";
+import { generateDefaultConfigFile } from "./utils.js";
 
 /**
  * Get the command-line settings
  */
-export function getCliOptions(
-  rawArgs: yargs.Argv<object> | undefined,
-): CliOptions {
+export function getCliOptions(rawArgs: Argv<object> | undefined): CliOptions {
   if (!rawArgs) {
     rawArgs = yargs(hideBin(process.argv));
   }

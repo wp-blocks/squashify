@@ -5,7 +5,7 @@ import {
   getImageCompressionOptions,
   srcDirQuestion,
 } from "./options.js";
-import { CompressionOptionsMap, type ScriptOptions } from "./types";
+import { CompressionOptionsMap, type ScriptOptions } from "./types.js";
 import {
   defaultCompressionOptions,
   getImageFormatsInFolder,

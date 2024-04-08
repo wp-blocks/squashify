@@ -1,4 +1,4 @@
-import { CompressionMeta, OutputData } from "./types";
+import { CompressionMeta, OutputData } from "./types.js";
 import sharp, { FitEnum } from "sharp";
 import { transparentColor } from "./constants.js";
 
