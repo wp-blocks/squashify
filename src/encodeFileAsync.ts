@@ -25,23 +25,6 @@ export function encodeFileAsync(
     const filePath = path.join(paths.distPath, paths.base);
     logMessage("📐 Processing " + filePath, encodeSetup?.verbose);
     return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
-  } else if (paths.ext === ".gif") {
-    /**
-     * GIF optimization
-     */
-    const outputFile = getFileName(
-      options?.extMode,
-      paths as CompressImagePaths,
-      compressor,
-    );
-    const filePath = path.join(paths.distPath, outputFile);
-    if ("encodeAnimated" in encodeSetup) {
-      logMessage("🎬️ Processing " + outputFile, encodeSetup?.verbose);
-      return encodeAnimation(paths.srcPath, filePath);
-    } else {
-      logMessage("🖼️ Processing " + outputFile, encodeSetup?.verbose);
-      return encodeImage(paths.srcPath, filePath, encodeSetup);
-    }
   } else {
     /**
      * Default Images compression
@@ -52,15 +35,23 @@ export function encodeFileAsync(
       compressor,
     );
 
-    logMessage("🖼️ Processing " + outputFile, encodeSetup?.verbose);
-
     /**
      * The rest of the image formats
      */
-    return encodeImage(
-      paths.srcPath,
-      path.join(paths.distPath, outputFile),
-      encodeSetup,
-    );
+    if ("encodeAnimated" in encodeSetup) {
+      logMessage("🎬️ Processing " + outputFile, encodeSetup?.verbose);
+      return encodeAnimation(
+        paths.srcPath,
+        path.join(paths.distPath, outputFile),
+      );
+    } else {
+      logMessage("🖼️ Processing " + outputFile, encodeSetup?.verbose);
+
+      return encodeImage(
+        paths.srcPath,
+        path.join(paths.distPath, outputFile),
+        encodeSetup,
+      );
+    }
   }
 }
