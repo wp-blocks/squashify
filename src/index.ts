@@ -32,8 +32,12 @@ export default async function main() {
   );
 
   // Prompt the user for the script settings
-  if (cliOptions.interactive === true || missingOptions.length > 0) {
+  if (cliOptions.interactive === true && missingOptions.length > 0) {
     options = await getPromptOptions(options);
+  } else {
+    if (missingOptions.length > 0) {
+      throw new Error(`Missing required options: ${missingOptions.join(", ")}`);
+    }
   }
 
   // Print the settings to the console

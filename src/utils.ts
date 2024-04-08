@@ -10,6 +10,7 @@ import {
   type CompressionOptionsMap,
   ExtMode,
   GenericCompressionOptions,
+  SVGCompressionOption,
 } from "./types";
 import {
   type Config as SvgoConfig,
@@ -33,7 +34,12 @@ export function getCompressionOptions(
   imageFormat: string,
   options: CompressionOptionsMap,
 ): Partial<CompressionOption> | undefined {
-  return options[imageFormat as keyof CompressionOptionsMap] ?? undefined;
+  if (imageFormat.startsWith(".")) {
+    imageFormat = imageFormat.substring(1);
+  }
+  return options
+    ? options[imageFormat as keyof CompressionOptionsMap]
+    : undefined;
 }
 
 /**
@@ -41,8 +47,8 @@ export function getCompressionOptions(
  *
  * @param ext the image format to check
  */
-export function asInputFormats(ext: unknown): ext is InputFormats {
-  return inputFormats.includes(ext as InputFormats);
+export function asInputFormats(ext: string | undefined): ext is InputFormats {
+  return ext ? inputFormats.includes(ext as InputFormats) : false;
 }
 
 /**
@@ -75,7 +81,8 @@ export function getImageFormatsInFolder(folderPath: string): InputFormats[] {
         searchForImages(filePath);
       } else {
         // Get the extension of the file
-        let ext = path.extname(file).toLowerCase(); // get the file extension in lowercase
+        const fileInfo = path.parse(file);
+        let ext = fileInfo.ext.toLowerCase(); // get the file extension in lowercase
 
         if (ext.startsWith(".")) {
           ext = ext.substring(1); // remove the dot from the extension
@@ -122,7 +129,7 @@ export function getOutputExtension(
   if (!compressor) return originalExt;
 
   // If the original extension is not jpg, return the original extension
-  let newExt = ".".concat(compressor);
+  let newExt = "." + compressor;
 
   // If the original extension is jpg, add the jpg extension
   switch (compressor) {
@@ -247,8 +254,16 @@ export function defaultCompressionOptions(
   }
   const options: Partial<CompressionOptionsMap> = {};
   imageFormats.forEach((format) => {
-    if (format === ".svg") {
-      options[format as "svg"] = {};
+    if (format === "svg") {
+      options[format as "svg"] = {
+        compressor: "svgo",
+        plugins: ["default"],
+      } as GenericCompressionOptions;
+    } else if (format === "gif") {
+      options[format] = {
+        compressor: "webp",
+        quality: 80,
+      } as GenericCompressionOptions;
     } else {
       options[format] = {
         compressor: "avif",

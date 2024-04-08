@@ -93,6 +93,7 @@ export type CompressionMeta = {
   compressor?: Compressor;
   paths: CompressImagePaths;
   options?: SquashOptions;
+  verbose?: boolean;
 } & CompressionOption;
 
 export type OutputData =

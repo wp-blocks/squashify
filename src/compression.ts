@@ -3,6 +3,7 @@ import fs from "fs";
 import path, { ParsedPath } from "path";
 
 import {
+  asInputFormats,
   defaultCompressionOptions,
   getCompressionOptions,
   getImageFormatsInFolder,
@@ -116,40 +117,42 @@ export async function convertImages(settings: ScriptOptions): Promise<boolean> {
       verbose: settings.verbose,
     };
 
-    console.log(encodeSetup);
-
-    if (encodeSetup.compressor !== undefined) {
+    if (
+      encodeSetup.compressor !== undefined &&
+      asInputFormats(encodeSetup.paths.ext.substring(1))
+    ) {
       promises.push(
         /* return the promise to copy/encode the file */
         encodeFileAsync(encodeSetup),
       );
-    } else {
-      const destPath = path.join(filePaths.distPath, filePaths.base);
-      /**
-       * Otherwise the compression is not enabled, or the file is not an image,
-       * so we copy it to the destination directory
-       */
-      logMessage(
-        "This is not an image file or the compression is not enabled for " +
-          filePaths.ext,
-        settings.verbose,
-      );
-      logMessage(
-        `📄 Copying ${filePaths.srcPath} file to ${destPath}`,
-        settings.verbose,
-      );
-
-      /** Copy the file */
-      promises.push(
-        copyFile(filePaths.srcPath, destPath).then(() => {
-          return {
-            copy: true,
-            srcPath: filePaths.srcPath,
-            distPath: destPath,
-          } as OutputData;
-        }),
-      );
+      continue;
     }
+
+    const destPath = path.join(filePaths.distPath, filePaths.base);
+    /**
+     * Otherwise the compression is not enabled, or the file is not an image,
+     * so we copy it to the destination directory
+     */
+    logMessage(
+      "This is not an image file or the compression is not enabled for " +
+        filePaths.ext,
+      settings.verbose,
+    );
+    logMessage(
+      `📄 Copying ${filePaths.srcPath} file to ${destPath}`,
+      settings.verbose,
+    );
+
+    /** Copy the file */
+    promises.push(
+      copyFile(filePaths.srcPath, destPath).then(() => {
+        return {
+          copy: true,
+          srcPath: filePaths.srcPath,
+          distPath: destPath,
+        } as OutputData;
+      }),
+    );
   }
 
   // Wait for all promises to resolve before returning

@@ -9,7 +9,6 @@ import {
   getQuality,
   getSvgoPluginOptions,
 } from "./utils";
-import { string } from "yargs";
 
 /**
  * Clean up an option in the ini file
@@ -101,6 +100,12 @@ export function getIniOptions(
       }
     }
 
+    /**
+     * Adds the options in the iniOptions object to the iniOptionsParsed object
+     *
+     * @param opt - the option to process
+     * @param iniOptions - the options in the ini file to be parsed for the compression options
+     */
     function addRecursiveOptions(
       opt: string,
       iniOptions: Record<string, CompressionOption> | CompressionOption,
