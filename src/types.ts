@@ -55,8 +55,8 @@ export type SquashOptions = {
 };
 
 export interface CliOptions {
-  srcDir: string;
-  distDir: string;
+  srcDir?: string;
+  distDir?: string;
   verbose?: boolean;
   configFile?: string;
   interactive?: boolean;

@@ -40,7 +40,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
   const { srcDir, distDir, compressionOptions } = settings as ScriptOptions;
 
   // check if the srcDir is a directory
-  if (!fs.existsSync(srcDir)) {
+  if (srcDir && !fs.existsSync(srcDir)) {
     return new Promise(() => {
       console.warn(
         `🎃 Error! The specified source directory ${srcDir} does not exist.`,
@@ -52,7 +52,7 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
     logMessage(
       "🎃 No compression options found. Using default compression options.",
     );
-    const inputFormats = getImageFormatsInFolder(settings.srcDir);
+    const inputFormats = getImageFormatsInFolder(srcDir as string);
     settings.compressionOptions = defaultCompressionOptions(inputFormats);
   }
 
@@ -78,15 +78,15 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
       ...paths,
       ...file,
       res,
-      srcPath: path.join(process.cwd(), srcDir, res),
-      distPath: path.join(process.cwd(), distDir, file.dir),
+      srcPath: path.join(process.cwd(), srcDir as string, res),
+      distPath: path.join(process.cwd(), distDir as string, file.dir),
     };
 
     /** If the src is a directory */
     const srcLstat = lstatSync(filePaths.srcPath);
     // if is a directory creating the copy of the directory if the src is different from the dist
     if (srcLstat?.isDirectory()) {
-      const dirPath = path.join(process.cwd(), distDir, res);
+      const dirPath = path.join(process.cwd(), distDir as string, res);
       // check if the directory exists
       const exists = fs.existsSync(dirPath);
       if (exists) {
