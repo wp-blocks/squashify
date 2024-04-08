@@ -17,7 +17,10 @@ import {
   type CompressionOptionsMap,
   ExtMode,
   GenericCompressionOptions,
+  ResizeType,
 } from "./types.js";
+import ini from "ini";
+import { writeFileSync } from "node:fs";
 
 /**
  * The function returns compression settings for a given image format.
@@ -294,4 +297,40 @@ export function getFileName(
   return extMode === "add" && paths?.ext !== ext
     ? paths?.base + ext
     : paths?.name + ext;
+}
+
+/**
+ * Generates a default configuration file based on the provided arguments.
+ *
+ * @param filename - The name of the configuration file.
+ * @param {Record<string, string>} argv - The input arguments for configuration.
+ */
+export function generateDefaultConfigFile(
+  filename: string,
+  argv: Record<string, string>,
+) {
+  let defaultConfig = {
+    path: {
+      in: argv.input ?? "images",
+      out: argv.output ?? "optimized",
+    },
+    options: {
+      verbose: argv.verbose ?? undefined,
+      extMode: (argv.extMode as ExtMode) || "replace",
+      maxSize: Number(argv.maxSize) || undefined,
+      resizeType: (argv.resizeType as ResizeType) || undefined,
+    },
+  };
+
+  defaultConfig = {
+    ...defaultConfig,
+    options: {
+      ...defaultConfig.options,
+    },
+    ...defaultCompressionOptions(),
+  };
+
+  const iniFileContent = ini.stringify(defaultConfig);
+
+  return writeFileSync(filename, iniFileContent);
 }

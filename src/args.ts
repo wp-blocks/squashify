@@ -1,14 +1,13 @@
 import { defaultConfigFile, extModes } from "./constants.js";
-import yargs from "yargs";
-import { CliOptions, ExtMode } from "./types.js";
+import yargs, { Argv } from "yargs";
+import { CliOptions, ExtMode, ResizeType, resizeType } from "./types.js";
 import { hideBin } from "yargs/helpers";
+import { generateDefaultConfigFile } from "./utils.js";
 
 /**
  * Get the command-line settings
  */
-export function getCliOptions(
-  rawArgs: yargs.Argv<object> | undefined,
-): CliOptions {
+export function getCliOptions(rawArgs: Argv<object> | undefined): CliOptions {
   if (!rawArgs) {
     rawArgs = yargs(hideBin(process.argv));
   }
@@ -35,6 +34,24 @@ export function getCliOptions(
       describe: "Interactive mode",
       type: "boolean",
     })
+    .option("defaultIni", {
+      alias: "d",
+      describe: "Generate default config file",
+      type: "boolean",
+    })
+    .option("maxSize", {
+      alias: "s",
+      describe: "Maximum image size in pixels",
+      type: "number",
+      default: undefined,
+    })
+    .option("resizeType", {
+      alias: "r",
+      describe: "Resize type",
+      type: "string",
+      choices: resizeType,
+      default: undefined,
+    })
     .option("extMode", {
       alias: "e",
       describe: "Whenever to add or replace extension",
@@ -60,15 +77,29 @@ export function getCliOptions(
       ? (argv.extMode as ExtMode)
       : "replace";
 
+  const configFileName = argv.config ?? defaultConfigFile;
+
+  if (Boolean(argv.defaultIni) && configFileName) {
+    generateDefaultConfigFile(configFileName, argv as Record<string, string>);
+
+    console.log(`Generated default config file: ${configFileName}`);
+
+    process.exit(0);
+  }
+
   return {
     srcDir: argv.input ?? "",
     distDir: argv.output ?? "",
-    configFile: argv.config ?? defaultConfigFile,
+    configFile: configFileName,
     interactive: Boolean(argv.interactive),
     verbose: Boolean(argv.verbose),
     options: extMode
       ? {
           extMode: (extMode as ExtMode) || "replace",
+          maxSize: argv.maxSize ? Number(argv.maxSize) : undefined,
+          resizeType: argv.resizeType
+            ? (argv.resizeType as ResizeType)
+            : undefined,
         }
       : undefined,
   };

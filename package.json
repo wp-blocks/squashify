@@ -20,15 +20,16 @@
 		"type": "git",
 		"url": "git+https://github.com/wp-blocks/squashify.git"
 	},
-	"module": "lib/esm/",
-	"main": "lib/esm/index.js",
+  "main": "lib/esm/index.js",
+  "module": "lib/esm/",
 	"reqire": "lib/cjs/index.js",
-	"types": "lib/esm/index.d.ts",
+	"types": "lib/@types/index.d.ts",
 	"scripts": {
 		"build": "npx esbuild ./src/* --outdir=lib/esm/ --format=esm --platform=node --minify",
-		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify",
-		"watch": "tsc --watch --sourceMap",
+		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify && tsc --emitDeclarationOnly --outDir lib/@types/",
+		"watch": "tsc --watch --sourceMap --outDir lib/esm/",
 		"squashify": "node . --in tests/images/ --out tests/output --verbose",
+		"squashifyDefaults": "node . -d",
 		"test": "vitest --coverage"
 	},
 	"files": [
