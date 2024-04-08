@@ -1,15 +1,25 @@
 [path]
-in = src/image
-out = images
+in = tests/images/test1
+out = tests/images/dist-1
 
-[.jpg]
+[options]
+overwrite = false
+extMode = add
+maxSize = 50
+resizeType = contain
+
+[.jpg,.tiff,.jpeg]
 compressor = mozjpeg
 quality = 85
 progressive = true
 
-[.png]
+[png]
 compressor = avif
 quality = 50
 
+[.gif]
+encodeAnimated = true
+
 [.svg]
-options = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, RemoveMetadata, RemoveXMLNS, RemoveEditorsNSData, RemoveTitle, RemoveDesc, RemoveUselessDefs, RemoveEmptyAttrs, RemoveHiddenElems, RemoveEmptyContainers, RemoveEmptyText, RemoveUnusedNS, ConvertShapeToPath, SortAttrs, MergePaths, SortDefsChildren, RemoveDimensions, RemoveStyleElement, RemoveScriptElement, InlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
+compressor = svgo
+plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, removeMetadata, removeXMLNS, removeEditorsNSData, removeTitle, removeDesc, removeUselessDefs, removeEmptyAttrs, removeHiddenElems, removeEmptyContainers, removeEmptyText, removeUnusedNS, convertShapeToPath, sortAttrs, mergePaths, sortDefsChildren, removeDimensions, removeStyleElement, removeScriptElement, inlineStyles, removeViewBox, removeElementsByAttr, cleanupIds, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,

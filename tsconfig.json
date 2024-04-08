@@ -5,13 +5,14 @@
 		"target": "ES2015",
 		"esModuleInterop": true,
 		"strict": true,
-		"removeComments": true,
 		"pretty": false,
 		// Import non-ES modules as default imports.
-		"outDir": "lib",
-		"rootDir": "src"
-	},
-	"include": [
+		"outDir": "lib/esm",
+		"rootDir": "src",
+		"declaration": true,
+    "sourceMap": false
+  },
+  "include": [
 		"./src/**/*"
 	]
 }

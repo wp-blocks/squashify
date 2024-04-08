@@ -4,7 +4,7 @@ import { defaultConfigFile } from "../../src/constants";
 import yargs, { argv } from "yargs";
 
 describe("getCliOptions", () => {
-	it("Should return the correct options", () => {
+	it("Should return the correct settings", () => {
 		const args =
 			"--in ./source --out ./destination --config ./config.json --verbose --interactive";
 		const options = getCliOptions(yargs(args.split(" ")));
@@ -16,7 +16,7 @@ describe("getCliOptions", () => {
 		expect(options.interactive).toBe(true);
 	});
 
-	it("Should return the default options if no arguments are passed", () => {
+	it("Should return the default settings if no arguments are passed", () => {
 		const options = getCliOptions(yargs([""]));
 		expect(options.srcDir).toBe("");
 		expect(options.distDir).toBe("");

@@ -1,40 +1,30 @@
 import fs from "fs";
 import { convertImages } from "../../src/compression";
-import { getIniOptions } from "../../src/ini";
+import { getIniOptions } from "../../src/parseIni";
+import { rm } from "node:fs/promises";
 
-// get test options
-const options = getIniOptions({
-	extMode: "add",
-	srcDir: "./tests/images/test1",
-	distDir: "./tests/images/dist",
-	configFile: "./tests/data/.squash",
-	compressionOptions: {},
-});
+// get test settings
+const options = getIniOptions("./tests/data/.squash");
 
 describe("convertImages", () => {
-	it("Should handle default options correctly", async () => {
-		const r = await convertImages(options);
+  afterAll(async () => {
+    if (fs.existsSync(options.distDir)) {
+      await rm(options.distDir, { recursive: true, force: true });
+    }
+  });
 
-		if (r) {
-			expect(fs.readdirSync(`${options.distDir}`)).toMatchObject([
-				"image.gif.webp",
-				"image.jpg",
-				"image.png.webp",
-				"image.svg",
-				"image.tiff.webp",
-			]);
-			expect(fs.readdirSync(`${options.distDir}`).length).toBe(5);
+  it("Should handle default settings correctly", async () => {
+    // options.verbose = true;
+    await convertImages(options as any);
 
-			// check if the subdirectory was created and image was converted to destination directory
-			// the jpg file exists
-			expect(fs.existsSync(`${options.distDir}/image.jpg`)).toBe(true);
+    expect(fs.readdirSync(`${options.distDir}`)).toMatchObject([
+      "image.gif.webp",
+      "image.jpg",
+      "image.png.avif",
+      "image.svg",
+      "image.tiff.jpg",
+    ]);
 
-			// the png file is encoded into webp
-			expect(fs.existsSync(`${options.distDir}/image.png.webp`)).toBe(true);
-			expect(fs.existsSync(`${options.distDir}/image.png`)).not.toBe(true);
-
-			expect(fs.existsSync(`${options.distDir}/image.gif.webp`)).toBe(true);
-			expect(fs.existsSync(`${options.distDir}/image.tiff.webp`)).toBe(true);
-		}
-	});
+    expect(fs.readdirSync(`${options.distDir}`).length).toBe(5);
+  });
 });

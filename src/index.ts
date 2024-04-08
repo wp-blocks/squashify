@@ -3,11 +3,12 @@ import yargs from "yargs";
 
 import { getCliOptions } from "./args";
 import { convertImages } from "./compression";
-import { getIniOptions } from "./ini";
+import { getIniOptions } from "./parseIni";
 import { getPromptOptions } from "./prompts";
-import { defaultCompressionOptions } from "./utils";
 import { hideBin } from "yargs/helpers";
-import process from "process";
+import process from "node:process";
+import { parseOptions } from "./parseOptions";
+import { logMessage } from "./utils";
 
 /**
  * Prompts the user for the source and destination directories
@@ -15,55 +16,48 @@ import process from "process";
  *
  * @returns Promise that resolves when the image conversion is complete
  */
-export default async function main(): Promise<unknown> {
-	// Get the cli options
-	let options = getCliOptions(yargs(hideBin(process.argv)));
+export default async function main() {
+  // Get the cli settings
+  const cliOptions = getCliOptions(yargs(hideBin(process.argv)));
 
-	// Get the options from the ini file
-	options = getIniOptions(options);
+  // Get the settings from the .ini file
+  const iniOptions = getIniOptions(cliOptions.configFile);
 
-	// check for missing options
-	const missingOptions = ["srcDir", "distDir"].filter(
-		(option) => !options[option as keyof typeof options],
-	);
+  // Parse the settings
+  let options = parseOptions(cliOptions, iniOptions);
 
-	// Prompt the user for the script options
-	if (options.interactive === true || missingOptions.length > 0) {
-		options = await getPromptOptions(options);
-	}
+  // Check for missing settings
+  const missingOptions = ["srcDir", "distDir"].filter(
+    (option) => !options[option as keyof typeof options],
+  );
 
-	if (Object.keys(options.compressionOptions).length === 0) {
-		console.log(
-			"No compression options found, so we will use the default compression options",
-		);
-		options.compressionOptions = defaultCompressionOptions();
-	}
+  // Prompt the user for the script settings
+  if (cliOptions.interactive === true && missingOptions.length > 0) {
+    options = await getPromptOptions(options);
+  } else {
+    if (missingOptions.length > 0) {
+      throw new Error(`Missing required options: ${missingOptions.join(", ")}`);
+    }
+  }
 
-	// Print the options to the console
-	if (options.verbose) {
-		console.log("Options:", options);
-	}
+  // Print the settings to the console
+  logMessage("Options:" + JSON.stringify(options), cliOptions.verbose);
 
-	// Start the timer
-	const startTime = Date.now();
+  // Start the timer
+  const startTime = Date.now();
 
-	// Then convert the images in the source directory
-	const res = await convertImages(options);
+  // Then convert the images in the source directory
+  await convertImages(options);
 
-	if (res) {
-		res.forEach((result) => {
-			if (result.status !== "fulfilled") {
-				console.log("🔴 " + result.reason);
-			}
-		});
-		// Print the time elapsed in seconds to the console
-		console.log(
-			`The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`,
-		);
-		return res;
-	}
+  // Print the time elapsed in seconds to the console
+  logMessage(
+    `The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`,
+    true,
+  );
+
+  return;
 }
 
 main().catch((err) => {
-	console.error(err);
+  console.error(err);
 });

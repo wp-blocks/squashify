@@ -1,91 +1,90 @@
-import {describe, expect, it} from "@jest/globals";
-import {getIniOptions} from "../../src/ini";
-import {inputFormats} from "../../src/constants";
+import { describe, expect, it } from "@jest/globals";
+import { getIniOptions } from "../../src/parseIni";
 
-describe('getIniOptions', () => {
-	it('should return the input options when no configuration file is found', () => {
-		const options = {
-			configFile: 'invalid_path',
-			srcDir: 'src',
-			distDir: 'dist',
-			compressionOptions: null
-		};
+describe("getIniOptions", () => {
+  it("should return the input settings when no configuration file is found", () => {
+    const options = {
+      configFile: "invalid_path",
+      srcDir: "src",
+      distDir: "dist",
+      compressionOptions: null,
+    };
 
-		const result = getIniOptions(options);
+    const result = getIniOptions("fakepath", options);
 
-		expect(result).toEqual(options);
-	});
+    expect(result).toEqual(options);
+  });
 
-	it('should load the configuration file and update the options', () => {
-		const options = {
-			configFile: './tests/data/.squash',
-			srcDir: 'old',
-			distDir: 'new',
-			compressionOptions: null
-		};
+  it("should load the configuration file and update the settings", () => {
+    let result = getIniOptions("./tests/data/.squash");
 
-		const result = getIniOptions(options);
+    expect(result).not.toBeNull();
 
-		// check the srcDir and distDir
-		expect(result.srcDir).toEqual('old');
-		expect(result.distDir).toEqual('new');
+    // check the srcDir and distDir
+    expect(result.srcDir).toEqual("tests/images/test1");
+    expect(result.distDir).toEqual("tests/images/dist-1");
 
-		// check the compression options
-		expect(result.compressionOptions).toMatchObject({
-				".jpg": {
-					"compressor": "mozjpeg",
-					"quality": 80,
-					"progressive": true,
-					"plugins": undefined
-				},
-				".jpeg": {
-					"compressor": "mozjpeg",
-					"quality": 80,
-					"progressive": true,
-					"plugins": undefined
-				},
-				".png": {
-					"compressor": "webp",
-					"quality": 80,
-					"progressive": undefined,
-					"plugins": undefined
-				},
-				".webp": {
-					"compressor": "webp",
-					"quality": 80,
-					"progressive": undefined,
-					"plugins": undefined
-				},
-				".avif": {
-					"compressor": "webp",
-					"quality": 80,
-					"progressive": undefined,
-					"plugins": undefined
-				},
-				".tiff": {
-					"compressor": "webp",
-					"quality": 80,
-					"progressive": undefined,
-					"plugins": undefined
-				},
-				".gif": {
-					"compressor": "webp",
-					"quality": 80,
-					"progressive": undefined,
-					"plugins": undefined
-				},
-				".svg": {
-					"compressor": undefined,
-					"quality": undefined,
-					"progressive": undefined,
-					"plugins": ["preset-default"]
-				}
-			}
-		);
+    expect(result.options).toMatchObject({
+      overwrite: false,
+      extMode: "add",
+      maxSize: 50,
+      resizeType: "contain",
+    });
 
-		// Check that options for all input formats have been parsed
-		inputFormats.forEach(format => {
-			expect(result.compressionOptions[format]).toBeDefined();
-		});
-	});
+    // check the compression settings
+    expect(result.compressionOptions).toMatchObject({
+      jpg: {
+        compressor: "mozjpeg",
+        quality: 85,
+        progressive: true,
+      },
+      png: {
+        compressor: "avif",
+        quality: 50,
+      },
+      gif: {
+        compressor: "webp",
+        encodeAnimated: true,
+      },
+      tiff: {
+        compressor: "mozjpeg",
+        quality: 85,
+      },
+      svg: {
+        compressor: "svgo",
+        plugins: [
+          "cleanupAttrs",
+          "removeDoctype",
+          "removeXMLProcInst",
+          "removeComments",
+          "removeMetadata",
+          "removeXMLNS",
+          "removeEditorsNSData",
+          "removeTitle",
+          "removeDesc",
+          "removeUselessDefs",
+          "removeEmptyAttrs",
+          "removeHiddenElems",
+          "removeEmptyContainers",
+          "removeEmptyText",
+          "removeUnusedNS",
+          "convertShapeToPath",
+          "sortAttrs",
+          "mergePaths",
+          "sortDefsChildren",
+          "removeDimensions",
+          "removeStyleElement",
+          "removeScriptElement",
+          "inlineStyles",
+          "removeViewBox",
+          "removeElementsByAttr",
+          "cleanupIds",
+          "convertColors",
+          "removeRasterImages",
+          "removeUselessStrokeAndFill",
+          "removeNonInheritableGroupAttrs",
+        ],
+      },
+    });
+  });
 });
