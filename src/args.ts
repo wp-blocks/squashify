@@ -1,7 +1,8 @@
 import { defaultConfigFile, extModes } from "./constants.js";
 import yargs from "yargs";
-import { CliOptions, ExtMode } from "./types.js";
+import { CliOptions, ExtMode, ResizeType, resizeType } from "./types.js";
 import { hideBin } from "yargs/helpers";
+import { generateDefaultConfigFile } from "./utils";
 
 /**
  * Get the command-line settings
@@ -35,6 +36,24 @@ export function getCliOptions(
       describe: "Interactive mode",
       type: "boolean",
     })
+    .option("defaultIni", {
+      alias: "d",
+      describe: "Generate default config file",
+      type: "boolean",
+    })
+    .option("maxSize", {
+      alias: "s",
+      describe: "Maximum image size in pixels",
+      type: "number",
+      default: undefined,
+    })
+    .option("resizeType", {
+      alias: "r",
+      describe: "Resize type",
+      type: "string",
+      choices: resizeType,
+      default: undefined,
+    })
     .option("extMode", {
       alias: "e",
       describe: "Whenever to add or replace extension",
@@ -63,12 +82,16 @@ export function getCliOptions(
   return {
     srcDir: argv.input ?? "",
     distDir: argv.output ?? "",
-    configFile: argv.config ?? defaultConfigFile,
+    configFile: configFileName,
     interactive: Boolean(argv.interactive),
     verbose: Boolean(argv.verbose),
     options: extMode
       ? {
           extMode: (extMode as ExtMode) || "replace",
+          maxSize: argv.maxSize ? Number(argv.maxSize) : undefined,
+          resizeType: argv.resizeType
+            ? (argv.resizeType as ResizeType)
+            : undefined,
         }
       : undefined,
   };
