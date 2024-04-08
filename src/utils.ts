@@ -8,7 +8,6 @@ import {
 
 import {
   type Compressor,
-  defaultConfigFile,
   inputFormats,
   type InputFormats,
 } from "./constants.js";
@@ -310,10 +309,10 @@ export function generateDefaultConfigFile(
   filename: string,
   argv: Record<string, string>,
 ) {
-  const defaultConfig = {
+  let defaultConfig = {
     path: {
-      in: argv.input ?? "",
-      out: argv.output ?? "",
+      in: argv.input ?? "images",
+      out: argv.output ?? "optimized",
     },
     options: {
       verbose: argv.verbose ?? undefined,
@@ -323,7 +322,15 @@ export function generateDefaultConfigFile(
     },
   };
 
-  const iniFileContent = ini.stringify(defaultConfig, filename);
+  defaultConfig = {
+    ...defaultConfig,
+    options: {
+      ...defaultConfig.options,
+    },
+    ...defaultCompressionOptions(),
+  };
+
+  const iniFileContent = ini.stringify(defaultConfig);
 
   return writeFileSync(filename, iniFileContent);
 }
