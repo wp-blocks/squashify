@@ -6,25 +6,20 @@ import {
   srcDirQuestion,
 } from "./options.js";
 import { CompressionOptionsMap, type ScriptOptions } from "./types.js";
-import {
-  defaultCompressionOptions,
-  getImageFormatsInFolder,
-  logMessage,
-} from "./utils.js";
+import { defaultCompressionOptions, getImageFormatsInFolder } from "./utils.js";
 import { InputFormats } from "./constants.js";
 
 export async function getInteractiveCompressorOptions(
   imageFormats: InputFormats[],
-  verbose = false,
+  verbose: boolean | undefined = false,
 ): Promise<CompressionOptionsMap> {
   const response = await prompts({
     type: "confirm",
     name: "useDefaultCompressionOptions",
     message: "Do you want to use the default compression settings?",
-    initial: true,
   });
 
-  if (response.useDefaultCompressionOptions) {
+  if (response.useDefaultCompressionOptions !== true) {
     //return a promise that resolves with the default compression settings
     return await new Promise((resolve) => {
       resolve(defaultCompressionOptions(imageFormats));
@@ -51,33 +46,18 @@ export async function getPromptOptions(
   }
 
   // Get the image formats
-  const imageFormats = getImageFormatsInFolder(options.srcDir);
+  const imageFormats = getImageFormatsInFolder(options.srcDir as string);
 
   // If no image formats are found, return
   if (imageFormats.length === 0) {
-    logMessage(
-      "No image formats found in the source directory",
-      options.verbose,
-    );
-    return options;
-  }
-
-  // If the compression settings are not specified, use the default compression settings
-  if (Object.keys(options.compressionOptions).length === 0) {
-    logMessage(
-      "No compression settings found, so we will use the default compression settings",
-      true,
-    );
-    options.compressionOptions = defaultCompressionOptions();
+    throw new Error("No image formats found in the source directory, aborting");
   }
 
   // If the compression settings are not specified, prompt the user if he wants to use the default compression settings
-  if (Object.keys(options.compressionOptions).length === 0) {
-    options.compressionOptions = await getInteractiveCompressorOptions(
-      imageFormats,
-      options.verbose,
-    );
-  }
+  options.compressionOptions = await getInteractiveCompressorOptions(
+    imageFormats,
+    options.verbose,
+  );
 
   return options;
 }
