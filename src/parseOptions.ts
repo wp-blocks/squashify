@@ -3,7 +3,7 @@ import { logMessage } from "./utils.js";
 
 export function parseOptions(
   settings: CliOptions,
-  iniOptions: ScriptOptions | null = null,
+  iniOptions: ScriptOptions | undefined = undefined,
 ): ScriptOptions {
   const newSettings: Partial<ScriptOptions> = {};
 

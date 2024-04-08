@@ -64,7 +64,7 @@ function processSingleOption(
 export function getIniOptions(
   configFile: string | undefined = ".squash",
   override?: IniOptions,
-): ScriptOptions | null {
+): ScriptOptions | undefined {
   // Get the compression settings in the configuration file
   if (override) return override as IniOptions;
   // Get the compression settings in the configuration file
@@ -81,8 +81,8 @@ export function getIniOptions(
         extMode: iniOptions.options.extMode ?? undefined,
         resizeType: iniOptions.options.resizeType ?? undefined,
         overwrite: iniOptions.options.overwrite ?? undefined,
-        maxSize: Number(iniOptions.options.maxSize) ?? undefined,
-        outMargin: iniOptions.options.outMargin ?? undefined,
+        maxSize: parseInt(iniOptions.options.maxSize, 10) ?? undefined,
+        outMargin: parseInt(iniOptions.options.outMargin, 10) ?? undefined,
         background: iniOptions.options.background ?? undefined,
       },
       compressionOptions: {},
@@ -173,10 +173,10 @@ export function getIniOptions(
             format,
           ) as number;
 
-          // if the format is .gif and the encodeAnimated option is set to true force the compressor to webp mode
+          // if the format is .gif and the animation option is set to true force the compressor to webp mode
           if (
             format === "gif" &&
-            "encodeAnimated" in iniOptionsParsed.compressionOptions.gif
+            "animation" in iniOptionsParsed.compressionOptions.gif
           ) {
             iniOptionsParsed.compressionOptions.gif.compressor = "webp";
           }
@@ -210,5 +210,5 @@ export function getIniOptions(
 
     return iniOptionsParsed as ScriptOptions;
   }
-  return null;
+  return undefined;
 }
