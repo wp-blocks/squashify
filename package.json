@@ -2,7 +2,7 @@
 	"name": "squashify",
 	"version": "1.1.0",
 	"description": "A Node.js command-line tool and script to compress and optimize images, using different algorithms to reduce file size",
-	"license": "GPL-2.0-or-later",
+	"license": "LGPL-3.0-or-later",
 	"contributors": [
 		"Erik Golinelli <erik@codekraft.it> (https://codekraft.it/)",
 		"John Hooks <bitmachina@outlook.com> (https://johnhooks.io/)"
@@ -36,10 +36,10 @@
 	"files": [
 		"lib",
 		"tests",
-		"package.json",
-		".gitignore",
-		"LICENSE",
-		"readme.md"
+		"*.json",
+    "*.md",
+    ".gitignore",
+    "LICENSE"
 	],
 	"keywords": [
 		"image",
