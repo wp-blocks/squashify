@@ -2,7 +2,7 @@ import { defaultConfigFile, extModes } from "./constants.js";
 import yargs, { Argv } from "yargs";
 import { CliOptions, ExtMode, ResizeType, resizeType } from "./types.js";
 import { hideBin } from "yargs/helpers";
-import { generateDefaultConfigFile } from "./utils.js";
+import { generateDefaultConfigFile, logMessage } from "./utils.js";
 
 /**
  * Get the command-line settings
@@ -82,7 +82,7 @@ export function getCliOptions(rawArgs: Argv<object> | undefined): CliOptions {
   if (Boolean(argv.defaultIni) && configFileName) {
     generateDefaultConfigFile(configFileName, argv as Record<string, string>);
 
-    console.log(`Generated default config file: ${configFileName}`);
+    logMessage(`Generated default config file: ${configFileName}`, true);
 
     process.exit(0);
   }

@@ -64,8 +64,9 @@ export async function getPromptOptions(
 
   // If the compression settings are not specified, use the default compression settings
   if (Object.keys(options.compressionOptions).length === 0) {
-    console.log(
+    logMessage(
       "No compression settings found, so we will use the default compression settings",
+      true,
     );
     options.compressionOptions = defaultCompressionOptions();
   }
