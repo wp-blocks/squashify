@@ -1,12 +1,12 @@
 [path]
-in = src/image
-out = images
+in = tests/images/test1
+out = tests/images/dist-1
 
 [options]
 overwrite = false
-extMode = replace
+extMode = add
 maxSize = 50
-resizeMode = contain
+resizeType = contain
 
 [.jpg,.tiff,.jpeg]
 compressor = mozjpeg

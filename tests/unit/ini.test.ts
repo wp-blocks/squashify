@@ -1,8 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
 import { getIniOptions } from "../../src/parseIni";
-import { inputFormats } from "../../src/constants";
-import { parseOptions } from "../../src/parseOptions";
-import { ScriptOptions } from "../../src/types";
 
 describe("getIniOptions", () => {
   it("should return the input settings when no configuration file is found", () => {
