@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getIniOptions } from "../../src/parseIni.js";
+import { ScriptOptions } from "node:vm";
+import { CliOptions } from "../../src/types.js";
 
 describe("getIniOptions", () => {
   it("should return the input settings when no configuration file is found", () => {
@@ -18,7 +20,7 @@ describe("getIniOptions", () => {
   });
 
   it("should load the configuration file and update the settings", () => {
-    let result = getIniOptions("./tests/data/.squash");
+    let result = getIniOptions("./tests/data/.squash") as CliOptions;
 
     expect(result).not.toBeNull();
 
@@ -46,7 +48,7 @@ describe("getIniOptions", () => {
       },
       gif: {
         compressor: "webp",
-        encodeAnimated: true,
+        animation: true,
       },
       tiff: {
         compressor: "mozjpeg",

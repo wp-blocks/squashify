@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getCliOptions } from "../../src/args.js";
+import { getCliOptions } from "../../src/parseArgs.js";
 import { defaultConfigFile } from "../../src/constants.js";
 import yargs from "yargs";
 

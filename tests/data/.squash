@@ -18,7 +18,7 @@ compressor = avif
 quality = 50
 
 [.gif]
-encodeAnimated = true
+animation = true
 
 [.svg]
 compressor = svgo
