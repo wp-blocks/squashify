@@ -1,7 +1,8 @@
 import fs from "fs";
+import { describe, expect, it, beforeAll, vitest } from "vitest";
 
-import { srcDirQuestion } from "../../src/options";
-import { getImageFormatsInFolder } from "../../src/utils";
+import { srcDirQuestion } from "../../src/options.js";
+import { getImageFormatsInFolder } from "../../src/utils.js";
 
 describe("srcDirQuestion", () => {
   it("should return true if the path exists and is a directory", async () => {
@@ -33,7 +34,7 @@ describe("srcDirQuestion", () => {
   });
 
   it("should use the fs.promises.stat method to check if the path exists", async () => {
-    const spy = jest.spyOn(fs.promises, "stat");
+    const spy = vitest.spyOn(fs.promises, "stat");
     const value = "src/images";
     typeof srcDirQuestion.validate === "function"
       ? await srcDirQuestion.validate(value, {} as any, {} as any)

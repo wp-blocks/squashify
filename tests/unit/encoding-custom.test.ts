@@ -1,6 +1,6 @@
 import fs from "fs";
-import { convertImages } from "../../src/compression";
-import { afterEach } from "@jest/globals";
+import { convertImages } from "../../src/compression.js";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const srcDir = "./tests/images/test2";
 const distDir = "./tests/images/dist-custom";
