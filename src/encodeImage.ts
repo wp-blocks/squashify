@@ -46,8 +46,10 @@ export function encodeImage(
     }
   }
 
+  console.log(options.options);
+
   // Save the image to the destination directory
-  if (options.options?.maxSize && options?.options?.resizeType !== "none") {
+  if (options.options?.maxSize) {
     image = image.resize({
       width: options.options?.maxSize,
       height: options.options?.maxSize,

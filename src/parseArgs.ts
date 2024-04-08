@@ -87,20 +87,18 @@ export function getCliOptions(rawArgs: Argv<object> | undefined): CliOptions {
     process.exit(0);
   }
 
+  const options: Record<string, string | boolean | number | undefined> = {
+    extMode: (extMode as ExtMode) || "replace",
+    maxSize: argv.maxSize ? Number(argv.maxSize) : undefined,
+    resizeType: argv.resizeType ? (argv.resizeType as ResizeType) : undefined,
+  };
+
   return {
     srcDir: argv.input ?? "",
     distDir: argv.output ?? "",
     configFile: configFileName,
     interactive: Boolean(argv.interactive),
     verbose: Boolean(argv.verbose),
-    options: extMode
-      ? {
-          extMode: (extMode as ExtMode) || "replace",
-          maxSize: argv.maxSize ? Number(argv.maxSize) : undefined,
-          resizeType: argv.resizeType
-            ? (argv.resizeType as ResizeType)
-            : undefined,
-        }
-      : undefined,
+    options: JSON.parse(JSON.stringify(options)),
   };
 }
