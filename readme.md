@@ -138,6 +138,11 @@ encodeAnimated = true
 [.svg]
 plugins = cleanupAttrs, removeDoctype, removeXMLProcInst, removeComments, removeMetadata, removeXMLNS, removeEditorsNSData, removeTitle, removeDesc, removeUselessDefs, removeEmptyAttrs, removeHiddenElems, removeEmptyContainers, removeEmptyText, removeUnusedNS, convertShapeToPath, sortAttrs, mergePaths, sortDefsChildren, removeDimensions, removeStyleElement, removeScriptElement, inlineStyles, removeViewBox, removeElementsByAttr, cleanupIDs, convertColors, removeRasterImages, removeUselessStrokeAndFill, removeNonInheritableGroupAttrs,
 ```
+### SVGO plugins
+
+This is the list of plugins supported by SVGO:
+https://svgo.dev/docs/plugins/
+
 ### Supported Image Formats
 
 The script supports the following image formats:

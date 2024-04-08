@@ -35,7 +35,7 @@ import { encodeFileAsync } from "./encodeFileAsync";
  *                                   have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
  *                                   that are objects containing compression settings for that format (e.g. "no", "mozjpeg", "jpeg").
  */
-export async function convertImages(settings: ScriptOptions): Promise<boolean> {
+export async function convertImages(settings: ScriptOptions): Promise<void> {
   // destructuring the settings
   const { srcDir, distDir, compressionOptions } = settings as ScriptOptions;
 
@@ -49,6 +49,9 @@ export async function convertImages(settings: ScriptOptions): Promise<boolean> {
   }
 
   if (settings.compressionOptions == undefined) {
+    logMessage(
+      "🎃 No compression options found. Using default compression options.",
+    );
     const inputFormats = getImageFormatsInFolder(settings.srcDir);
     settings.compressionOptions = defaultCompressionOptions(inputFormats);
   }
@@ -160,7 +163,7 @@ export async function convertImages(settings: ScriptOptions): Promise<boolean> {
   if (res.length) {
     res.forEach((result) => {
       if (result.status !== "fulfilled") {
-        logMessage("🔴 " + result.reason, settings.verbose);
+        logMessage("🔴 " + result.reason, true);
       } else {
         logMessage(
           "✅ " +
@@ -170,7 +173,9 @@ export async function convertImages(settings: ScriptOptions): Promise<boolean> {
           settings.verbose,
         );
       }
+      return;
     });
-    return true;
-  } else return false;
+  } else {
+    logMessage("🔴 No files found", true);
+  }
 }

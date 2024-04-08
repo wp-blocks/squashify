@@ -24,7 +24,7 @@ export function encodeFileAsync(
      */
     const filePath = path.join(paths.distPath, paths.base);
     logMessage("📐 Processing " + filePath, encodeSetup?.verbose);
-    return encodeSvg(paths.srcDir, filePath, options as SVGCompressionOption);
+    return encodeSvg(paths.srcPath, filePath, encodeSetup);
   } else {
     /**
      * Default Images compression
