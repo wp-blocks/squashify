@@ -8,17 +8,17 @@ import {
   getCompressionOptions,
   getImageFormatsInFolder,
   logMessage,
-} from "./utils";
+} from "./utils.js";
 import {
   CompressImagePaths,
   CompressionMeta,
   OutputData,
   type ScriptOptions,
-} from "./types";
+} from "./types.js";
 import { copyFile, mkdir } from "node:fs/promises";
 import { Glob } from "glob";
 import { lstatSync } from "node:fs";
-import { encodeFileAsync } from "./encodeFileAsync";
+import { encodeFileAsync } from "./encodeFileAsync.js";
 
 /**
  * The function converts images in a source directory to a specified format and

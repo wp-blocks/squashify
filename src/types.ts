@@ -1,5 +1,5 @@
-import { type Compressor, type InputFormats } from "./constants";
-import { Config as SvgoConfig, PluginConfig } from "svgo";
+import { type Compressor, type InputFormats } from "./constants.js";
+import { Config as SvgoConfig } from "svgo";
 import { ParsedPath } from "path";
 import { OutputInfo } from "sharp";
 

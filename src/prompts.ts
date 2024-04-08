@@ -4,14 +4,14 @@ import {
   distDirQuestion,
   getImageCompressionOptions,
   srcDirQuestion,
-} from "./options";
+} from "./options.js";
 import { CompressionOptionsMap, type ScriptOptions } from "./types";
 import {
   defaultCompressionOptions,
   getImageFormatsInFolder,
   logMessage,
-} from "./utils";
-import { InputFormats } from "./constants";
+} from "./utils.js";
+import { InputFormats } from "./constants.js";
 
 export async function getInteractiveCompressorOptions(
   imageFormats: InputFormats[],

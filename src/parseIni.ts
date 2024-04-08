@@ -1,14 +1,15 @@
 import fs from "fs";
 import ini from "ini";
-import { CompressionOption, type IniOptions, ScriptOptions } from "./types";
 import path from "path";
-import { Compressor, InputFormats, inputFormats } from "./constants";
+
+import { CompressionOption, type IniOptions, ScriptOptions } from "./types.js";
+import { Compressor, InputFormats, inputFormats } from "./constants.js";
 import {
   getDefaultCompressor,
   getJpgCompressionOptions,
   getQuality,
   getSvgoPluginOptions,
-} from "./utils";
+} from "./utils.js";
 
 /**
  * Clean up an option in the ini file

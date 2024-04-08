@@ -1,6 +1,6 @@
 import { CompressionMeta, OutputData } from "./types";
 import sharp, { FitEnum } from "sharp";
-import { transparentColor } from "./constants";
+import { transparentColor } from "./constants.js";
 
 export function encodeImage(
   src: string,

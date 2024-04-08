@@ -11,11 +11,24 @@
 	"bugs": {
 		"url": "https://github.com/wp-blocks/squashify/issues"
 	},
+  "type": "module",
+  "bin": "./lib/esm/index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wp-blocks/squashify.git"
+  },
+  "module": "lib/esm/",
+  "main": "lib/esm/index.js",
+  "reqire": "lib/cjs/index.js",
+  "types": "lib/esm/index.d.ts",
 	"scripts": {
-		"build": "tsc --build --clean && tsc",
+		"build": "npx esbuild ./src/* --outdir=lib/esm/ --format=esm --platform=node --minify",
 		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify",
 		"watch": "tsc --watch --sourceMap",
-		"squashify": "node ./lib/esm/index.js --in tests/images/ --out tests/output --verbose",
+		"squashify": "node . --in tests/images/ --out tests/output --verbose",
 		"test": "jest --silent=false --coverage --verbose",
 		"posttest": "rimraf tests/images/dist-*"
 	},
@@ -41,20 +54,6 @@
 		"frontend",
 		"SEO"
 	],
-	"main": "./lib/esm/index.js",
-	"bin": "./lib/esm/index.js",
-	"types": "./lib/esm/index.d.ts",
-	"engines": {
-		"node": ">=16.0.0"
-	},
-	"exports": {
-		"import": "./lib/esm/index.js",
-		"require": "./lib/cjs/index.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/wp-blocks/squashify.git"
-	},
 	"dependencies": {
 		"glob": "^10.3.12",
 		"ini": "^4.1.2",
