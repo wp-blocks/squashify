@@ -70,6 +70,11 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
     cwd: process.cwd(),
   };
 
+  logMessage(
+    `🎃 Converting images in ${srcDir} to ${distDir} ... Please wait!`,
+    true,
+  );
+
   // Loop through the files in the directory
   for await (const res of globResults as AsyncIterable<string>) {
     /** Collect the source and destination paths */

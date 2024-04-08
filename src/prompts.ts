@@ -1,11 +1,12 @@
 import prompts from "prompts";
 
-import { distDirQuestion, promptsToAsk, srcDirQuestion } from "./options.js";
 import {
-  type CompressionOption,
-  CompressionOptionsMap,
-  type ScriptOptions,
-} from "./types.js";
+  distDirQuestion,
+  promptsToAsk,
+  srcDirQuestion,
+  toggleQuestion,
+} from "./options.js";
+import { type CompressionOption, type ScriptOptions } from "./types.js";
 import {
   defaultCompressionOptions,
   getImageFormatsInFolder,
@@ -34,21 +35,18 @@ export async function getPromptOptions(
   // If no image formats are found, return
   if (!imageFormats.length) {
     throw new Error("No image formats found in the source directory, aborting");
+  } else {
+    logMessage(
+      `Found ${imageFormats.length} image formats in the source directory, ` +
+        imageFormats.join(", "),
+      true,
+    );
   }
 
-  // If the compression settings are not specified, prompt the user if he wants to use the default compression settings
-
   // Check if the user wants to use the default compression options
-  const response = await prompts({
-    type: "toggle",
-    name: "loadDefaults",
-    message: "Do you want to use the default compression settings?",
-    initial: false,
-    active: "Yes",
-    inactive: "No",
-  });
+  const response = await prompts(toggleQuestion);
 
-  if (response.loadDefaults) {
+  if (response?.loadDefaults !== false) {
     //return a promise that resolves with the default compression settings
     options.compressionOptions = await new Promise((resolve) => {
       resolve(defaultCompressionOptions(imageFormats));

@@ -43,6 +43,13 @@ export const distDirQuestion: PromptObject = {
   initial: defaultDist,
 };
 
+export const toggleQuestion: PromptObject = {
+  type: "confirm",
+  name: "loadDefaults",
+  message: "Do you want to use the default compression settings?",
+  initial: true,
+};
+
 /**
  * The function prompts the user for the image compression settings for different image formats
  *

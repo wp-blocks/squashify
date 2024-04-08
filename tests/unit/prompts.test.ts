@@ -1,7 +1,7 @@
 import prompts from "prompts";
 import { beforeEach, describe, expect, it, Mock, vitest } from "vitest";
-import { getImageCompressionOptions } from "../../src/options.js";
 import { logMessage } from "../../src/utils.js";
+import { getImageCompressionOptions } from "../../src/prompts.js";
 
 vitest.mock("prompts");
 
