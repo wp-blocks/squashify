@@ -2,38 +2,17 @@ import prompts from "prompts";
 
 import {
   distDirQuestion,
-  getImageCompressionOptions,
+  promptsToAsk,
   srcDirQuestion,
+  toggleQuestion,
 } from "./options.js";
-import { CompressionOptionsMap, type ScriptOptions } from "./types.js";
+import { type CompressionOption, type ScriptOptions } from "./types.js";
 import {
   defaultCompressionOptions,
   getImageFormatsInFolder,
   logMessage,
 } from "./utils.js";
-import { InputFormats } from "./constants.js";
-
-export async function getInteractiveCompressorOptions(
-  imageFormats: InputFormats[],
-  verbose = false,
-): Promise<CompressionOptionsMap> {
-  const response = await prompts({
-    type: "confirm",
-    name: "useDefaultCompressionOptions",
-    message: "Do you want to use the default compression settings?",
-    initial: true,
-  });
-
-  if (response.useDefaultCompressionOptions) {
-    //return a promise that resolves with the default compression settings
-    return await new Promise((resolve) => {
-      resolve(defaultCompressionOptions(imageFormats));
-    });
-  } else {
-    // Prompt the user for compression settings
-    return await getImageCompressionOptions(imageFormats, verbose);
-  }
-}
+import type { InputFormats } from "./constants.js";
 
 export async function getPromptOptions(
   options: ScriptOptions,
@@ -51,32 +30,69 @@ export async function getPromptOptions(
   }
 
   // Get the image formats
-  const imageFormats = getImageFormatsInFolder(options.srcDir);
+  const imageFormats = getImageFormatsInFolder(options.srcDir as string);
 
   // If no image formats are found, return
-  if (imageFormats.length === 0) {
+  if (!imageFormats.length) {
+    throw new Error("No image formats found in the source directory, aborting");
+  } else {
     logMessage(
-      "No image formats found in the source directory",
-      options.verbose,
-    );
-    return options;
-  }
-
-  // If the compression settings are not specified, use the default compression settings
-  if (Object.keys(options.compressionOptions).length === 0) {
-    logMessage(
-      "No compression settings found, so we will use the default compression settings",
+      `Found ${imageFormats.length} image formats in the source directory, ` +
+        imageFormats.join(", "),
       true,
     );
-    options.compressionOptions = defaultCompressionOptions();
   }
 
-  // If the compression settings are not specified, prompt the user if he wants to use the default compression settings
-  if (Object.keys(options.compressionOptions).length === 0) {
-    options.compressionOptions = await getInteractiveCompressorOptions(
+  // Check if the user wants to use the default compression options
+  const response = await prompts(toggleQuestion);
+
+  if (response?.loadDefaults !== false) {
+    //return a promise that resolves with the default compression settings
+    options.compressionOptions = await new Promise((resolve) => {
+      resolve(defaultCompressionOptions(imageFormats));
+    });
+  } else {
+    // Prompt the user for compression settings
+    options.compressionOptions = await getImageCompressionOptions(
       imageFormats,
       options.verbose,
     );
+  }
+
+  return options;
+}
+
+/**
+ * This function prompts the user for settings to compress different image formats,
+ * including SVG files with custom SVGO plugins.
+ *
+ * @param imageFormats - An array of image file formats (e.g. ['.jpg', '.png', '.svg'])
+ *                     that the function will prompt the user about compressing.
+ * @param verbose - Whether to log messages
+ * @returns an object containing compression settings for different image formats. The
+ * settings are obtained through a series of prompts that ask the user whether they want
+ * to compress each format, which compressor to use (if applicable), and the quality
+ * level (if applicable). For SVG files, the user can also choose which SVGO plugins to
+ * use for compression.
+ */
+export async function getImageCompressionOptions(
+  imageFormats: InputFormats[],
+  verbose = false,
+): Promise<{ [key in InputFormats]: CompressionOption }> {
+  const options = {} as { [key in InputFormats]: CompressionOption };
+
+  for (const format of imageFormats) {
+    logMessage("==".concat(format, "=="), verbose);
+    const response: CompressionOption = (await prompts(
+      promptsToAsk(format),
+    )) as CompressionOption;
+
+    if (!response.compressor) {
+      logMessage(`Skipping ${format} files...`, verbose);
+      continue;
+    }
+
+    options[format] = response;
   }
 
   return options;

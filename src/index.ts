@@ -26,18 +26,17 @@ export default async function main() {
   // Parse the settings
   let options = parseOptions(cliOptions, iniOptions);
 
+  // Prompt the user for the script settings
+  if (cliOptions.interactive === true) {
+    options = await getPromptOptions(options);
+  }
+
   // Check for missing settings
   const missingOptions = ["srcDir", "distDir"].filter(
     (option) => !options[option as keyof typeof options],
   );
-
-  // Prompt the user for the script settings
-  if (cliOptions.interactive === true && missingOptions.length > 0) {
-    options = await getPromptOptions(options);
-  } else {
-    if (missingOptions.length > 0) {
-      throw new Error(`Missing required options: ${missingOptions.join(", ")}`);
-    }
+  if (missingOptions.length > 0) {
+    throw new Error(`Missing required options: ${missingOptions.join(", ")}`);
   }
 
   // Print the settings to the console

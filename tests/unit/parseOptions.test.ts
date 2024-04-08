@@ -26,17 +26,17 @@ describe("getPromptOptions", () => {
 
     // Mock the prompts function to return the user's input
     (prompts as MockedFunction<typeof prompts>).mockResolvedValueOnce({
-      srcDir: "./src",
+      srcDir: "tests/images",
     });
 
     const result = await getPromptOptions(options as any);
 
-    expect(result.srcDir).toBe("./src");
-    expect(prompts).toBeCalledTimes(1);
+    expect(result.srcDir).toBe("tests/images");
+    expect(prompts).toBeCalledTimes(2);
   });
 
   it("Should prompt for destination directory when not provided", async () => {
-    const options = { srcDir: "./src" };
+    const options = { srcDir: "./tests/images" };
 
     // Mock the prompts function to return the user's input
     (prompts as MockedFunction<typeof prompts>).mockResolvedValueOnce({
@@ -46,12 +46,12 @@ describe("getPromptOptions", () => {
     const result = await getPromptOptions(options as any);
 
     expect(result.distDir).toBe("./dist");
-    expect(prompts).toBeCalledTimes(1);
+    expect(prompts).toBeCalledTimes(2);
   });
 
   it("Should not prompt for compression settings when already provided", async () => {
     const options = {
-      srcDir: "./src",
+      srcDir: "./tests/images",
       distDir: "./dist",
       compressionOptions: {
         jpeg: { quality: 75 },
@@ -62,7 +62,7 @@ describe("getPromptOptions", () => {
     const result = await getPromptOptions(options as any);
 
     expect(result.compressionOptions).toEqual(options.compressionOptions);
-    expect(prompts).toBeCalledTimes(0);
+    expect(prompts).toBeCalledTimes(1);
   });
 });
 

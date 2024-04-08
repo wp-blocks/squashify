@@ -18,8 +18,8 @@ describe("getCliOptions", () => {
 
   it("Should return the default settings if no arguments are passed", () => {
     const options = getCliOptions(yargs([""]));
-    expect(options.srcDir).toBe("");
-    expect(options.distDir).toBe("");
+    expect(options.srcDir).toBe(undefined);
+    expect(options.distDir).toBe(undefined);
     expect(options.configFile).toBe(defaultConfigFile);
     expect(options.verbose).toBe(false);
     expect(options.interactive).toBe(false);

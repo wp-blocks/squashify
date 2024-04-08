@@ -1,17 +1,14 @@
 /* eslint-disable no-console */
 import fs from "fs";
-
-import prompts, { type PromptObject } from "prompts";
+import { PromptObject } from "prompts";
 
 import {
   compressors,
-  svgOptions,
-  type InputFormats,
-  defaultSrc,
   defaultDist,
+  defaultSrc,
+  type InputFormats,
+  svgOptions,
 } from "./constants.js";
-import { type CompressionOption } from "./types.js";
-import { logMessage } from "./utils.js";
 
 /**
  * Prompts the user for the source directory
@@ -44,6 +41,13 @@ export const distDirQuestion: PromptObject = {
   message:
     "Enter the destination directory (same path as source to override existing images):",
   initial: defaultDist,
+};
+
+export const toggleQuestion: PromptObject = {
+  type: "confirm",
+  name: "loadDefaults",
+  message: "Do you want to use the default compression settings?",
+  initial: true,
 };
 
 /**
@@ -136,39 +140,3 @@ export const promptsToAsk = (format: InputFormats): PromptObject[] => {
     ];
   }
 };
-
-/**
- * This function prompts the user for settings to compress different image formats,
- * including SVG files with custom SVGO plugins.
- *
- * @param imageFormats - An array of image file formats (e.g. ['.jpg', '.png', '.svg'])
- *                     that the function will prompt the user about compressing.
- * @param verbose - Whether to log messages
- * @returns an object containing compression settings for different image formats. The
- * settings are obtained through a series of prompts that ask the user whether they want
- * to compress each format, which compressor to use (if applicable), and the quality
- * level (if applicable). For SVG files, the user can also choose which SVGO plugins to
- * use for compression.
- */
-export async function getImageCompressionOptions(
-  imageFormats: InputFormats[],
-  verbose = false,
-): Promise<{ [key in InputFormats]: CompressionOption }> {
-  const options = {} as { [key in InputFormats]: CompressionOption };
-
-  for (const format of imageFormats) {
-    logMessage("==".concat(format, "=="), verbose);
-    const response: CompressionOption = (await prompts(
-      promptsToAsk(format),
-    )) as CompressionOption;
-
-    if (!response.compressor) {
-      logMessage(`Skipping ${format} files...`, verbose);
-      continue;
-    }
-
-    options[format] = response;
-  }
-
-  return options;
-}
