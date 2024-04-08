@@ -29,7 +29,7 @@
 		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify",
 		"watch": "tsc --watch --sourceMap",
 		"squashify": "node . --in tests/images/ --out tests/output --verbose",
-		"test": "vitest --coverage --watch"
+		"test": "vitest --coverage"
 	},
 	"files": [
 		"lib",
