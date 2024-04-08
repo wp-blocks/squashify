@@ -3,7 +3,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import process from "node:process";
 
-import { getCliOptions } from "./args.js";
+import { getCliOptions } from "./parseArgs.js";
 import { convertImages } from "./compression.js";
 import { getIniOptions } from "./parseIni.js";
 import { getPromptOptions } from "./prompts.js";

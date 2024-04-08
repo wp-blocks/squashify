@@ -29,7 +29,7 @@ export interface GenericCompressionOptions {
 export interface SVGCompressionOption extends SvgoConfig {}
 
 export interface GifCompressionOption extends GenericCompressionOptions {
-  encodeAnimated?: boolean;
+  animation?: boolean;
 }
 
 export interface JpegCompressionOption extends GenericCompressionOptions {

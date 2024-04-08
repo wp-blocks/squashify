@@ -199,7 +199,6 @@ export function getQuality(
  * @param {boolean | undefined} progressive - A boolean value that indicates whether the JPEG
  * compression should be progressive or not. If it is undefined, the default value of true will be
  * used.
- * @param {string} format - a string representing the file format, such as ".jpg" or ".png"
  * @returns either the value of `progressive` if the `format` parameter is `.jpg` or `.jpeg`, or
  * `undefined` if it is not. If `progressive` is not provided, it defaults to `true`.
  */
@@ -267,6 +266,7 @@ export function defaultCompressionOptions(
     } else if (format === "gif") {
       options[format] = {
         compressor: "webp",
+        animation: true,
         quality: 80,
       } as GenericCompressionOptions;
     } else {
@@ -309,25 +309,25 @@ export function generateDefaultConfigFile(
   filename: string,
   argv: Record<string, string>,
 ) {
-  let defaultConfig = {
+  const opts = {
+    verbose: argv.verbose === "true",
+    extMode: (argv.extMode as ExtMode) || "replace",
+    maxSize: Number(argv.maxSize) || undefined,
+    resizeType: (argv.resizeType as ResizeType) || undefined,
+  } as Record<string, unknown>;
+
+  let defaultConfig: Record<string, unknown> = {
     path: {
       in: argv.input ?? "images",
       out: argv.output ?? "optimized",
     },
-    options: {
-      verbose: argv.verbose ?? undefined,
-      extMode: (argv.extMode as ExtMode) || "replace",
-      maxSize: Number(argv.maxSize) || undefined,
-      resizeType: (argv.resizeType as ResizeType) || undefined,
-    },
-  };
-
-  defaultConfig = {
-    ...defaultConfig,
-    options: {
-      ...defaultConfig.options,
-    },
+    options: JSON.parse(JSON.stringify(opts)), // will remove undefined values
     ...defaultCompressionOptions(),
+    svg: {
+      // override the default settings for SVG images
+      compressor: "svgo",
+      plugins: "defaults",
+    },
   };
 
   const iniFileContent = ini.stringify(defaultConfig);

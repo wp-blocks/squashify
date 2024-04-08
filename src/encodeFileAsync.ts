@@ -33,7 +33,7 @@ export function encodeFileAsync(
     /**
      * The rest of the image formats
      */
-    if ("encodeAnimated" in encodeSetup) {
+    if ("animation" in encodeSetup) {
       logMessage("🎬️ Processing " + outputFile, encodeSetup?.verbose);
       return encodeAnimation(
         paths.srcPath,
