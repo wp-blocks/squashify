@@ -10,7 +10,6 @@ import {
   type CompressionOptionsMap,
   ExtMode,
   GenericCompressionOptions,
-  SVGCompressionOption,
 } from "./types";
 import {
   type Config as SvgoConfig,
@@ -289,7 +288,7 @@ export function getFileName(
     compressor = "jpg";
   }
   const ext = "." + compressor;
-  return extMode === "add" && paths?.ext === ext
+  return extMode === "add" && paths?.ext !== ext
     ? paths?.base + ext
     : paths?.name + ext;
 }

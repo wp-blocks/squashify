@@ -180,11 +180,13 @@ export function getIniOptions(
             iniOptionsParsed.compressionOptions.gif.compressor = "webp";
           }
 
-          // if the format is .svg and the plugins option is set
+          // if the format is .svg and the plugins option is set, we can safely assume that the compressor is svgo
           if (
             format === "svg" &&
             "plugins" in iniOptionsParsed.compressionOptions.svg
           ) {
+            // set the compressor to svgo and parse the plugins
+            iniOptionsParsed.compressionOptions.svg.compressor = "svgo";
             iniOptionsParsed.compressionOptions.svg.plugins =
               getSvgoPluginOptions(
                 (

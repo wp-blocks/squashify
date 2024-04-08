@@ -99,6 +99,8 @@ export type CompressionMeta = {
 export type OutputData =
   | OutputInfo
   | {
+      src: string;
+      dist: string;
       originalSize: number;
       size: number;
     }

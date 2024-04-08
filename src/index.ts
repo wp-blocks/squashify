@@ -50,8 +50,9 @@ export default async function main() {
   await convertImages(options);
 
   // Print the time elapsed in seconds to the console
-  console.log(
+  logMessage(
     `The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`,
+    true,
   );
 
   return;
