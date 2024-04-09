@@ -27,8 +27,7 @@ There are three ways to use squashify:
 **As a command-line script**: You can use the script from the command line by running the npx command and following the prompts to enter the input and output directories, and select the compression options for each image format.
 
 #### Requirements
-- Node.js version 14 or above
-- npm or yarn package manager
+It can be used with all JavaScript runtimes that provide support for Node-API v9, including Node.js (^18.17.0 or >= 20.3.0), Deno and Bun.
 
 ### as Node Script
 
