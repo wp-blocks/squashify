@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { getIniOptions } from "../../src/parseIni.js";
-import { ScriptOptions } from "node:vm";
 import { CliOptions } from "../../src/types.js";
 
 describe("getIniOptions", () => {
