@@ -35,7 +35,9 @@ import { encodeFileAsync } from "./encodeFileAsync.js";
  *                                   have keys that correspond to image formats (e.g. "jpg", "png", "webp") and values
  *                                   that are objects containing compression settings for that format (e.g. "no", "mozjpeg", "jpeg").
  */
-export async function convertImages(settings: ScriptOptions): Promise<void> {
+export async function convertImages(
+  settings: ScriptOptions,
+): Promise<PromiseSettledResult<OutputData>[]> {
   // destructuring the settings
   const { srcDir, distDir, compressionOptions } = settings as ScriptOptions;
 
@@ -164,23 +166,5 @@ export async function convertImages(settings: ScriptOptions): Promise<void> {
   }
 
   // Wait for all promises to resolve before returning
-  const res = await Promise.allSettled(promises);
-  if (res.length) {
-    res.forEach((result) => {
-      if (result.status !== "fulfilled") {
-        logMessage("🔴 " + result.reason, true);
-      } else {
-        logMessage(
-          "✅ " +
-            JSON.stringify(
-              (result as PromiseFulfilledResult<OutputData>).value,
-            ),
-          settings.verbose,
-        );
-      }
-      return;
-    });
-  } else {
-    logMessage("🔴 No files found", true);
-  }
+  return await Promise.allSettled(promises);
 }

@@ -11,8 +11,6 @@
 	"bugs": {
 		"url": "https://github.com/wp-blocks/squashify/issues"
 	},
-	"type": "module",
-	"bin": "./lib/esm/index.js",
 	"engines": {
 		"node": ">=16.0.0"
 	},
@@ -20,17 +18,20 @@
 		"type": "git",
 		"url": "git+https://github.com/wp-blocks/squashify.git"
 	},
-	"main": "lib/esm/index.js",
-	"module": "lib/esm/",
-	"reqire": "lib/cjs/index.js",
-	"types": "lib/@types/index.d.ts",
+  "type": "module",
+  "bin": "lib/esm/bin.js",
+  "types": "./lib/@types/index.d.ts",
+  "module": "./lib/esm/",
+  "exports": {
+    "squashify": "./lib/esm/bin.js",
+    "default": "./lib/esm/bin.js"
+  },
 	"scripts": {
 		"prebuild": "rimraf lib && tsc --emitDeclarationOnly --outDir lib/@types/",
 		"build": "npx esbuild ./src/* --outdir=lib/esm/ --format=esm --platform=node --minify",
-		"postbuild": "npx esbuild src/index.ts --outfile=lib/cjs/index.js --bundle --platform=node --minify",
 		"watch": "tsc --watch --sourceMap --outDir lib/esm/",
-		"squashify": "node . --in tests/images/ --out tests/output --verbose",
-		"squashifyDefaults": "node . -d",
+		"squashify": "node ./lib/esm/bin.js --in tests/images/ --out tests/output --verbose",
+		"squashifyDefaults": "node ./lib/esm/bin.js -d",
 		"test": "vitest --coverage"
 	},
 	"files": [
