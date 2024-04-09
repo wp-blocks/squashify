@@ -32,12 +32,13 @@
 		"watch": "tsc --watch --sourceMap --outDir lib/esm/",
 		"squashify": "node ./lib/esm/bin.js --in tests/images/ --out tests/output --verbose",
 		"squashifyDefaults": "node ./lib/esm/bin.js -d",
-		"test": "vitest --coverage"
+		"test": "vitest --coverage",
+    "prepublish": "npm run build && npm run test"
 	},
 	"files": [
 		"lib",
-		"tests",
-		"!tests/images/**/*",
+		"tests/unit",
+		"tests/data",
 		"*.json",
 		"*.md",
 		".gitignore",
@@ -70,7 +71,6 @@
 		"@babel/core": "^7.24.3",
 		"@babel/preset-env": "^7.24.3",
 		"@babel/preset-typescript": "^7.24.1",
-		"@jest/globals": "^29.7.0",
 		"@types/ini": "^4.1.0",
 		"@types/node": "^20.11.30",
 		"@types/prompts": "^2.4.9",
