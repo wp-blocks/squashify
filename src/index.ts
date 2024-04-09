@@ -1,14 +1,14 @@
-#!/usr/bin/env node
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import process from "node:process";
-
-import { getCliOptions } from "./parseArgs.js";
 import { convertImages } from "./compression.js";
 import { getIniOptions } from "./parseIni.js";
 import { getPromptOptions } from "./prompts.js";
 import { parseOptions } from "./parseOptions.js";
-import { logMessage } from "./utils.js";
+import { getImageFormatsInFolder, logMessage } from "./utils.js";
+import { encodeFileAsync } from "./encodeFileAsync.js";
+import { encodeSvg } from "./encodeSvg.js";
+import { encodeAnimation } from "./encodeAnimation.js";
+import { encodeImage } from "./encodeImage.js";
+import { CliOptions } from "./types.js";
+import main from "./bin.js";
 
 /**
  * Prompts the user for the source and destination directories
@@ -16,10 +16,7 @@ import { logMessage } from "./utils.js";
  *
  * @returns Promise that resolves when the image conversion is complete
  */
-export default async function main() {
-  // Get the cli settings
-  const cliOptions = getCliOptions(yargs(hideBin(process.argv)));
-
+export default async function squashify(cliOptions: CliOptions) {
   // Get the settings from the .ini file
   const iniOptions = getIniOptions(cliOptions.configFile);
 
@@ -46,17 +43,22 @@ export default async function main() {
   const startTime = Date.now();
 
   // Then convert the images in the source directory
-  await convertImages(options);
+  const result = await convertImages(options);
 
-  // Print the time elapsed in seconds to the console
-  logMessage(
-    `The end 🎉 - Time elapsed: ${(Date.now() - startTime) / 1000} seconds`,
-    true,
-  );
-
-  return;
+  return {
+    result,
+    timeElapsed: (Date.now() - startTime) / 1000,
+    verbose: cliOptions.verbose,
+  };
 }
 
-main().catch((err) => {
-  console.error(err);
-});
+export {
+  main,
+  getIniOptions,
+  convertImages,
+  getImageFormatsInFolder,
+  encodeFileAsync,
+  encodeSvg,
+  encodeAnimation,
+  encodeImage,
+};
