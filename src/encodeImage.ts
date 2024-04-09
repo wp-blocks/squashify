@@ -12,6 +12,10 @@ export function encodeImage(
 
   const options = compressOpt;
 
+  if (options.options?.background) {
+    image.flatten({ background: options.options?.background });
+  }
+
   /**
    * The rest of the image formats
    * Will apply compression settings if specified in the settings
@@ -35,13 +39,15 @@ export function encodeImage(
         image = image.jpeg({
           mozjpeg: true,
           quality: compressOpt.quality,
+          background: "white",
+          progressive: compressOpt.progressive,
         } as sharp.JpegOptions);
         break;
       case "jpg":
         image = image.jpeg({
           quality: compressOpt.quality,
           progressive: compressOpt.progressive,
-        });
+        } as sharp.JpegOptions);
         break;
     }
   }
